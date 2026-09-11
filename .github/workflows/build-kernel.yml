@@ -27,7 +27,7 @@ jobs:
     secrets: inherit
   
   build_pocom3_android13:
-    name: "Poco M3 (Based AOSP A13)"
+    name: "Poco M3"
     strategy:
       fail-fast: true
     uses: ./.github/workflows/build_pocom3_android13.yml
