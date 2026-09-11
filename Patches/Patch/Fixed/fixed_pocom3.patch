@@ -40,6 +40,10 @@ index 5e94ec9..a9810ba 100644
 +#endif // #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 +
  	fc = fs_context_for_mount(type, flags);
++
++#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
++bypass_orig_flow:
++#endif // #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 	if (IS_ERR(fc))
 		return ERR_CAST(fc);
 
@@ -50,10 +54,6 @@ index 5e94ec9..a9810ba 100644
 		ret = parse_monolithic_mount_data(fc, data);
 	if (!ret)
 		mnt = fc_mount(fc);
-+
-+#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
-+bypass_orig_flow:
-+#endif // #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
  	else
 		mnt = ERR_PTR(ret);
  
