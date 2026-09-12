@@ -97,7 +97,7 @@ runs:
           #    echo "[+] try_umount susfs patch success."
           #  else
           
-              if [[ "${{ env.KERNEL_SOURCE }}" == *superchime* ]]; then              
+              if [[ "${{ env.KERNEL_SOURCE }}" == *fredslbn* ]]; then              
                  cp /tmp/Patches/Patch/susfs_pocom3_patch_to_${{ env.KERNEL_VERSION }}.patch ./
                  patch -p1 < susfs_pocom3_patch_to_${{ env.KERNEL_VERSION }}.patch || true
                  echo "[+] SuSFS Patch completed."
