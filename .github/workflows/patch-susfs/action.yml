@@ -72,13 +72,9 @@ runs:
           # Check SuSFS
           if grep -q "CONFIG_KSU_SUSFS_SUS_MOUNT" "fs/namespace.c"; then
             if [[ "${{ env.KERNEL_SOURCE }}" == *entahsiapa* ]]; then              
-                              
-               if [[ "${{ env.KERNELSU_SOURCE }}" == *backslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]]; then
+
                   patch -p1 < <(curl -sL "https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/patches/55_try_umount_for_susfs.patch") || true
                   echo "[+] But still lack try_umount susfs patch, and now patched successfully."
-               else
-                  echo "[+] SuSFS has already patched manually in kernel sources."
-               fi
                
             else                        
                echo "[-] SuSFS is already patched, Skipped."
@@ -102,8 +98,8 @@ runs:
                  patch -p1 < susfs_pocom3_patch_to_${{ env.KERNEL_VERSION }}.patch || true
                  echo "[+] SuSFS Patch completed."
               else            
-                 cp /tmp/Patches/Patch/susfs_patch_to_${{ env.KERNEL_VERSION }}.patch ./
-                 patch -p1 < susfs_patch_to_${{ env.KERNEL_VERSION }}.patch || true
+                 cp /tmp/Patches/Patch/susfs_pocom3_patch_to_${{ env.KERNEL_VERSION }}.patch ./
+                 patch -p1 < susfs_pocom3_patch_to_${{ env.KERNEL_VERSION }}.patch || true
                  echo "[+] SuSFS Patch completed."
               fi
                           
