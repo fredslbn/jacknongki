@@ -23,7 +23,7 @@ runs:
             bash syscall_hook_patches.sh ./
 
             echo "[+] executed syscall hook successfully."
-
+                      
           else
             echo "[-] please input a vaild option!"
             false
