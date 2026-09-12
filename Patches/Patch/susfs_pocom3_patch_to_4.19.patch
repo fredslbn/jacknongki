@@ -488,13 +488,13 @@ diff --git a/fs/namespace.c b/fs/namespace.c
 index 5e94ec9..0c103d8 100644
 --- a/fs/namespace.c
 +++ b/fs/namespace.c
-@@ -26,10 +26,21 @@
- #include <linux/bootmem.h>
+@@ -27,10 +27,21 @@
  #include <linux/task_work.h>
  #include <linux/sched/task.h>
-+#ifdef CONFIG_KSU_SUSFS
+ #include <linux/fs_context.h>
++#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 +#include <linux/susfs_def.h>
-+#endif // #ifdef CONFIG_KSU_SUSFS
++#endif // #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
  
  #include "pnode.h"
  #include "internal.h"
@@ -684,9 +684,27 @@ index 5e94ec9..0c103d8 100644
  	hlist_for_each_entry_rcu(p, head, mnt_hash)
  		if (&p->mnt_parent->mnt == mnt && p->mnt_mountpoint == dentry)
  			return p;
-@@ -1008,7 +1179,40 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
- 	struct mount *mnt;
- 	int err;
+@@ -940,7 +948,22 @@ struct vfsmount *vfs_create_mount(struct fs_context *fc)
+ sb = fc->root->d_sb;
+ 
++#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
++	if (static_branch_unlikely(&susfs_is_sdcard_android_data_not_decrypted)) {
++		if (susfs_is_current_ksu_domain()) {
++			mnt = susfs_alloc_non_unshare_ksu_vfsmnt(fc->source ?: "none");
++			goto bypass_orig_flow;
++		}
++	}
++	mnt = alloc_vfsmnt(fc->source ?: "none");
++bypass_orig_flow:
++#else
+	mnt = alloc_vfsmnt(fc->source ?: "none");
++#endif
+ if (!mnt)
+     return ERR_PTR(-ENOMEM);
+ 
+@@ -1008,7 +1179,40 @@ static struct mount *clone_mnt(struct mount *old
+   struct mount *mnt;
+   int err;
  
 +#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 +	bool is_mnt_ksu_unshared = false;
@@ -725,7 +743,7 @@ index 5e94ec9..0c103d8 100644
  	if (!mnt)
  		return ERR_PTR(-ENOMEM);
  
-@@ -1033,6 +1237,14 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
+@@ -1035,6 +1067,14 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
  
  	mnt->mnt.mnt_flags = old->mnt.mnt_flags;
  	mnt->mnt.mnt_flags &= ~(MNT_WRITE_HOLD|MNT_MARKED|MNT_INTERNAL);
@@ -740,17 +758,16 @@ index 5e94ec9..0c103d8 100644
  	/* Don't allow unprivileged users to change mount flags */
  	if (flag & CL_UNPRIVILEGED) {
  		mnt->mnt.mnt_flags |= MNT_LOCK_ATIME;
-@@ -2945,6 +3157,9 @@ struct mnt_namespace *copy_mnt_ns(unsigned long flags, struct mnt_namespace *ns,
- 	copy_flags = CL_COPY_UNBINDABLE | CL_EXPIRE;
- 	if (user_ns != ns->user_ns)
- 		copy_flags |= CL_SHARED_TO_SLAVE | CL_UNPRIVILEGED;
+@@ -3049,5 +3075,8 @@ struct mnt_namespace *copy_mnt_ns(unsigned long flags, struct mnt_namespace *ns,
+ namespace_lock();
+ /* First pass: copy the tree topology */
+ copy_flags = CL_COPY_UNBINDABLE | CL_EXPIRE; 
 +#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 +	copy_flags |= CL_COPY_MNT_NS;
 +#endif
- 	new = copy_tree(old, old->mnt.mnt_root, copy_flags);
- 	if (IS_ERR(new)) {
- 		namespace_unlock();
-@@ -3527,3 +3742,34 @@ const struct proc_ns_operations mntns_operations = {
+    if (user_ns != ns->user_ns)
+       copy_flags |= CL_SHARED_TO_SLAVE;
+@@ -3647,3 +3655,34 @@ const struct proc_ns_operations mntns_operations = {
  	.install	= mntns_install,
  	.owner		= mntns_owner,
  };
