@@ -111,7 +111,7 @@ runs:
           cd $GITHUB_WORKSPACE/device_kernel
           
           if [[ "${{ env.CUSTOM_CLEANUP_HARDCODE }}" == "true" ]]; then
-             echo "::group::[+] Starting clean hook..."
+             echo "::group::[+] Starting clean pocom3 hook..."
              cp /tmp/Bin/clean_pocom3_hook.sh ./
              bash clean_pocom3_hook.sh
           else                   
