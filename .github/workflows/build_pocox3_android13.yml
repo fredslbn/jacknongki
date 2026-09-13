@@ -1,4 +1,4 @@
-name: Build Poco X3 (Based AOSP A13)
+name: Build Poco X3
 
 on:
   workflow_call:
@@ -46,8 +46,12 @@ env:
   NEED_DTBO : true
   NEED_SAFE_DTBO : false
 
-  ROM_TEXT : "aosp_a13"
-
+  ROM_TEXT : "os.11-16"
+  
+  CUSTOM_SUSFS_PATCH : false
+  
+  CUSTOM_CLEANUP_HARDCODE : false
+  
   # Other env
   PYTHON_VERSION: "3" # Only 2(Ubuntu 22.04 and Ubuntu 20.04) or 3(Any OS Versions).
 
@@ -91,7 +95,7 @@ env:
 
 jobs:
   build-kernel:
-    name: Build Poco X3 (Based AOSP A13)
+    name: Build Poco X3
     runs-on: ubuntu-latest # u can changed to ubuntu 22.04, and need container set ubuntu-latest
     # container: archlinux/archlinux:latest # if u need use arch linux -> archlinux/archlinux:latest or ubuntu 20.04 -> ubuntu:focal
     env:
@@ -119,16 +123,14 @@ jobs:
         run: |
           # Only ${{ env.DEVICE_NAME }} use it.
           cd $GITHUB_WORKSPACE/device_kernel
-          # Nothing
 
-     # - name: 🧰 Patch Kernel of Re:Kernel
-     #   uses: ./.github/workflows/patch-rekernel
-
-    #  - name: 💿 Patch Kernel of Droidspaces
-    #    uses: ./.github/workflows/patch-droidspaces
-
-    #  - name: 🔒 Patch Kernel of Baseband Guard
-    #    uses: ./.github/workflows/patch-baseband-guard
+          # enable CONFIG_COMPAT_VDSO and CONFIG_THUMB2_COMPAT_VDSO
+          echo "CONFIG_LOCALVERSION_AUTO=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+          
+          # sed -i 's/-valeryn/-super.kernel/g' localversion
+          # sed -i 's/-cip131//g' localversion-cip
+          # sed -i 's/-st15//g' localversion-st
+          echo "Localversion string has been replaced."
 
       - name: 🔒 Patch Kernel of nomount
         uses: ./.github/workflows/patch-nomount
