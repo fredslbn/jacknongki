@@ -109,10 +109,17 @@ runs:
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel
-
-          echo "::group::[+] Starting clean hook..."
-          cp /tmp/Bin/clean_hook.sh ./
-          bash clean_hook.sh
+          
+          if [[ "${{ env.CUSTOM_CLEANUP_HARDCODE }}" == "true" ]]; then
+             echo "::group::[+] Starting clean hook..."
+             cp /tmp/Bin/clean_pocom3_hook.sh ./
+             bash clean_pocom3_hook.sh
+          else                   
+             echo "::group::[+] Starting clean hook..."
+             cp /tmp/Bin/clean_hook.sh ./
+             bash clean_hook.sh
+          fi
+          
           echo "::endgroup::"
           echo "[+] Cleaned hook."
 

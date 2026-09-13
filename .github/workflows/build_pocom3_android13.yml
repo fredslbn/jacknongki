@@ -52,6 +52,8 @@ env:
   ROM_TEXT : "os.11-16"
   
   CUSTOM_SUSFS_PATCH : true
+  
+  CUSTOM_CLEANUP_HARDCODE : true
 
   # Other env
   PYTHON_VERSION: "3" # Only 2(Ubuntu 22.04 and Ubuntu 20.04) or 3(Any OS Versions).

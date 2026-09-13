@@ -71,15 +71,13 @@ runs:
 
           # Check SuSFS
           if grep -q "CONFIG_KSU_SUSFS_SUS_MOUNT" "fs/namespace.c"; then
-            if [[ "${{ env.KERNEL_SOURCE }}" == *entahsiapa* ]]; then              
-
+              if [[ "${{ env.KERNEL_SOURCE }}" == *entahsiapa* ]]; then              
                   patch -p1 < <(curl -sL "https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/patches/55_try_umount_for_susfs.patch") || true
-                  echo "[+] But still lack try_umount susfs patch, and now patched successfully."
-               
-            else                        
-               echo "[-] SuSFS is already patched, Skipped."
-               echo "SUSFS_SKIP=true" >> $GITHUB_ENV
-            fi
+                  echo "[+] But still lack try_umount susfs patch, and now patched successfully."               
+              else                        
+                 echo "[-] SuSFS is already patched, Skipped."
+                 echo "SUSFS_SKIP=true" >> $GITHUB_ENV
+              fi
 
           else
 
@@ -93,10 +91,10 @@ runs:
           #    echo "[+] try_umount susfs patch success."
           #  else
           
-              if [[ "${{ env.KERNEL_SOURCE }}" == *fredslbn* ]]; then              
+              if [[ "${{ env.CUSTOM_SUSFS_PATCH }}" == "true" ]]; then              
                  cp /tmp/Patches/Patch/susfs_pocom3_patch_to_${{ env.KERNEL_VERSION }}.patch ./
                  patch -p1 < susfs_pocom3_patch_to_${{ env.KERNEL_VERSION }}.patch || true
-                 echo "[+] SuSFS Patch completed."
+                 echo "[+] Custom PocoM3 SuSFS Patch completed."
               else            
                  cp /tmp/Patches/Patch/susfs_pocom3_patch_to_${{ env.KERNEL_VERSION }}.patch ./
                  patch -p1 < susfs_pocom3_patch_to_${{ env.KERNEL_VERSION }}.patch || true
