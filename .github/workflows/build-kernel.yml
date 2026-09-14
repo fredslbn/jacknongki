@@ -13,14 +13,14 @@ jobs:
   
 
   build_renote5_android13:
-    name: "Redmi Note 5/Pro (Based AOSP A13)"
+    name: "Renote 5/Pro"
     strategy:
       fail-fast: true
     uses: ./.github/workflows/build_renote5_android13.yml
     secrets: inherit
     
   build_pocox5_android13:
-    name: "Poco X5 (Based AOSP A13)"
+    name: "Poco X5"
     strategy:
       fail-fast: true
     uses: ./.github/workflows/build_pocox5_android13.yml
@@ -34,15 +34,22 @@ jobs:
     secrets: inherit
   
   build_renote10pro_android13:
-    name: "Renote 10 Pro (Based AOSP A13)"
+    name: "Renote 10 Pro"
     strategy:
       fail-fast: true
     uses: ./.github/workflows/build_renote10pro_android13.yml
     secrets: inherit
 
   build_pocox3_android13:
-    name: "Poco X3 (Based AOSP A13)"
+    name: "Poco X3"
     strategy:
       fail-fast: true
     uses: ./.github/workflows/build_pocox3_android13.yml
+    secrets: inherit
+    
+    build_renote8_android13:
+    name: "Renote 8"
+    strategy:
+      fail-fast: true
+    uses: ./.github/workflows/build_renote8_android13.yml
     secrets: inherit  
