@@ -21,8 +21,10 @@ runs:
             # Core
             cp /tmp/Patches/syscall_hook_patches.sh ./
             bash syscall_hook_patches.sh ./
+            
+            echo "CONFIG_KALLSYMS_ALL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
-            echo "[+] executed syscall hook successfully."
+            echo "[+] SYSCALL HOOK method applied."
                       
           elif [[ ${{ env.HOOK_METHOD }} == "tamper" ]]; then
                         
