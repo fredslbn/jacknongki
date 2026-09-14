@@ -45,8 +45,8 @@ jobs:
       fail-fast: true
     uses: ./.github/workflows/build_pocox3_android13.yml
     secrets: inherit
-    
-    build_renote8_android13:
+        
+  build_renote8_android13:
     name: "Renote 8"
     strategy:
       fail-fast: true
