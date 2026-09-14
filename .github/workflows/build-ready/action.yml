@@ -270,6 +270,26 @@ runs:
             echo "[-] Your KernelSU Fork needn't it, Skipped."
 
           fi
+     
+      ### FREDS MODIF
+      - name: xxKSU + SuSFS
+        shell: bash
+        run: |
+          cd $GITHUB_WORKSPACE/device_kernel/KernelSU
+
+          if [[ "${{ env.KERNELSU_SOURCE }}" == *backslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]]; then
+            if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then                                     
+              cp /tmp/Patches/xx.patch $GITHUB_WORKSPACE/device_kernel/KernelSU
+              patch -p1 < xx.patch || true
+              
+              # patch -p1 < <(curl -sL "https://github.com/midori01/KernelSU/commit/xx.patch") || true
+              echo "[+] Susfs patch for xxKSU has been applied."                            
+            fi
+            
+          else
+            echo "[-] Your KernelSU is not xxKSU, patch SUSFS be skipped."
+
+          fi
 
       - name: KPM Function Support
         if: env.KPM_ENABLE == 'true'
@@ -360,7 +380,7 @@ runs:
           fi
 
           if [[ "${{ env.KERNELSU_SOURCE }}" == *blackslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]]; then
-            echo "CONFIG_KSU_KPROBES_KSUD=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+            echo "# CONFIG_KSU_KPROBES_KSUD is not set" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
           fi
 

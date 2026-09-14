@@ -69,11 +69,13 @@ runs:
 
           }
 
+          
+          ### FREDS MODIF
           # Check SuSFS
           if grep -q "CONFIG_KSU_SUSFS_SUS_MOUNT" "fs/namei.c"; then
               if [[ "${{ env.KERNEL_SOURCE }}" == *entahsiapa* ]]; then              
                   patch -p1 < <(curl -sL "https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/patches/55_try_umount_for_susfs.patch") || true
-                  echo "[+] But still lack try_umount susfs patch, and now patched successfully."               
+                  echo "[+] Kernel source already has SUSFS patch, only need try_umount patch, and has been applied now."               
               else                        
                  echo "[-] SuSFS is already patched, Skipped."
                  echo "SUSFS_SKIP=true" >> $GITHUB_ENV
