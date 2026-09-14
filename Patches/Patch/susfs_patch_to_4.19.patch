@@ -4086,7 +4086,7 @@ index 0fc34ca..8f4b814 100644
  static int thaw_super_locked(struct super_block *sb);
  
  static LIST_HEAD(super_blocks);
-@@ -1103,6 +1119,22 @@ int get_anon_bdev(dev_t *p)
+@@ -1103,6 +1112,22 @@ int get_anon_bdev(dev_t *p)
  {
  int dev;
  
