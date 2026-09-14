@@ -1916,7 +1916,7 @@ diff --git a/fs/stat.c b/fs/stat.c
 index 0fda4b6..dd2c150 100644
 --- a/fs/stat.c
 +++ b/fs/stat.c
-@@ -21,6 +21,11 @@
+@@ -21,6 +21,15 @@
  #include <linux/uaccess.h>
  #include <asm/unistd.h>
  

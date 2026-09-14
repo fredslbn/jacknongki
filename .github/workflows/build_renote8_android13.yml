@@ -36,9 +36,9 @@ env:
   KERNELSU_BRANCH : ""
 
   KERNELSU_AUTO_GET : "true" # if u want easy setting kernelsu, u can true.
-  KERNELSU_AUTO_FORK : "xxksu" # magic, rsuntk, next, resukisu and sukisu
+  KERNELSU_AUTO_FORK : "resukisu" # magic, rsuntk, next, resukisu and sukisu
 
-  ROM_TEXT : "xxKSU"  
+  ROM_TEXT : "Resukisu"  
   CUSTOM_SUSFS_PATCH : false
   CUSTOM_CLEANUP_HARDCODE : false
   
@@ -71,7 +71,7 @@ env:
   DROIDSPACES_ENABLE: "false" # if u need Droidspaces or LXC/Docker.
   NOMOUNT_ENABLE: "true" # if u need NoMount.
 
-  HOOK_METHOD: "tamper" # Manual hook method -> syscall.
+  HOOK_METHOD: "syscall" # Manual hook method -> syscall.
 
   KERNEL_PATCH: "false" # If your kernel version is <= 4.9, you have the option of enabling the patch to patch the kernel_write and kernel_read functions.
 
