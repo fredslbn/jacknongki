@@ -95,11 +95,11 @@ runs:
           
               if [[ "${{ env.CUSTOM_SUSFS_PATCH }}" == "true" ]]; then              
                  cp /tmp/Patches/Patch/susfs_pocom3_patch_to_${{ env.KERNEL_VERSION }}.patch ./
-                 patch -p1 < susfs_pocom3_patch_to_${{ env.KERNEL_VERSION }}.patch || true
+                 patch --ignore-whitespace -p1 < susfs_pocom3_patch_to_${{ env.KERNEL_VERSION }}.patch || true
                  echo "[+] Custom PocoM3 SuSFS Patch completed."
               else            
                  cp /tmp/Patches/Patch/susfs_patch_to_${{ env.KERNEL_VERSION }}.patch ./
-                 patch -p1 < susfs_patch_to_${{ env.KERNEL_VERSION }}.patch || true
+                 patch --ignore-whitespace -p1 < susfs_patch_to_${{ env.KERNEL_VERSION }}.patch || true
                  echo "[+] SuSFS Patch completed."
               fi
                           
