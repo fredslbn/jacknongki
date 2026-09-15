@@ -3531,7 +3531,7 @@ index 0000000..125ec8f
 +#define KSTAT_SPOOF_ATIME_TV_NSEC (1 << 5)
 +#define KSTAT_SPOOF_MTIME_TV_SEC (1 << 6)
 +#define KSTAT_SPOOF_MTIME_TV_NSEC (1 << 7)
-+#define KSTAT_SPOOF_CTIME_TV_SEC (1 < 8)
++#define KSTAT_SPOOF_CTIME_TV_SEC (1 << 8)
 +#define KSTAT_SPOOF_CTIME_TV_NSEC (1 << 9)
 +#define KSTAT_SPOOF_BLOCKS (1 << 10)
 +#define KSTAT_SPOOF_BLKSIZE (1 << 11)
@@ -3769,6 +3769,7 @@ index 0000000..fe48902
 +
 +#define DEFAULT_KSU_MNT_ID 2000000000 /* used for mounts created or single cloned by ksu process */
 +#define DEFAULT_KSU_MNT_GROUP_ID 200000 /* used by mount->mnt_group_id */
++#define DEFAULT_KSU_MNT_MINOR_DEV (1 << 12) /* should be way enough, here minor(dev) begins with 4097 */
 +
 +#ifndef FUSE_SUPER_MAGIC
 +#define FUSE_SUPER_MAGIC 0x65735546
@@ -3936,9 +3937,9 @@ index 0fc34ca..8f4b814 100644
  #include <linux/fsnotify.h>
  #include <linux/lockdep.h>
  #include <linux/user_namespace.h>
-+#ifdef CONFIG_KSU_SUSFS
++#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 +#include <linux/susfs_def.h>
-+#endif // #ifdef CONFIG_KSU_SUSFS
++#endif // #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
  #include <linux/fs_context.h>
  #include "internal.h"
  
