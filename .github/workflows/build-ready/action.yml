@@ -277,7 +277,10 @@ runs:
           cd $GITHUB_WORKSPACE/device_kernel/KernelSU
 
           if [[ "${{ env.KERNELSU_SOURCE }}" == *backslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]]; then
-            if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then                                     
+            if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then
+              cp /tmp/Patches/xx-1.patch $GITHUB_WORKSPACE/device_kernel/KernelSU
+              patch -p1 < xx-1.patch || true
+              
               cp /tmp/Patches/xx.patch $GITHUB_WORKSPACE/device_kernel/KernelSU
               patch -p1 < xx.patch || true
               
