@@ -56,7 +56,8 @@ runs:
              
              ## tesr Kprobes Optimization
              echo "CONFIG_OPTPROBES=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_PREEMPT=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+             echo "CONFIG_PREEMPT=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}             
+             echo "CONFIG_KSU_COMPILE_AS_C23=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
              
              ## tesr             
              #echo "KSU_KPROBES_KSUD=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
