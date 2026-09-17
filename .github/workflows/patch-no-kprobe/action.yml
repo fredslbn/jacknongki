@@ -28,6 +28,7 @@ runs:
                       
           elif [[ ${{ env.HOOK_METHOD }} == "tamper" ]]; then
                         
+             echo "CONFIG_KSU=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
              echo "CONFIG_KSU_TAMPER_SYSCALL_TABLE=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
              echo "CONFIG_KSU_HOSTSREDIRECT=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
              ## default config xxksu for LSM is y
@@ -43,10 +44,11 @@ runs:
             
           elif [[ ${{ env.HOOK_METHOD }} == "branchlink" ]]; then
                         
+             echo "CONFIG_KSU=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
              echo "CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
              echo "CONFIG_KSU_HOSTSREDIRECT=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
              ## default config xxksu for LSM is y
-             echo "CONFIG_KSU_LSM_SECURITY_HOOKS=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}            
+             echo "CONFIG_KSU_LSM_SECURITY_HOOKS=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}            
             
              echo "CONFIG_KPROBES=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
              echo "CONFIG_HAVE_KPROBES=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
@@ -65,6 +67,11 @@ runs:
 
              echo "[+] BRANCHLINK HOOK method applied."
                                                           
+          elif [[ ${{ env.HOOK_METHOD }} == "lkm" ]]; then
+
+             echo "[+] LKM HOOK method applied from xxksu.config."
+          
+          
           else
           
             echo "[-] please input a vaild option!"

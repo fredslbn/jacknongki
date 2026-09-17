@@ -369,10 +369,18 @@ runs:
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel
+          
+          if [[ "${{ env.KERNELSU_SOURCE }}" == *backslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]]; then                          
+            echo "[+] CONFIG_KSU applied from specific defconfig."
+            
+          else
 
-          # Neccssary
-          echo "CONFIG_KSU=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+            # Neccssary
+            echo "CONFIG_KSU=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+          
+          fi
 
+          
           # Fork
           if [[ "${{ env.KERNELSU_SOURCE }}" == *rsuntk* ]] || [[ "${{ env.KERNELSU_SOURCE }}" == *Next* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "rsuntk" ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "next" ]] || [[ "${{ env.KERNELSU_SOURCE }}" == *ReSukiSU* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "resukisu" ]]; then
             if [[ ${{ env.SUSFS_ENABLE }} != "true" ]]; then
@@ -380,12 +388,7 @@ runs:
 
             fi
           fi
-
-          if [[ "${{ env.KERNELSU_SOURCE }}" == *blackslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]]; then
-            echo "# CONFIG_KSU_KPROBES_KSUD is not set" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-
-          fi
-
+          
           if [[ "${{ env.KERNELSU_SOURCE }}" == *SukiSU* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "sukisu" ]] || [[ "${{ env.KERNELSU_SOURCE }}" == *ReSukiSU* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "resukisu" ]]; then
             if [[ "${{ env.SUSFS_ENABLE }}" != "true" ]]; then
                 echo "CONFIG_KSU_SUSFS=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
