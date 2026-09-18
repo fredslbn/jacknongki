@@ -5,6 +5,8 @@ on:
   workflow_dispatch:
 
 env:
+  THINLTO_USE_MLGO: "false"
+  
   # Device env
   DEVICE_NAME : "renote_10pro"
   DEVICE_CODENAME : "Sweet"
