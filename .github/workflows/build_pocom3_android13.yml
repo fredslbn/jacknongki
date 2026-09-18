@@ -51,7 +51,7 @@ env:
   CUSTOM_SUSFS_PATCH : true
   CUSTOM_CLEANUP_HARDCODE : true
   
-  SUSFS_ENABLE : true
+  SUSFS_ENABLE : false
   SUSFS_FIXED : true
 
   AK3_SOURCE : "https://github.com/fredslbn/AnyKernel3.git"
