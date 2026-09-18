@@ -4,9 +4,7 @@ on:
   workflow_call:
   workflow_dispatch:
 
-env:
-  THINLTO_USE_MLGO: "false"
-  
+env: 
   # Device env
   DEVICE_NAME : "renote_10pro"
   DEVICE_CODENAME : "Sweet"
@@ -14,7 +12,7 @@ env:
   CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- THINLTO_USE_MLGO=false"
   EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1"
 
-  KERNEL_SOURCE : "https://github.com/tbyool/android_kernel_xiaomi_sm6150.git"
+  KERNEL_SOURCE : "https://github.com/fredslbn/android_kernel_xiaomi_sm6150.git"
   KERNEL_BRANCH : "stable"
 
   CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.7/LLVM-19.1.7-Linux-X64.tar.xz"
@@ -22,15 +20,15 @@ env:
   CLANG_BRANCH : ""
 
   GCC_GNU : false
-  GCC_64_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
-  GCC_64_BRANCH : "aarch64"
-  GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
-  GCC_32_BRANCH : "arm32"
+  # GCC_64_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  # GCC_64_BRANCH : "aarch64"
+  # GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  # GCC_32_BRANCH : "arm32"
   
-  # GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
-  # GCC_64_BRANCH : "master"
-  # GCC_32_SOURCE : "https://github.com/mhdzumair/toolchain.git"
-  # GCC_32_BRANCH : "master"
+  GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
+  GCC_64_BRANCH : "master"
+  GCC_32_SOURCE : "https://github.com/mhdzumair/toolchain.git"
+  GCC_32_BRANCH : "master"
 
   DEFCONFIG_SOURCE: ""
   DEFCONFIG_NAME : "sweet_defconfig"
@@ -132,16 +130,9 @@ jobs:
         run: |
           # Only ${{ env.DEVICE_NAME }} use it.
           cd $GITHUB_WORKSPACE/device_kernel
-          # Nothing
-
-     # - name: 🧰 Patch Kernel of Re:Kernel
-     #   uses: ./.github/workflows/patch-rekernel
-
-    #  - name: 💿 Patch Kernel of Droidspaces
-    #    uses: ./.github/workflows/patch-droidspaces
-
-    #  - name: 🔒 Patch Kernel of Baseband Guard
-    #    uses: ./.github/workflows/patch-baseband-guard
+          
+          # enable CONFIG_COMPAT_VDSO and CONFIG_THUMB2_COMPAT_VDSO
+          echo "CONFIG_LOCALVERSION_AUTO=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
       - name: 🚀 Build Process
         uses: ./.github/workflows/build-process
