@@ -133,11 +133,11 @@ runs:
             if [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]]; then
                 KERNELSU_AUTHOR="backslashxx"
                 KERNELSU_NAME="KernelSU"
-                KERNELSU_ORIGIN_BRANCH="staging"
+                KERNELSU_ORIGIN_BRANCH="master"
                 if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then
-                    KERNELSU_BRANCH="staging"
+                    KERNELSU_BRANCH="master"
                 else
-                    KERNELSU_BRANCH="staging"
+                    KERNELSU_BRANCH="master"
                 fi
 
             elif [[ "${{ env.KERNELSU_AUTO_FORK }}" == "rsuntk" ]]; then

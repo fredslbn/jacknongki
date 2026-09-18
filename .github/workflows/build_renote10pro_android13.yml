@@ -15,20 +15,20 @@ env:
   KERNEL_SOURCE : "https://github.com/tbyool/android_kernel_xiaomi_sm6150.git"
   KERNEL_BRANCH : "stable"
 
-  # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.7/LLVM-19.1.7-Linux-X64.tar.xz"
-  CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.1/LLVM-23.1.1-Linux-X64.tar.xz"
+  CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.7/LLVM-19.1.7-Linux-X64.tar.xz"
+  # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.1/LLVM-23.1.1-Linux-X64.tar.xz"
   CLANG_BRANCH : ""
 
   GCC_GNU : false
-  # GCC_64_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
-  # GCC_64_BRANCH : "aarch64"
-  # GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
-  # GCC_32_BRANCH : "arm32"
+  GCC_64_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  GCC_64_BRANCH : "aarch64"
+  GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  GCC_32_BRANCH : "arm32"
   
-  GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
-  GCC_64_BRANCH : "master"
-  GCC_32_SOURCE : "https://github.com/mhdzumair/toolchain.git"
-  GCC_32_BRANCH : "master"
+  # GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
+  # GCC_64_BRANCH : "master"
+  # GCC_32_SOURCE : "https://github.com/mhdzumair/toolchain.git"
+  # GCC_32_BRANCH : "master"
 
   DEFCONFIG_SOURCE: ""
   DEFCONFIG_NAME : "sweet_defconfig"
