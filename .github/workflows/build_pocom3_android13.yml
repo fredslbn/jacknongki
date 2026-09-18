@@ -27,17 +27,17 @@ env:
   CLANG_BRANCH : ""
 
   GCC_GNU : false
-  # GCC_64_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
-  # GCC_64_BRANCH : "aarch64"
-  # GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
-  # GCC_32_BRANCH : "arm32"
+  GCC_64_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  GCC_64_BRANCH : "aarch64"
+  GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  GCC_32_BRANCH : "arm32"
   
   # GCC_64_SOURCE : "https://huggingface.co/csukuangfj/sherpa-ncnn-toolchains/resolve/main/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz"
-  GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
-  GCC_64_BRANCH : "master"
+  # GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
+  # GCC_64_BRANCH : "master"
   # GCC_32_SOURCE : "https://huggingface.co/csukuangfj/sherpa-ncnn-toolchains/resolve/main/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf.tar.xz"
-  GCC_32_SOURCE : "https://github.com/mhdzumair/toolchain.git"
-  GCC_32_BRANCH : "master"
+  # GCC_32_SOURCE : "https://github.com/mhdzumair/toolchain.git"
+  # GCC_32_BRANCH : "master"
 
   DEFCONFIG_SOURCE: ""
   DEFCONFIG_NAME : "vendor/bengal-perf_defconfig"
