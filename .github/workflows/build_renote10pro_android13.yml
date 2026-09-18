@@ -9,7 +9,7 @@ env:
   DEVICE_NAME : "renote_10pro"
   DEVICE_CODENAME : "Sweet"
 
-  CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu-"
+  CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- THINLTO_USE_MLGO=false"
   EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1"
 
   KERNEL_SOURCE : "https://github.com/tbyool/android_kernel_xiaomi_sm6150.git"
