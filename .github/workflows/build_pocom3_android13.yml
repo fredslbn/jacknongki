@@ -32,9 +32,9 @@ env:
   # GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
   # GCC_32_BRANCH : "arm32"
   
-  GCC_64_SOURCE : "https://developer.arm.com/-/cdn-downloads/permalink/legacy-linaro-gnu-toolchains/7.5-2019.12/gcc-linaro-7.5.0-2019.12-i686_aarch64-linux-gnu.tar.xz"
+  GCC_64_SOURCE : "https://developer.arm.com/-/cdn-downloads/permalink/legacy-linaro-gnu-toolchains/7.5-2019.12/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz"
   GCC_64_BRANCH : ""
-  GCC_32_SOURCE : "https://developer.arm.com/-/cdn-downloads/permalink/legacy-linaro-gnu-toolchains/7.5-2019.12/gcc-linaro-7.5.0-2019.12-i686_arm-linux-gnueabi.tar.xz"
+  GCC_32_SOURCE : "https://developer.arm.com/-/cdn-downloads/permalink/legacy-linaro-gnu-toolchains/7.5-2019.12/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabi.tar.xz"
   GCC_32_BRANCH : ""
 
   DEFCONFIG_SOURCE: ""
