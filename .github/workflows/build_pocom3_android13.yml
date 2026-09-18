@@ -21,9 +21,9 @@ env:
   # KERNEL_SOURCE : "https://github.com/frstprjkt/valeryn_xiaomi_sm6115.git"
   # KERNEL_BRANCH : "android16"
 
-  CLANG_SOURCE : "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/28337064939c0b4bb5804cddf35fb03d860edcf6/clang-r614150.tar.gz"
+  # CLANG_SOURCE : "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/28337064939c0b4bb5804cddf35fb03d860edcf6/clang-r614150.tar.gz"
   # CLANG_SOURCE : "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
-  # CLANG_SOURCE : "https://www.kernel.org/pub/tools/llvm/files/llvm-23.1.1-aarch64.tar.gz"
+  CLANG_SOURCE : "https://www.kernel.org/pub/tools/llvm/files/llvm-23.1.1-aarch64.tar.gz"
   CLANG_BRANCH : ""
 
   GCC_GNU : false
@@ -54,7 +54,7 @@ env:
   CUSTOM_SUSFS_PATCH : true
   CUSTOM_CLEANUP_HARDCODE : true
   
-  SUSFS_ENABLE : false
+  SUSFS_ENABLE : true
   SUSFS_FIXED : true
 
   AK3_SOURCE : "https://github.com/fredslbn/AnyKernel3.git"
