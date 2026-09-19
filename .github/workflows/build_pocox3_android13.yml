@@ -15,14 +15,15 @@ env:
   KERNEL_SOURCE : "https://github.com/fredslbn/android_kernel_xiaomi_surya.git"
   KERNEL_BRANCH : "backup"
 
-  CLANG_SOURCE : "https://github.com/Impqxr/aosp_clang_ci/releases/download/13289611/clang-13289611-linux-x86.tar.xz"
+  # CLANG_SOURCE : "https://github.com/Impqxr/aosp_clang_ci/releases/download/13289611/clang-13289611-linux-x86.tar.xz"
+  CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.1/LLVM-23.1.1-Linux-X64.tar.xz"
   CLANG_BRANCH : ""
 
   GCC_GNU : false
-  GCC_64_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
-  GCC_64_BRANCH : "aarch64"
-  GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
-  GCC_32_BRANCH : "arm32"
+  GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
+  GCC_64_BRANCH : "master"
+  GCC_32_SOURCE : "https://github.com/mhdzumair/toolchain.git"
+  GCC_32_BRANCH : "master"
 
   DEFCONFIG_SOURCE: ""
   DEFCONFIG_NAME : "surya_defconfig"
@@ -47,10 +48,9 @@ env:
   NEED_SAFE_DTBO : false
 
   ROM_TEXT : "xxKSU"
-  
   CUSTOM_SUSFS_PATCH : false
-  
   CUSTOM_CLEANUP_HARDCODE : false
+  CUSTOM_DIR_ANYKERNEL : true
   
   # Other env
   PYTHON_VERSION: "3" # Only 2(Ubuntu 22.04 and Ubuntu 20.04) or 3(Any OS Versions).
@@ -70,7 +70,7 @@ env:
   DROIDSPACES_ENABLE: "false" # if u need Droidspaces or LXC/Docker.
   NOMOUNT_ENABLE: "true" # if u need NoMount.
 
-  HOOK_METHOD: "tamper" # Manual hook method -> syscall.
+  HOOK_METHOD: "branchlink" # Manual hook method -> syscall.
 
   KERNEL_PATCH: "false" # If your kernel version is <= 4.9, you have the option of enabling the patch to patch the kernel_write and kernel_read functions.
 
