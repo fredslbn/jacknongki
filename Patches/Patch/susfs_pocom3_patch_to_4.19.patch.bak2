@@ -1565,7 +1565,7 @@ index 2978659..6f829e1 100644
  	if (!error)
 diff --git a/fs/susfs.c b/fs/susfs.c
 new file mode 100644
-index 0000000..f879857
+index 0000000..f2f93ae
 --- /dev/null
 +++ b/fs/susfs.c
 @@ -0,0 +1,1568 @@
@@ -3213,7 +3213,7 @@ index 0000000..125ec8f
 +#define KSTAT_SPOOF_ATIME_TV_NSEC (1 << 5)
 +#define KSTAT_SPOOF_MTIME_TV_SEC (1 << 6)
 +#define KSTAT_SPOOF_MTIME_TV_NSEC (1 << 7)
-+#define KSTAT_SPOOF_CTIME_TV_SEC (1 < 8)
++#define KSTAT_SPOOF_CTIME_TV_SEC (1 << 8)
 +#define KSTAT_SPOOF_CTIME_TV_NSEC (1 << 9)
 +#define KSTAT_SPOOF_BLOCKS (1 << 10)
 +#define KSTAT_SPOOF_BLKSIZE (1 << 11)
