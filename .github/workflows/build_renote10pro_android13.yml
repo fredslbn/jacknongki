@@ -42,8 +42,8 @@ env:
   KERNELSU_AUTO_FORK : "xxksu" # magic, rsuntk, next, resukisu and sukisu
 
   ROM_TEXT : "xxKSU"
-  CUSTOM_SUSFS_PATCH : false
-  CUSTOM_CLEANUP_HARDCODE : false
+  CUSTOM_SUSFS_PATCH : true
+  CUSTOM_CLEANUP_HARDCODE : true
   CUSTOM_DIR_ANYKERNEL : false
   
   SUSFS_ENABLE : true
@@ -69,7 +69,7 @@ env:
   PATCHES_BRANCH: "main" # [your_branch] -> main
 
   SUSFS_FOLDER_FIXED: "Patches/Patch/Fixed" # Fill in your patch prefix directory here. Leave it blank if there isn't one. -> your_folder
-  SUSFS_PATCH_FIXED: "fixed_renote10pro" # Fill in your patches here. If there are multiple patches, please separate them with a comma. Leave it blank if there isn't one. -> patch1,patch2
+  SUSFS_PATCH_FIXED: "" # Fill in your patches here. If there are multiple patches, please separate them with a comma. Leave it blank if there isn't one. -> patch1,patch2
 
   REKERNEL_ENABLE: "false" # if u need Re:Kernel.
   DROIDSPACES_ENABLE: "false" # if u need Droidspaces or LXC/Docker.

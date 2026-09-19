@@ -58,6 +58,7 @@ env:
   ROM_TEXT : "xxKSU"  
   CUSTOM_SUSFS_PATCH : true
   CUSTOM_CLEANUP_HARDCODE : true
+  CUSTOM_DIR_ANYKERNEL : false
   
   SUSFS_ENABLE : true
   SUSFS_FIXED : true

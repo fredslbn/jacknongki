@@ -111,10 +111,19 @@ runs:
           cd $GITHUB_WORKSPACE/device_kernel
           
           if [[ "${{ env.CUSTOM_CLEANUP_HARDCODE }}" == "true" ]]; then
-             echo "::group::[+] Starting clean pocom3 hook..."
-             cp /tmp/Bin/clean_pocom3_hook.sh ./
-             bash clean_pocom3_hook.sh
-          else                   
+             
+             if [[ "${{ env.DEVICE_CODENAME }}" == "Citrus" ]]; then 
+                echo "::group::[+] Starting clean PocoM3 hook..."
+                cp /tmp/Bin/clean_pocom3_hook.sh ./
+                bash clean_pocom3_hook.sh
+             elif [[ "${{ env.DEVICE_CODENAME }}" == "Sweet" ]]; then 
+                echo "::group::[+] Starting clean Renote10Pro hook..."
+                cp /tmp/Bin/clean_renote10pro_hook.sh ./
+                bash clean_renote10pro_hook.sh
+             fi
+             
+          else
+          
              echo "::group::[+] Starting clean hook..."
              cp /tmp/Bin/clean_hook.sh ./
              bash clean_hook.sh
