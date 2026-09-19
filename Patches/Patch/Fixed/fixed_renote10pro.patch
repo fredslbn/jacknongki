@@ -14,7 +14,7 @@ index 403cbb1..270e418 100644
  #if defined (CONFIG_INITRAMFS_IGNORE_SKIP_FLAG) \
  	|| defined(CONFIG_CMDLINE_HWC_IS_SKU) \
  	|| defined(CONFIG_CMDLINE_HWC_IS_PRODUCT_SKU)
-@@ -78,6 +83,11 @@	
+@@ -78,4 +83,10 @@	
  static int cmdline_proc_show(struct seq_file *m, void *v)
  {
 +#ifdef CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG
@@ -26,7 +26,6 @@ index 403cbb1..270e418 100644
 +#endif
    	#ifdef ALTER_CMDLINE
   	seq_printf(m, "%s\n", proc_command_line);
- #else
 diff --git a/kernel/sys.c b/kernel/sys.c
 index 30801ea..0fd8fad 100644
 --- a/kernel/sys.c
