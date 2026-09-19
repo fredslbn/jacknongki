@@ -137,10 +137,10 @@ runs:
           7za a -mx9 tmp.zip *
           cd ..
           
-          cp -fp tmp/tmp.zip ${{ env.DEVICE_CODENAME }}-${{ env.ROM_TEXT }}-[${{ env.HOOK_METHOD }}]-$TIME-${{ env.PACK_METHOD }}.zip
+          cp -fp tmp/tmp.zip ${{ env.DEVICE_CODENAME }}-${{ env.ROM_TEXT }}-$TIME-${{ env.PACK_METHOD }}.zip
           rm -rf tmp
 
-          echo "PACK_NAME=${{ env.DEVICE_CODENAME }}-${{ env.ROM_TEXT }}-[${{ env.HOOK_METHOD }}]-$TIME-${{ env.PACK_METHOD }}.zip" >> $GITHUB_ENV
+          echo "PACK_NAME=${{ env.DEVICE_CODENAME }}-${{ env.ROM_TEXT }}-$TIME-${{ env.PACK_METHOD }}.zip" >> $GITHUB_ENV
 
       - name: Make Latest Boot Image
         if: env.PACK_METHOD == 'MKBOOTIMG'

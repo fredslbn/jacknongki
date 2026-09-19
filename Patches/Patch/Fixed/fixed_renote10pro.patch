@@ -1,0 +1,90 @@
+diff --git a/fs/namei.c b/fs/namei.c
+index 1ff4623..e727c74 100644
+--- a/fs/namei.c
++++ b/fs/namei.c
+@@ -3656,24 +3837,57 @@ out2:
+	mnt_drop_write(path.mnt);
+ out:
+	path_put(&path);
++#ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
++	if (fake_filename && !IS_ERR(fake_filename))
++		putname(fake_filename);
++#endif // #ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT	
+	return error;
+ }
+
+ static int do_o_path(struct nameidata *nd, unsigned flags, struct file *file)
+ {
++#ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
++	int old_dfd = nd->dfd;
++	struct filename *fake_filename = NULL;
++#endif // #ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
+	struct path path;
+	int error = path_lookupat(nd, flags, &path);
+	if (!error) {
++#ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
++		if (old_dfd != -1 &&
++			SUSFS_IS_INODE_OPEN_REDIRECT_WITHOUT_UID_CHECK(path.dentry->d_inode))
++		{
++			fake_filename = susfs_open_redirect_spoof_do_sys_openat(path.dentry->d_inode);
++			if (fake_filename && !IS_ERR(fake_filename)) {
++				path_put(&path);
++				restore_nameidata();
++				set_nameidata(nd, old_dfd, fake_filename);
++				error = path_lookupat(nd, flags, &path);
++				if (unlikely(error)) {
++					putname(fake_filename);
++					return error;
++				}
++			}
++		}
++#endif // #ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT	
+		audit_inode(nd->name, path.dentry, 0);
+		error = vfs_open(&path, file);
+		path_put(&path);
+	}
++#ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
++	if (fake_filename && !IS_ERR(fake_filename))
++		putname(fake_filename);
++#endif // #ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT	
+	return error;
+ }
+
+ static struct file *path_openat(struct nameidata *nd,
+			const struct open_flags *op, unsigned flags)
+ {
++#ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
++	int old_dfd = nd->dfd;
++	struct filename *fake_filename = NULL;
++#endif // #ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
+	const char *s;
+	struct file *file;
+	int opened = 0;
+diff --git a/kernel/sys.c b/kernel/sys.c
+index b276a5e..898dbf1 100644
+--- a/kernel/sys.c
++++ b/kernel/sys.c
+@@ -1183,13 +1183,21 @@ static int override_release(char __user *release, size_t len)
+ return ret;
+ }
+ 
++#ifdef CONFIG_KSU_SUSFS_SPOOF_UNAME
++extern struct static_key_false susfs_is_uname_spoof_buffer_set;
++extern void susfs_spoof_uname(struct new_utsname* tmp);
++#endif
+ extern bool is_legacy_ebpf;
+ SYSCALL_DEFINE1(newuname, struct new_utsname __user *, name)
+ {
+	struct new_utsname tmp;
+	struct task_struct *t;
+	bool is_netmgrd = false;
+
+	down_read(&uts_sem);
+	memcpy(&tmp, utsname(), sizeof(tmp));
++#ifdef CONFIG_KSU_SUSFS_SPOOF_UNAME
++	if (static_branch_likely(&susfs_is_uname_spoof_buffer_set))
++		susfs_spoof_uname(&tmp);
++#endif
+	if (!is_legacy_ebpf) {
+		if (!strncmp(current->comm, "bpfloader", 9) ||
+			!strncmp(current->comm, "netbpfload", 10) ||
