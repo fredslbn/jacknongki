@@ -21,6 +21,20 @@ runs:
           fi
           echo "::endgroup::"
           echo "[+] Kernel source code is cloned."
+          
+          
+          ## FREDS MODIF: PATCHING GKI KERNEL          
+          cd $GITHUB_WORKSPACE/device_kernel
+          if [[ "${{ env.GKI_KERNEL_TYPE }}" == "true" ]]; then
+             
+             patch -p1 < <(curl -sL "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-gki-fixup.patch") || true
+             patch -p1 < <(curl -sL "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-Don-t-append-and-dirty-to-localversion.patch") || true
+             # patch -p1 < <(curl -sL ".  ") || true
+             
+             echo "[+] GKI kernel patches has been applied."          
+          fi
+        
+
 
           # Get Kernel Version
 
