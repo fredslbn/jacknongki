@@ -69,7 +69,7 @@ runs:
                                                                
              ## tesr             
              echo "CONFIG_KSU_FEATURE_SULOG=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             # echo "CONFIG_KSU_KPROBES_KSUD=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+             echo "CONFIG_KSU_KPROBES_KSUD=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
              echo "CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
              echo "[+] BRANCHLINK HOOK method applied."
