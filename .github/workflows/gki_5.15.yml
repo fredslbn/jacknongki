@@ -12,7 +12,7 @@ on:
         
 jobs:
   build-kernels:
-    name: "🐎 Build GKI 5.15 ${{ matrix.kernel.name }} kernel"
+    name: Build GKI 5.15
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
