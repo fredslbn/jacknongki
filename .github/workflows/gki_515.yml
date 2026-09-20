@@ -1,4 +1,4 @@
-name: Build GKI 615
+name: Build GKI 515
 
 env:
   OUT_DIR: "out"
@@ -26,7 +26,7 @@ jobs:
             defconfig: "gki_defconfig"
             local_version: "-super.kernel/gki"
             output_name: "Image.gki.ksu"
-            enable_resukisu: true
+            enable_resukisu: false
             enable_xxksu: false
             extra_patches:
               - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-gki-fixup.patch"
@@ -42,7 +42,7 @@ jobs:
             local_version: "-super.kernel/clo"
             output_name: "Image.clo.ksu"
             enable_resukisu: false
-            enable_xxksu: true
+            enable_xxksu: false
             extra_patches:
               - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-gki-fixup.patch"
               - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-sign-builds.patch"
@@ -329,7 +329,7 @@ jobs:
       - name: "🔨 Build kernel"
         working-directory: ${{ env.WORK_DIR }}
         run: |
-          LTO=full \
+          LTO=thin \
           BUILD_CONFIG=${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.gki.aarch64 \
           build/build.sh -j$(nproc --all)
 
