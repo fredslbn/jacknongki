@@ -1,4 +1,4 @@
-name: "Build GKI 515"
+name: Build GKI 615
 
 env:
   OUT_DIR: "out"
@@ -137,7 +137,6 @@ jobs:
 
       - name: "🔧 Add BBG Support (KSU variant only)"
         if: matrix.kernel.enable_xxksu == true
-        if: matrix.kernel.enable_resukisu == true
         working-directory: ./${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
           echo "Adding BBG...";
@@ -147,7 +146,6 @@ jobs:
           
       - name: "🔧 Add Nomount"
         if: matrix.kernel.enable_xxksu == true
-        if: matrix.kernel.enable_resukisu == true
         working-directory: ./${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
           echo "Adding Nomount...";
@@ -166,18 +164,15 @@ jobs:
           curl -LSs "https://raw.githubusercontent.com/backslashxx/KernelSU/refs/heads/master/kernel/setup.sh" | bash -s master
           
           echo "✔ KSU installed successfully"
-                   
-          
+
           # Create symbolic link for drivers/kernelsu (if needed by build system)
           if [ ! -L "drivers/kernelsu" ]; then
             ln -sf ../KernelSU drivers/kernelsu
             echo "✔ Created drivers/kernelsu symlink"
           fi
 
-
           echo "✅ KSU configs added"
           echo "🎉 xxKSU installed for GKI android13-5.15 and fully integrated!"
-
           
 
       - name: "🔧 Setup ReSukiSU with SUSFS"
