@@ -53,9 +53,9 @@ jobs:
     uses: ./.github/workflows/build_renote8_android13.yml
     secrets: inherit
     
-  gki_5.15:
+  gki_5.15_kernel:
     name: "GKI 5.15"
     strategy:
       fail-fast: true
-    uses: ./.github/workflows/gki_5.15.yml
+    uses: ./.github/workflows/gki_5.15_kernel.yml
     secrets: inherit
