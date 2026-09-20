@@ -1,4 +1,4 @@
-name: "Build GKI 5.15"
+name: "Build GKI 515"
 
 env:
   OUT_DIR: "out"
@@ -12,7 +12,7 @@ on:
         
 jobs:
   build-kernels:
-    name: Build GKI 5.15
+    name: Build GKI 515
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -174,10 +174,8 @@ jobs:
             echo "✔ Created drivers/kernelsu symlink"
           fi
 
-          
-          
-          echo "✅ KSU configs added"
 
+          echo "✅ KSU configs added"
           echo "🎉 xxKSU installed for GKI android13-5.15 and fully integrated!"
 
           
