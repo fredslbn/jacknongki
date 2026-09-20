@@ -96,13 +96,13 @@ runs:
               if [[ "${{ env.CUSTOM_SUSFS_PATCH }}" == "true" ]]; then
               
                  if [[ "${{ env.DEVICE_CODENAME }}" == "Citrus" ]]; then
-                 cp /tmp/Patches/Patch/susfs_pocom3_patch_to_${{ env.KERNEL_VERSION }}.patch ./
-                 patch -p1 < susfs_pocom3_patch_to_${{ env.KERNEL_VERSION }}.patch || true                 
+                 cp /tmp/Patches/Patch/susfs_pocom3_patch_to_4.19.patch ./
+                 patch -p1 < susfs_pocom3_patch_to_4.19.patch || true                 
                  echo "[+] Custom PocoM3 SuSFS Patch completed."
                  
                  elif [[ "${{ env.DEVICE_CODENAME }}" == "Sweet" ]]; then
-                 cp /tmp/Patches/Patch/susfs_renote10pro_patch_to_${{ env.KERNEL_VERSION }}.patch ./
-                 patch -p1 < susfs_renote10pro_patch_to_${{ env.KERNEL_VERSION }}.patch || true                 
+                 cp /tmp/Patches/Patch/susfs_renote10pro_patch_to_4.14.patch ./
+                 patch -p1 < susfs_renote10pro_patch_to_4.14.patch || true                 
                  echo "[+] Custom Renote10Pro SuSFS Patch completed."
                  
                  fi                            
