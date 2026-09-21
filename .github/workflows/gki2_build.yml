@@ -118,8 +118,8 @@ jobs:
                 echo "use_bazel=false" >> $GITHUB_OUTPUT
                 ;;
               "13-5.10"|"13-5.15")
-                echo "build_system=both" >> $GITHUB_OUTPUT
-                echo "use_bazel=true" >> $GITHUB_OUTPUT
+                echo "build_system=legacy" >> $GITHUB_OUTPUT
+                echo "use_bazel=false" >> $GITHUB_OUTPUT
                 ;;
               "14-5.15"|"14-6.1"|"15-6.6")
                 echo "build_system=bazel" >> $GITHUB_OUTPUT
@@ -351,7 +351,7 @@ jobs:
         working-directory: android-kernel
         run: |
           echo "Building kernel using Bazel method..."
-          tools/bazel build --config=fast --lto=${{ github.event.inputs.lto_mode }} //common:kernel_aarch64_dist
+          tools/bazel run //common:kernel_aarch64_dist
           
           # Verify build artifacts
           if [ -f "bazel-bin/common/kernel_aarch64/Image" ]; then
