@@ -151,8 +151,32 @@ jobs:
           repo init --depth=1 -u https://android.googlesource.com/kernel/manifest \
             -b common-${{ github.event.inputs.kernel_branch }}
           
-            repo sync --optimized-fetch --prune -j8
-            # repo --trace sync -c -j$(nproc) --no-tags --fail-fast
+          repo sync --optimized-fetch --prune -j8
+            
+            # Clean up existing repo and common directories
+          rm -rf .repo
+          rm -rf common
+
+          # Download and setup custom clang toolchain
+          aria2c -x 16 -s 16 -o prebuilts/clang/host/linux-x86/clang-r547379.tar.gz "https://github.com/topnotchfreaks/clang/releases/download/v1.0.0/clang-r547379.tar.gz"
+          mkdir -p prebuilts/clang/host/linux-x86/clang-r547379
+          tar -xzf prebuilts/clang/host/linux-x86/clang-r547379.tar.gz -C prebuilts/clang/host/linux-x86/clang-r547379
+          rm -rf prebuilts/clang/host/linux-x86/clang-r547379.tar.gz
+
+          # Remove unused clang for more space
+          rm -rf prebuilts/clang/host/linux-x86/clang-3289846
+          rm -rf prebuilts/clang/host/linux-x86/clang-r450784e
+          rm -rf prebuilts/clang/host/linux-x86/clang-stable
+          
+          # Update build config constants
+          sed -i \
+           -e 's/^BRANCH=.*/BRANCH=android13-5.15/' \
+           -e 's/^CLANG_VERSION=.*/CLANG_VERSION=r547379/' \
+           android-kernel/build.config.constants
+          
+          # Remove defconfig check (if exists)
+          sed -i '/^POST_DEFCONFIG_CMDS="check_defconfig"/d' android-kernel/build.config.gki || true
+
       
       - name: "Configure kernel & patches"
         working-directory: android-kernel
