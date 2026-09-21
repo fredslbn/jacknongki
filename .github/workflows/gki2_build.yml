@@ -147,11 +147,10 @@ jobs:
       
       - name: Initialize AOSP repo
         run: |                    
-          echo "Initializing repo with branch: ${{ github.event.inputs.kernel_branch }}"
-          repo init --depth=1 -u https://android.googlesource.com/kernel/manifest \
-            -b common-${{ github.event.inputs.kernel_branch }}
-          
+          # Initialize AOSP repo
+          repo init -u https://android.googlesource.com/kernel/manifest -b common-android13-5.15-lts --depth=1
           repo sync --optimized-fetch --prune -j8
+          
             
             # Clean up existing repo and common directories
           rm -rf .repo
