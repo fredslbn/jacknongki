@@ -276,7 +276,7 @@ index 80b743c..86447fa 100644
  
  	nd->flags &= ~LOOKUP_PARENT;
  	return walk_component(nd, 0);
-@@ -3257,15 +3389,39 @@ static int lookup_open(struct nameidata *nd, struct path *path,
+@@ -3278,15 +3410,39 @@ static int lookup_open(struct nameidata *nd, struct path *path,
  	int error, create_error = 0;
  	umode_t mode = op->mode;
  	DECLARE_WAIT_QUEUE_HEAD_ONSTACK(wq);
@@ -316,7 +316,7 @@ index 80b743c..86447fa 100644
  			if (IS_ERR(dentry))
  				return PTR_ERR(dentry);
  		}
-@@ -3391,6 +3547,10 @@ static int do_last(struct nameidata *nd,
+@@ -3412,6 +3568,10 @@ static int do_last(struct nameidata *nd,
  	struct path path;
  	int error;
  
@@ -327,7 +327,7 @@ index 80b743c..86447fa 100644
  	nd->flags &= ~LOOKUP_PARENT;
  	nd->flags |= op->intent;
  
-@@ -3605,9 +3765,31 @@ static int do_tmpfile(struct nameidata *nd, unsigned flags,
+@@ -3626,9 +3786,31 @@ static int do_tmpfile(struct nameidata *nd, unsigned flags,
  		const struct open_flags *op,
  		struct file *file, int *opened)
  {
@@ -359,7 +359,7 @@ index 80b743c..86447fa 100644
  	if (unlikely(error))
  		return error;
  	error = mnt_want_write(path.mnt);
-@@ -3640,9 +3822,30 @@ out:
+@@ -3661,9 +3843,30 @@ out:
  
  static int do_o_path(struct nameidata *nd, unsigned flags, struct file *file)
  {
@@ -390,7 +390,7 @@ index 80b743c..86447fa 100644
  		audit_inode(nd->name, path.dentry, 0);
  		error = vfs_open(&path, file, current_cred());
  		path_put(&path);
-@@ -3653,6 +3856,11 @@ static int do_o_path(struct nameidata *nd, unsigned flags, struct file *file)
+@@ -3674,6 +3877,11 @@ static int do_o_path(struct nameidata *nd, unsigned flags, struct file *file)
  static struct file *path_openat(struct nameidata *nd,
  			const struct open_flags *op, unsigned flags)
  {
@@ -402,7 +402,7 @@ index 80b743c..86447fa 100644
  	const char *s;
  	struct file *file;
  	int opened = 0;
-@@ -3690,12 +3898,45 @@ static struct file *path_openat(struct nameidata *nd,
+@@ -3711,12 +3919,45 @@ static struct file *path_openat(struct nameidata *nd,
  			break;
  		}
  	}
@@ -448,7 +448,7 @@ index 80b743c..86447fa 100644
  	if (unlikely(error)) {
  		if (error == -EOPENSTALE) {
  			if (flags & LOOKUP_RCU)
-@@ -4876,6 +5117,10 @@ out:
+@@ -4897,6 +5138,10 @@ out:
  	return len;
  }
  
@@ -459,7 +459,7 @@ index 80b743c..86447fa 100644
  /*
   * A helper for ->readlink().  This should be used *ONLY* for symlinks that
   * have ->get_link() not calling nd_jump_link().  Using (or not using) it
-@@ -4896,6 +5141,15 @@ static int generic_readlink(struct dentry *dentry, char __user *buffer,
+@@ -4917,6 +5162,15 @@ static int generic_readlink(struct dentry *dentry, char __user *buffer,
  		if (IS_ERR(link))
  			return PTR_ERR(link);
  	}
@@ -475,7 +475,7 @@ index 80b743c..86447fa 100644
  	res = readlink_copy(buffer, buflen, link);
  	do_delayed_call(&done);
  	return res;
-@@ -4914,10 +5168,24 @@ static int generic_readlink(struct dentry *dentry, char __user *buffer,
+@@ -4935,10 +5189,24 @@ static int generic_readlink(struct dentry *dentry, char __user *buffer,
  int vfs_readlink(struct dentry *dentry, char __user *buffer, int buflen)
  {
  	struct inode *inode = d_inode(dentry);
@@ -797,7 +797,7 @@ index d772fe4..243e9e8 100644
  	/* Don't allow unprivileged users to change mount flags */
  	if (flag & CL_UNPRIVILEGED) {
  		mnt->mnt.mnt_flags |= MNT_LOCK_ATIME;
-@@ -3059,6 +3277,9 @@ struct mnt_namespace *copy_mnt_ns(unsigned long flags, struct mnt_namespace *ns,
+@@ -3068,6 +3285,9 @@ struct mnt_namespace *copy_mnt_ns(unsigned long flags, struct mnt_namespace *ns,
  	copy_flags = CL_COPY_UNBINDABLE | CL_EXPIRE;
  	if (user_ns != ns->user_ns)
  		copy_flags |= CL_SHARED_TO_SLAVE | CL_UNPRIVILEGED;
@@ -807,7 +807,7 @@ index d772fe4..243e9e8 100644
  	new = copy_tree(old, old->mnt.mnt_root, copy_flags);
  	if (IS_ERR(new)) {
  		namespace_unlock();
-@@ -3635,3 +3856,43 @@ const struct proc_ns_operations mntns_operations = {
+@@ -3699,3 +3920,43 @@ const struct proc_ns_operations mntns_operations = {
  	.install	= mntns_install,
  	.owner		= mntns_owner,
  };
@@ -975,7 +975,7 @@ diff --git a/fs/proc/base.c b/fs/proc/base.c
 index 0495111..e86c03f 100644
 --- a/fs/proc/base.c
 +++ b/fs/proc/base.c
-@@ -95,6 +95,9 @@
+@@ -96,6 +96,9 @@
  #include <linux/flex_array.h>
  #include <linux/posix-timers.h>
  #include <linux/cpufreq_times.h>
@@ -985,7 +985,7 @@ index 0495111..e86c03f 100644
  #ifdef CONFIG_HARDWALL
  #include <asm/hardwall.h>
  #endif
-@@ -1798,6 +1801,10 @@ out:
+@@ -1870,6 +1873,10 @@ out:
  	return ERR_PTR(error);
  }
  
@@ -996,7 +996,7 @@ index 0495111..e86c03f 100644
  static int do_proc_readlink(struct path *path, char __user *buffer, int buflen)
  {
  	char *tmp = (char *)__get_free_page(GFP_KERNEL);
-@@ -1807,6 +1814,17 @@ static int do_proc_readlink(struct path *path, char __user *buffer, int buflen)
+@@ -1879,6 +1886,17 @@ static int do_proc_readlink(struct path *path, char __user *buffer, int buflen)
  	if (!tmp)
  		return -ENOMEM;
  
@@ -1014,7 +1014,7 @@ index 0495111..e86c03f 100644
  	pathname = d_path(path, tmp, PAGE_SIZE);
  	len = PTR_ERR(pathname);
  	if (IS_ERR(pathname))
-@@ -2370,6 +2388,10 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
+@@ -2446,6 +2464,10 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
  				vma = vma->vm_next) {
  			if (!vma->vm_file)
  				continue;
@@ -1136,7 +1136,7 @@ index 1347939..5c594b9 100644
  
  #include <asm/elf.h>
  #include <asm/tlb.h>
-@@ -349,6 +352,14 @@ static void show_vma_header_prefix(struct seq_file *m,
+@@ -511,6 +514,14 @@ static void show_vma_header_prefix(struct seq_file *m,
  		   MAJOR(dev), MINOR(dev), ino);
  }
  
@@ -1151,7 +1151,7 @@ index 1347939..5c594b9 100644
  static void
  show_map_vma(struct seq_file *m, struct vm_area_struct *vma, int is_pid)
  {
-@@ -363,9 +374,36 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma, int is_pid)
+@@ -525,9 +536,36 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma, int is_pid)
  
  	if (file) {
  		struct inode *inode = file_inode(vma->vm_file);
@@ -1188,7 +1188,7 @@ index 1347939..5c594b9 100644
  	}
  
  	start = vma->vm_start;
-@@ -831,6 +869,11 @@ static int show_smap(struct seq_file *m, void *v, int is_pid)
+@@ -1021,6 +1059,11 @@ static int show_smap(struct seq_file *m, void *v, int is_pid)
  		mss = &mss_stack;
  	}
  
@@ -1200,7 +1200,7 @@ index 1347939..5c594b9 100644
  	smaps_walk.private = mss;
  
  #ifdef CONFIG_SHMEM
-@@ -892,7 +935,6 @@ static int show_smap(struct seq_file *m, void *v, int is_pid)
+@@ -1082,7 +1125,6 @@ static int show_smap(struct seq_file *m, void *v, int is_pid)
  			   vma_kernel_pagesize(vma) >> 10,
  			   vma_mmu_pagesize(vma) >> 10);
  
@@ -1208,7 +1208,7 @@ index 1347939..5c594b9 100644
  	if (!rollup_mode || last_vma)
  		seq_printf(m,
  			   "Rss:            %8lu kB\n"
-@@ -932,6 +974,7 @@ static int show_smap(struct seq_file *m, void *v, int is_pid)
+@@ -1122,6 +1164,7 @@ static int show_smap(struct seq_file *m, void *v, int is_pid)
  		arch_show_smap(m, vma);
  		show_smap_vma_flags(m, vma);
  	}
@@ -1216,7 +1216,7 @@ index 1347939..5c594b9 100644
  	m_cache_vma(m, vma);
  	return ret;
  }
-@@ -1618,6 +1661,9 @@ static ssize_t pagemap_read(struct file *file, char __user *buf,
+@@ -1805,6 +1848,9 @@ static ssize_t pagemap_read(struct file *file, char __user *buf,
  	while (count && (start_vaddr < end_vaddr)) {
  		int len;
  		unsigned long end;
@@ -1226,7 +1226,7 @@ index 1347939..5c594b9 100644
  
  		pm.pos = 0;
  		end = (start_vaddr + PAGEMAP_WALK_SIZE) & PAGEMAP_WALK_MASK;
-@@ -1625,7 +1671,15 @@ static ssize_t pagemap_read(struct file *file, char __user *buf,
+@@ -1812,7 +1858,15 @@ static ssize_t pagemap_read(struct file *file, char __user *buf,
  		if (end < start_vaddr || end > end_vaddr)
  			end = end_vaddr;
  		down_read(&mm->mmap_sem);
@@ -1893,10 +1893,6 @@ index 0fda4b6..dd2c150 100644
  #include <linux/uaccess.h>
  #include <asm/unistd.h>
  
-+#ifdef CONFIG_KSU_SUSFS
-+#include <linux/susfs_def.h>
-+#endif
-+
 +#ifdef CONFIG_KSU_SUSFS_SUS_KSTAT
 +#include <linux/susfs_def.h>
 +#endif // #ifdef CONFIG_KSU_SUSFS_SUS_KSTAT
@@ -2071,7 +2067,7 @@ index e6019ed..f298278 100644
  
  static LIST_HEAD(super_blocks);
  static DEFINE_SPINLOCK(sb_lock);
-@@ -972,6 +980,22 @@ int get_anon_bdev(dev_t *p)
+@@ -974,6 +982,22 @@ int get_anon_bdev(dev_t *p)
  	int dev;
  	int error;
  
@@ -4146,7 +4142,7 @@ diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
 index b5bfcdc..8af2521 100644
 --- a/kernel/kallsyms.c
 +++ b/kernel/kallsyms.c
-@@ -25,6 +25,9 @@
+@@ -23,6 +23,9 @@
  #include <linux/slab.h>
  #include <linux/filter.h>
  #include <linux/compiler.h>
@@ -4156,7 +4152,7 @@ index b5bfcdc..8af2521 100644
  
  #include <asm/sections.h>
  
-@@ -646,8 +649,37 @@ static int s_show(struct seq_file *m, void *p)
+@@ -612,8 +615,37 @@ static int s_show(struct seq_file *m, void *p)
  		seq_printf(m, "%pK %c %s\t[%s]\n", (void *)iter->value,
  			   type, iter->name, iter->module_name);
  	} else
@@ -4209,7 +4205,7 @@ index 0879df7..23c4b11 100644
  #include "internal.h"
  
  #define CREATE_TRACE_POINTS
-@@ -5087,12 +5091,20 @@ int __access_remote_vm(struct task_struct *tsk, struct mm_struct *mm,
+@@ -4334,12 +4338,20 @@ int __access_remote_vm(struct task_struct *tsk, struct mm_struct *mm,
  	int write = gup_flags & FOLL_WRITE;
  
  	down_read(&mm->mmap_sem);
