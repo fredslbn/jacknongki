@@ -116,8 +116,11 @@ runs:
               fi
                           
               if [[ "${{ env.KERNELSU_SOURCE }}" == *backslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]]; then
-                  patch -p1 < <(curl -sL "https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/patches/55_try_umount_for_susfs.patch") || true
-                  echo "[+] Now try_umount susfs patch successfully applied."
+                  
+                  cp /tmp/Patches/try_umount_for_susfs.patch ./
+                  patch -p1 < try_umount_for_susfs.patch || true              
+                  # patch -p1 < <(curl -sL "https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/patches/55_try_umount_for_susfs.patch") || true
+                  echo "[+] try_umount patch for xxKSU successfully applied."
               else
                   echo "[+] This is not xxKSU, so no need for patching try_umount susfs."
               fi
