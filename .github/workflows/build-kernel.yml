@@ -59,3 +59,10 @@ jobs:
       fail-fast: true
     uses: ./.github/workflows/gki_515.yml
     secrets: inherit
+    
+  gki2_build:
+    name: "GKI 2 Build"
+    strategy:
+      fail-fast: true
+    uses: ./.github/workflows/gki2_build.yml
+    secrets: inherit
