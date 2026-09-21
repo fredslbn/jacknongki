@@ -276,7 +276,7 @@ index 80b743c..86447fa 100644
  
  	nd->flags &= ~LOOKUP_PARENT;
  	return walk_component(nd, 0);
-@@ -3257,15 +3389,39 @@ static int lookup_open(struct nameidata *nd, struct path *path,
+@@ -3278,15 +3410,39 @@ static int lookup_open(struct nameidata *nd, struct path *path,
  	int error, create_error = 0;
  	umode_t mode = op->mode;
  	DECLARE_WAIT_QUEUE_HEAD_ONSTACK(wq);
@@ -316,7 +316,7 @@ index 80b743c..86447fa 100644
  			if (IS_ERR(dentry))
  				return PTR_ERR(dentry);
  		}
-@@ -3391,6 +3547,10 @@ static int do_last(struct nameidata *nd,
+@@ -3412,6 +3568,10 @@ static int do_last(struct nameidata *nd,
  	struct path path;
  	int error;
  
@@ -327,7 +327,7 @@ index 80b743c..86447fa 100644
  	nd->flags &= ~LOOKUP_PARENT;
  	nd->flags |= op->intent;
  
-@@ -3605,9 +3765,31 @@ static int do_tmpfile(struct nameidata *nd, unsigned flags,
+@@ -3626,9 +3786,31 @@ static int do_tmpfile(struct nameidata *nd, unsigned flags,
  		const struct open_flags *op,
  		struct file *file, int *opened)
  {
@@ -359,7 +359,7 @@ index 80b743c..86447fa 100644
  	if (unlikely(error))
  		return error;
  	error = mnt_want_write(path.mnt);
-@@ -3640,9 +3822,30 @@ out:
+@@ -3661,9 +3843,30 @@ out:
  
  static int do_o_path(struct nameidata *nd, unsigned flags, struct file *file)
  {
@@ -390,7 +390,7 @@ index 80b743c..86447fa 100644
  		audit_inode(nd->name, path.dentry, 0);
  		error = vfs_open(&path, file, current_cred());
  		path_put(&path);
-@@ -3653,6 +3856,11 @@ static int do_o_path(struct nameidata *nd, unsigned flags, struct file *file)
+@@ -3674,6 +3877,11 @@ static int do_o_path(struct nameidata *nd, unsigned flags, struct file *file)
  static struct file *path_openat(struct nameidata *nd,
  			const struct open_flags *op, unsigned flags)
  {
@@ -402,7 +402,7 @@ index 80b743c..86447fa 100644
  	const char *s;
  	struct file *file;
  	int opened = 0;
-@@ -3690,12 +3898,45 @@ static struct file *path_openat(struct nameidata *nd,
+@@ -3711,12 +3919,45 @@ static struct file *path_openat(struct nameidata *nd,
  			break;
  		}
  	}
@@ -448,7 +448,7 @@ index 80b743c..86447fa 100644
  	if (unlikely(error)) {
  		if (error == -EOPENSTALE) {
  			if (flags & LOOKUP_RCU)
-@@ -4876,6 +5117,10 @@ out:
+@@ -4897,6 +5138,10 @@ out:
  	return len;
  }
  
@@ -459,7 +459,7 @@ index 80b743c..86447fa 100644
  /*
   * A helper for ->readlink().  This should be used *ONLY* for symlinks that
   * have ->get_link() not calling nd_jump_link().  Using (or not using) it
-@@ -4896,6 +5141,15 @@ static int generic_readlink(struct dentry *dentry, char __user *buffer,
+@@ -4917,6 +5162,15 @@ static int generic_readlink(struct dentry *dentry, char __user *buffer,
  		if (IS_ERR(link))
  			return PTR_ERR(link);
  	}
@@ -475,7 +475,7 @@ index 80b743c..86447fa 100644
  	res = readlink_copy(buffer, buflen, link);
  	do_delayed_call(&done);
  	return res;
-@@ -4914,10 +5168,24 @@ static int generic_readlink(struct dentry *dentry, char __user *buffer,
+@@ -4935,10 +5189,24 @@ static int generic_readlink(struct dentry *dentry, char __user *buffer,
  int vfs_readlink(struct dentry *dentry, char __user *buffer, int buflen)
  {
  	struct inode *inode = d_inode(dentry);

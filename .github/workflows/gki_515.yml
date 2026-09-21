@@ -42,7 +42,7 @@ jobs:
             local_version: "-super.kernel-clo"
             output_name: "Image.clo.ksu"
             enable_resukisu: false
-            enable_xxksu: false
+            enable_xxksu: true
             extra_patches:
               - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-gki-fixup.patch"
               - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-sign-builds.patch"
@@ -167,8 +167,21 @@ jobs:
           if [ ! -L "drivers/kernelsu" ]; then
             ln -sf ../KernelSU drivers/kernelsu
             echo "✔ Created drivers/kernelsu symlink"
-          fi
+          fi                    
 
+          CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          cat >> "$CONFIG_FILE" << 'EOF'
+          CONFIG_KSU=y
+          CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
+          CONFIG_KSU_HOSTSREDIRECT=y
+          CONFIG_KSU_LSM_SECURITY_HOOKS=y
+          CONFIG_KSU_FEATURE_SULOG=y
+          CONFIG_KSU_COMPILE_AS_C23=y
+          CONFIG_KSU_KPROBES_KSUD=y
+          CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y
+          CONFIG_CFI_CLANG=y          
+          EOF
+                    
           echo "✅ KSU configs added"
           echo "🎉 xxKSU installed for GKI android13-5.15 and fully integrated!"
           
@@ -293,7 +306,6 @@ jobs:
           fi
           
           echo "✅ KSU configs added"
-
           echo "🎉 ReSukiSU installed and SUSFS for GKI android13-5.15 fully integrated!"
 
       - name: "⚙️ Setup basic configs"
@@ -313,7 +325,7 @@ jobs:
           CONFIG_OVERLAY_FS=y
           CONFIG_TMPFS_XATTR=y
           CONFIG_TMPFS_POSIX_ACL=y
-          CONFIG_KALLSYMS=y
+          CONFIG_KALLSYMS_ALL=y
           EOF
           
           echo "✅ Basic configs added"
