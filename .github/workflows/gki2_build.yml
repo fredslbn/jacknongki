@@ -7,7 +7,7 @@ on:
         description: 'Kernel branch (e.g., common-android14-5.15-2025-0)'
         required: true
         type: string
-        default: 'common-android13-5.15-2026-09'
+        default: 'common-android13-5.15-lts'
       
       kernelsu_variant:
         description: 'KernelSU variant to integrate'
