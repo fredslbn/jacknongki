@@ -187,6 +187,8 @@ jobs:
         run: |
           echo "Adding Nomount...";
           curl https://raw.githubusercontent.com/maxsteeel/nomount/refs/heads/dev/kernel/setup.sh | bash -s dev
+          
+          CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           echo "CONFIG_NOMOUNT=y" >> "$CONFIG_FILE"
           echo "[+] Patched NoMount for your kernel successfully."
 
