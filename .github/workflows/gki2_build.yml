@@ -3,11 +3,18 @@ name: GKI 2.0 Kernel Builder with KernelSU & SUSFS
 on:
   workflow_dispatch:
     inputs:
+      kernel_repo:
+        description: 'Kernel repo (e.g., android.googlesource.com)'
+        required: true
+        type: string
+        default: 'https://android.googlesource.com/kernel/common'
+      
       kernel_branch:
         description: 'Kernel branch (e.g., common-android14-5.15-2025-0)'
         required: true
         type: string
-        default: 'common-android13-5.15-lts'
+        default: 'android13-5.15-lts'
+        
       
       kernelsu_variant:
         description: 'KernelSU variant to integrate'
@@ -131,37 +138,36 @@ jobs:
             exit 1
           fi
 
-      - name: Download Kernel Source
-        run: |
-          mkdir -p android-kernel
-          cd android-kernel
-          
+      
+      - name: Clone Kernel Source
+        run: |          
+          git clone --recursive --branch ${{ github.event.inputs.kernel_branch }} \
+            ${{ github.event.inputs.kernel_repo }} android-kernel --depth=1
+
+      
+      - name: Initialize AOSP repo
+        run: |                    
           echo "Initializing repo with branch: ${{ github.event.inputs.kernel_branch }}"
           repo init --depth=1 -u https://android.googlesource.com/kernel/manifest \
             -b ${{ github.event.inputs.kernel_branch }}
           
-          # Handle deprecated branches
-          if ! repo --trace sync -c -j$(nproc) --no-tags --fail-fast 2>/dev/null; then
-            echo "Branch might be deprecated, trying alternative approach..."
-            FORMATTED_BRANCH=${{ github.event.inputs.kernel_branch }}
-            FORMATTED_BRANCH=${FORMATTED_BRANCH#common-}
-            
-            REMOTE_BRANCH=$(git ls-remote https://android.googlesource.com/kernel/common ${FORMATTED_BRANCH})
-            if [[ $REMOTE_BRANCH == *"deprecated"* ]]; then
-              echo "Found deprecated branch: $FORMATTED_BRANCH"
-              sed -i "s/\"${FORMATTED_BRANCH}\"/\"deprecated\/${FORMATTED_BRANCH}\"/g" .repo/manifests/default.xml
-            fi
-            
-            repo --trace sync -c -j$(nproc) --no-tags --fail-fast
-          fi
-          
+            repo sync --optimized-fetch --prune -j8
+            # repo --trace sync -c -j$(nproc) --no-tags --fail-fast
+      
+      - name: "Configure kernel & patches"
+        working-directory: android-kernel
+        run: |
+          CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          echo "CONFIG_LOCALVERSION=-super.kernel" >> "$CONFIG_FILE"
+          echo "CONFIG_LOCALVERSION_AUTO=y" >> "$CONFIG_FILE"
+                  
       - name: Integrate Nomount
         if: ${{ github.event.inputs.kernel_module != 'none' }}
         working-directory: android-kernel
         run: |
           echo "Adding Nomount...";
           curl https://raw.githubusercontent.com/maxsteeel/nomount/refs/heads/dev/kernel/setup.sh | bash -s dev
-          echo "CONFIG_NOMOUNT=y" >> arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
+          echo "CONFIG_NOMOUNT=y" >> "$CONFIG_FILE"
           echo "[+] Patched NoMount for your kernel successfully."
 
       - name: Integrate KernelSU
