@@ -27,12 +27,13 @@ jobs:
             branch: "android13-5.15-lts"
             defconfig: "gki_defconfig"
             local_version: "-super.kernel"
-            output_name: "boot.clo-5.15.r1-rel.img"
+            # output_name: "boot.clo-5.15.r1-rel.img"
+            output_name: "boot.gki-5.15-lts.img"
             enable_resukisu: false
             enable_xxksu: true
             extra_patches:
               - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-gki-fixup.patch"
-              - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-sign-builds.patch"
+              # - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-sign-builds.patch"
               # - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-Don-t-append-and-dirty-to-localversion.patch"
               - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-do-not-ship-full-auto_localversion.patch"
 
@@ -195,23 +196,13 @@ jobs:
             echo "⚠️ SUSFS patch failed — copying files manually"
           fi
                     
-          # Always replace fs/susfs.c
-          mkdir -p fs
-          cp -f susfs4ksu/kernel_patches/fs/susfs.c fs/susfs.c
+          # Always copy fs/susfs.c          
+          cp -f susfs4ksu/kernel_patches/fs/* fs/
           echo "✔ Copied fs/susfs.c"
           
-          # Always replace include/linux/susfs.h
-          mkdir -p include/linux
-          cp -f susfs4ksu/kernel_patches/include/linux/susfs.h include/linux/susfs.h
+          # Always copy include/linux/susfs.h and susfs_def.h         
+          cp -f susfs4ksu/kernel_patches/include/linux/* include/linux/
           echo "✔ Copied include/linux/susfs.h"
-          
-          # Also install missing susfs_def.h
-          if [ -f susfs4ksu/kernel_patches/include/linux/susfs_def.h ]; then
-            cp -f susfs4ksu/kernel_patches/include/linux/susfs_def.h include/linux/susfs_def.h
-            echo "✔ Copied include/linux/susfs_def.h"
-          else
-            echo "⚠️ susfs_def.h not found in repo"
-          fi
           
           echo "🔍 Verifying SUSFS files..."
           for f in fs/susfs.c include/linux/susfs.h include/linux/susfs_def.h; do
