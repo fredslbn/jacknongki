@@ -55,12 +55,12 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y repo rsync aria2
 
-      - name: 📐 Setup SWAP 10GB
+      - name: "📐 Setup SWAP 10GB"
         uses: pierotofy/set-swap-space@master
         with:
             swap-size-gb: 10
             
-      - name: 📐 Tune Swap
+      - name: "📐 Tune Swap"
         run: |
             echo "vm.swappiness=80" | sudo tee -a /etc/sysctl.conf
             sudo sysctl -p
@@ -424,12 +424,3 @@ jobs:
           cd anykernel && rm -rf .git && zip -r9 "../$ZIP_NAME" *
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
  
-         
-      - name: "Upload Build Artifact"
-        uses: actions/upload-artifact@v7
-        with:
-          name: ${{ env.ZIP_NAME }}
-          path: |
-             ${{ env.KERNEL_LOC_DIR }}/${{ env.ZIP_NAME }}
-          archive: false
-          
