@@ -25,7 +25,7 @@ jobs:
             branch: "kernel.lnx.5.15.r1-rel"
             defconfig: "gki_defconfig"
             local_version: "-super.kernel-clo"
-            output_name: "boot.clo.ksu"
+            output_name: "boot.img"
             enable_resukisu: false
             enable_xxksu: true
             extra_patches:
@@ -322,19 +322,11 @@ jobs:
           LTO=thin \
           BUILD_CONFIG=${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.gki.aarch64 \
           build/build.sh -j$(nproc --all)
-
-      - name: Sanitize artifact name
-        run: |
-        SAFE_NAME="${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}"
-        echo "SAFE_ARTIFACT_NAME=Kernel-${SAFE_NAME}" >> $GITHUB_ENV
       
       - name: "📁 Copy kernel image"
         working-directory: ${{ env.WORK_DIR }}/out/dist
         run: |
-          mkdir -p output
-          
-          cp Image "${{ env.OUTPUT_NAME }}"
-          cp Image "${{ env.OUTPUT_NAME }}"
+          cp boot.img "${{ env.OUTPUT_NAME }}"          
 
       - name: "📤 Upload kernel artifact"
         uses: actions/upload-artifact@v4
@@ -361,7 +353,7 @@ jobs:
           git clone --depth=1 https://github.com/topnotchfreaks/AnyKernel3 -b YASK AnyKernel3
 
           # Copy kernel images
-          find ./artifacts -name "Image.*" -exec cp {} AnyKernel3/ \;
+          find ./artifacts -name "boot.*" -exec cp {} AnyKernel3/ \;
 
           
           # Create ZIP
