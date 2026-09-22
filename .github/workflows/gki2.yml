@@ -1,4 +1,4 @@
-name: Build GKI 2
+name: Build GKI 2 Kernel 5.15
 
 env:
   OUT_DIR: "out"
@@ -404,8 +404,7 @@ jobs:
           EOF
           
           echo "✅ Basic configs added"
-    
-      
+          
       - name: "🔨 Build kernel"
         working-directory: ${{ env.WORK_DIR }}
         run: |
@@ -414,21 +413,14 @@ jobs:
           BUILD_CONFIG=${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.gki.aarch64 \
           build/build.sh -j$(nproc --all)
 
-
-      - name: "Package Kernel"
-        working-directory: ${{ env.KERNEL_LOC_DIR }}
+      - name: "📁 Copy kernel image"
+        working-directory: ${{ env.WORK_DIR }}/out/dist
         run: |
-          IMAGE="clo/out/arch/arm64/boot/Image"
-          [ -f "$IMAGE" ] || { echo "Binary Missing!"; exit 1; }
-          ZIP_NAME="${{ env.OUTPUT_NAME }}.zip"
-          git clone --depth 1 --branch gki https://github.com/midori01/AnyKernel3 anykernel
-          cp "$IMAGE" anykernel/
-          cd anykernel && rm -rf .git && zip -r9 "../$ZIP_NAME" *
-          echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
+          cp boot.img "${{ env.OUTPUT_NAME }}"
 
       - name: "Upload Build Artifact"
         uses: actions/upload-artifact@v7
         with:
           path: |
-             ${{ env.KERNEL_LOC_DIR }}/${{ env.ZIP_NAME }}
+             ${{ env.WORK_DIR }}/out/dist/${{ env.OUTPUT_NAME }}
           archive: false
