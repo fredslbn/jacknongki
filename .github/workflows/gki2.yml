@@ -161,9 +161,11 @@ jobs:
                     
           echo "✅ xxKSU configs added"
           
+          echo "🔧 Applying SUSFS xxKSU patch..."
           ## SUSFS PATCHES FOR KERNELSU SUSFS          
           patch -p1 -d KernelSU < <(curl -sSfL "https://github.com/midori01/KernelSU/commit/xx~1.patch") || true
           patch -p1 -d KernelSU < <(curl -sSfL "https://github.com/midori01/KernelSU/commit/xx.patch") || true
+          echo "✅ SUSFS xxKSU patch successfully applied"
 
           # Clone SUSFS4KSU for kernel patches only (not KSU integration)
           echo "📦 Cloning SUSFS4KSU for kernel patches..."
@@ -190,11 +192,14 @@ jobs:
           SUSFS_KERNEL_PATCH="susfs4ksu/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch"
           
           echo "🔧 Applying SUSFS kernel patch..."
-          if patch -p1 < "$SUSFS_KERNEL_PATCH"; then
-            echo "✅ SUSFS patch successfully applied"
-          else
-            echo "⚠️ SUSFS patch failed — copying files manually"
-          fi
+          wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh
+          chmod +x susfs_deinlined.sh
+          ./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
+             if patch -p1 < deinlined.patch || true; then
+                echo "✅ SUSFS patch successfully applied"
+             else
+                echo "⚠️ SUSFS patch failed — copying files manually"
+             fi
                     
           # Always copy fs/susfs.c          
           cp -f susfs4ksu/kernel_patches/fs/* fs/
