@@ -25,7 +25,7 @@ jobs:
             branch: "kernel.lnx.5.15.r1-rel"
             defconfig: "gki_defconfig"
             local_version: "-s.k"
-            output_name: "boot.img"
+            output_name: "boot.clo.img"
             enable_resukisu: false
             enable_xxksu: true
             extra_patches:
