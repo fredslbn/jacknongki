@@ -1,9 +1,9 @@
-name: Build GKI 2
+name: Build GKI 2 6.6 Kernel
 
 env:
   OUT_DIR: "out"
-  KERNEL_VERSION: "5.15"
-  ANDROID_VERSION: "13"
+  KERNEL_VERSION: "6.6"
+  ANDROID_VERSION: "15"
 
 on:
   # schedule:
@@ -23,12 +23,12 @@ jobs:
             repo_name: "clo"
             # repo_url: "https://git.codelinaro.org/clo/la/kernel/msm-5.15.git"
             repo_url: "https://android.googlesource.com/kernel/common"            
-            # branch: "kernel.lnx.5.15.r1-rel"
-            branch: "android13-5.15-lts"
+            # branch: "kernel.lnx.6.6.r1-rel"
+            branch: "android15-6.6-lts"
             defconfig: "gki_defconfig"
             local_version: "-super.kernel"
-            # output_name: "boot.clo-5.15.r1-rel.img"
-            output_name: "boot.gki-5.15-lts.img"
+            # output_name: "boot.clo-6.6.r1-rel.img"
+            output_name: "boot.gki-6.6-lts.img"
             enable_resukisu: false
             enable_xxksu: true
             extra_patches:
@@ -75,7 +75,7 @@ jobs:
         working-directory: ${{ env.WORK_DIR }}
         run: |
           # Initialize AOSP repo
-          repo init -u https://android.googlesource.com/kernel/manifest -b common-android13-5.15-lts --depth=1
+          repo init -u https://android.googlesource.com/kernel/manifest -b common-android15-6.6-lts --depth=1
           repo sync --optimized-fetch --prune -j8
           
           # Clean up existing repo and common directories
@@ -167,7 +167,7 @@ jobs:
 
           # Clone SUSFS4KSU for kernel patches only (not KSU integration)
           echo "📦 Cloning SUSFS4KSU for kernel patches..."
-          git clone --depth=1 https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android13-5.15
+          git clone --depth=1 https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android15-6.6
 
           echo "☣️ Applying namespace.c Fake Patch (if applicable)"
           if grep -q '^#include <trace/hooks/blk.h>$' fs/namespace.c; then
@@ -253,7 +253,7 @@ jobs:
           fi
           
 
-          echo "🎉 xxKSU installed and SUSFS for GKI android13-5.15 fully integrated!"
+          echo "🎉 xxKSU installed and SUSFS for GKI android15-6.6 fully integrated!"
 
 
       - name: "🔧 Setup ReSukiSU with SUSFS"
@@ -269,7 +269,7 @@ jobs:
           
           # Clone SUSFS4KSU for kernel patches only (not KSU integration)
           echo "📦 Cloning SUSFS4KSU for kernel patches..."
-          git clone --depth=1 https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android13-5.15
+          git clone --depth=1 https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android15-6.6
 
           echo "☣️ Applying namespace.c Fake Patch (if applicable)"
           if grep -q '^#include <trace/hooks/blk.h>$' fs/namespace.c; then
@@ -304,22 +304,16 @@ jobs:
           echo "📄 Forcing SUSFS source injection..."
           
           # Always replace fs/susfs.c
-          mkdir -p fs
-          cp -f susfs4ksu/kernel_patches/fs/susfs.c fs/susfs.c
+          
+          cp -f susfs4ksu/kernel_patches/fs/* fs/
           echo "✔ Copied fs/susfs.c"
           
           # Always replace include/linux/susfs.h
-          mkdir -p include/linux
-          cp -f susfs4ksu/kernel_patches/include/linux/susfs.h include/linux/susfs.h
-          echo "✔ Copied include/linux/susfs.h"
           
-          # Also install missing susfs_def.h
-          if [ -f susfs4ksu/kernel_patches/include/linux/susfs_def.h ]; then
-            cp -f susfs4ksu/kernel_patches/include/linux/susfs_def.h include/linux/susfs_def.h
-            echo "✔ Copied include/linux/susfs_def.h"
-          else
-            echo "⚠️ susfs_def.h not found in repo"
-          fi
+          cp -f susfs4ksu/kernel_patches/include/linux/* include/linux/
+          echo "✔ Copied include/linux/*"
+          
+          
           
           echo "🔍 Verifying SUSFS files..."
           for f in fs/susfs.c include/linux/susfs.h include/linux/susfs_def.h; do
@@ -376,7 +370,7 @@ jobs:
           fi
           
           echo "✅ KSU configs added"
-          echo "🎉 ReSukiSU installed and SUSFS for GKI android13-5.15 fully integrated!"
+          echo "🎉 ReSukiSU installed and SUSFS for GKI android15-6.6 fully integrated!"
 
       - name: "⚙️ Setup basic configs"
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
@@ -400,36 +394,29 @@ jobs:
           
           echo "✅ Basic configs added"
 
-    
-      
-      - name: "Compile Kernel'
+      - name: "📝 Append custom Makefile line"
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
-        run: |         
-          ROOT_REAL_PATH=$(dirname "$(readlink -f "$PWD")")
-          export KBUILD_GENDWARFKSYMS_STABLE=1
-          export KCFLAGS="-fdebug-prefix-map=$ROOT_REAL_PATH=. -fmacro-prefix-map=$ROOT_REAL_PATH=. -ffile-prefix-map=$ROOT_REAL_PATH=. -no-canonical-prefixes -pipe -fno-stack-protector -D__ANDROID_COMMON_KERNEL__ -Wno-unused-command-line-argument"
-          # export KBUILD_BUILD_HOST=wtc2
-          # export KBUILD_BUILD_USER=freds
-          make -j$(nproc) LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- O=out KCFLAGS+=-O2 KCFLAGS+=-Wno-error gki_defconfig
-          make -j$(nproc) LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- O=out KCFLAGS+=-O2 KCFLAGS+=-Wno-error Image
-          
-      
-      - name: "Package Kernel"
-        working-directory: ${{ env.KERNEL_LOC_DIR }}
         run: |
-          IMAGE="clo/out/arch/arm64/boot/Image"
-          [ -f "$IMAGE" ] || { echo "Binary Missing!"; exit 1; }
-          ZIP_NAME="${{ env.OUTPUT_NAME }}.zip"
-          git clone --depth 1 --branch gki https://github.com/midori01/AnyKernel3 anykernel
-          cp "$IMAGE" anykernel/
-          cd anykernel && rm -rf .git && zip -r9 "../$ZIP_NAME" *
-          echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
-
+         # echo 'KBUILD_CFLAGS += -Wno-default-const-init-unsafe' >> Makefile
+         # echo 'KBUILD_CFLAGS += -Wno-uninitialized-const-pointer' >> Makefile
+         echo 'KBUILD_CFLAGS += -Wno-implicit-function-declaration' >> Makefile
+         echo "Custom Makefile line added successfully"
+    
+      - name: "🔨 Build kernel"
+        working-directory: ${{ env.WORK_DIR }}
+        run: |
+          LTO=thin \
+          BUILD_CONFIG=${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.gki.aarch64 \
+          build/build.sh -j$(nproc --all)
       
-      - name: "Upload Build Artifact"
-        uses: actions/upload-artifact@v7
+      - name: "📁 Copy kernel image"
+        working-directory: ${{ env.WORK_DIR }}/out/dist
+        run: |
+          cp boot.img "${{ env.OUTPUT_NAME }}"          
+
+      - name: "📤 Upload kernel artifact"
+        uses: actions/upload-artifact@v4
         with:
-          path: |
-            ${{ env.KERNEL_LOC_DIR }}/${{ env.ZIP_NAME }}
-          archive: false                
+          name: ${{ matrix.kernel.name }}-kernel
+          path: ${{ env.WORK_DIR }}/out/dist/${{ env.OUTPUT_NAME }}
           retention-days: 1
