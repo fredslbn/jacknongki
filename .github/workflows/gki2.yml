@@ -399,7 +399,6 @@ jobs:
           EOF
           
           echo "✅ Basic configs added"
-
     
       
       - name: "Compile Kernel'
@@ -424,12 +423,11 @@ jobs:
           cp "$IMAGE" anykernel/
           cd anykernel && rm -rf .git && zip -r9 "../$ZIP_NAME" *
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
-
-      
+     
       - name: "Upload Build Artifact"
         uses: actions/upload-artifact@v7
         with:
           path: |
             ${{ env.KERNEL_LOC_DIR }}/${{ env.ZIP_NAME }}
-          archive: false                
-          retention-days: 1
+          archive: false
+          
