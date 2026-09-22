@@ -391,14 +391,7 @@ jobs:
           
           echo "✅ Basic configs added"
 
-      - name: "📝 Append custom Makefile line"
-        working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
-        run: |
-         # echo 'KBUILD_CFLAGS += -Wno-default-const-init-unsafe' >> Makefile
-         # echo 'KBUILD_CFLAGS += -Wno-uninitialized-const-pointer' >> Makefile
-         echo 'KBUILD_CFLAGS += -Wno-implicit-function-declaration' >> Makefile
-         echo "Custom Makefile line added successfully"
-    
+
       - name: "🔨 Build kernel"
         working-directory: ${{ env.WORK_DIR }}
         run: |
@@ -418,9 +411,8 @@ jobs:
           
             # 6.1+ use kleaf / bazel. The options come in as a fragment so gki_defconfig
             # stays canonical and kleaf's own savedefconfig check keeps passing.
-            tools/bazel build --config=fast --lto=thin \
-              # --defconfig_fragment=//common:arch/arm64/configs/evokerr.fragment \
-              //common:kernel_aarch64_dist
+            tools/bazel build --config=fast --lto=thin //common:kernel_aarch64_dist
+          
           fi
                                         
 
