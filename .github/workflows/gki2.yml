@@ -427,7 +427,6 @@ jobs:
       - name: "Upload Build Artifact"
         uses: actions/upload-artifact@v7
         with:
-          path: |
-            ${{ env.KERNEL_LOC_DIR }}/${{ env.ZIP_NAME }}
+          path: ${{ env.KERNEL_LOC_DIR }}/${{ env.ZIP_NAME }}
           archive: false
           
