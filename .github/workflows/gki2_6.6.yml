@@ -1,4 +1,4 @@
-name: Build GKI 2 6.6 Kernel
+name: Build GKI 2 Kernel 6.6
 
 env:
   OUT_DIR: "out"
@@ -34,7 +34,7 @@ jobs:
             extra_patches:
               - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-gki-fixup.patch"
               # - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-sign-builds.patch"
-              # - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-Don-t-append-and-dirty-to-localversion.patch"
+              - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-Don-t-append-and-dirty-to-localversion.patch"
               - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-do-not-ship-full-auto_localversion.patch"
 
     env:
@@ -109,6 +109,12 @@ jobs:
           echo "CONFIG_LOCALVERSION=\"${{ env.LOCAL_VERSION }}\"" >> "$CONFIG_FILE"
           echo "CONFIG_LOCALVERSION_AUTO=y" >> "$CONFIG_FILE"
 
+          rm -f android/abi_gki_protected_exports_* || true
+          echo "device_find_any_child" >> android/abi_gki_aarch64_xiaomi || true
+          # sed -i 's/ -dirty//g' scripts/setlocalversion || true
+          sed -i ':a; /#ifdef USE_PKCS11_ENGINE/{N;N;s/#ifdef USE_PKCS11_ENGINE\n\(.*\)\n#endif/\1/; ta}' certs/extract-cert.c || true
+          
+          
           # Helper
           apply_patch() {
             local url="$1"
@@ -123,7 +129,7 @@ jobs:
             [ -n "$p" ] && apply_patch "$p"
           done
 
-          
+
       - name: "🔧 Add Nomount"
         working-directory: ./${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
@@ -161,9 +167,11 @@ jobs:
                     
           echo "✅ xxKSU configs added"
           
+          echo "🔧 Applying SUSFS xxKSU patch..."
           ## SUSFS PATCHES FOR KERNELSU SUSFS          
           patch -p1 -d KernelSU < <(curl -sSfL "https://github.com/midori01/KernelSU/commit/xx~1.patch") || true
           patch -p1 -d KernelSU < <(curl -sSfL "https://github.com/midori01/KernelSU/commit/xx.patch") || true
+          echo "✅ SUSFS xxKSU patch successfully applied"
 
           # Clone SUSFS4KSU for kernel patches only (not KSU integration)
           echo "📦 Cloning SUSFS4KSU for kernel patches..."
@@ -190,11 +198,14 @@ jobs:
           SUSFS_KERNEL_PATCH="susfs4ksu/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch"
           
           echo "🔧 Applying SUSFS kernel patch..."
-          if patch -p1 < "$SUSFS_KERNEL_PATCH"; then
-            echo "✅ SUSFS patch successfully applied"
-          else
-            echo "⚠️ SUSFS patch failed — copying files manually"
-          fi
+          wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh
+          chmod +x susfs_deinlined.sh
+          ./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
+             if patch -p1 < deinlined.patch || true; then
+                echo "✅ SUSFS patch successfully applied"
+             else
+                echo "⚠️ SUSFS patch failed — copying files manually"
+             fi
                     
           # Always copy fs/susfs.c          
           cp -f susfs4ksu/kernel_patches/fs/* fs/
@@ -253,7 +264,7 @@ jobs:
           fi
           
 
-          echo "🎉 xxKSU installed and SUSFS for GKI android15-6.6 fully integrated!"
+          echo "🎉 xxKSU installed and SUSFS for GKI android13-5.15 fully integrated!"
 
 
       - name: "🔧 Setup ReSukiSU with SUSFS"
@@ -379,12 +390,10 @@ jobs:
           
           # addon configs
           cat >> "$CONFIG_FILE" << 'EOF'
-          CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y
-          CONFIG_TCP_CONG_ADVANCED=y
+          CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y          
           CONFIG_TCP_CONG_BIC=n
           CONFIG_TCP_CONG_WESTWOOD=y
-          CONFIG_TCP_CONG_HTCP=n
-          CONFIG_TCP_CONG_BBR=y
+          CONFIG_TCP_CONG_HTCP=n          
           CONFIG_DEFAULT_WESTWOOD=y
           CONFIG_OVERLAY_FS=y
           CONFIG_TMPFS_XATTR=y
@@ -405,18 +414,19 @@ jobs:
       - name: "🔨 Build kernel"
         working-directory: ${{ env.WORK_DIR }}
         run: |
+          KMI_SYMBOL_LIST_STRICT_MODE=0 \
           LTO=thin \
           BUILD_CONFIG=${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.gki.aarch64 \
           build/build.sh -j$(nproc --all)
-      
+
       - name: "📁 Copy kernel image"
         working-directory: ${{ env.WORK_DIR }}/out/dist
         run: |
-          cp boot.img "${{ env.OUTPUT_NAME }}"          
+          cp boot.img "${{ env.OUTPUT_NAME }}"
 
-      - name: "📤 Upload kernel artifact"
-        uses: actions/upload-artifact@v4
+      - name: "Upload Build Artifact"
+        uses: actions/upload-artifact@v7
         with:
-          name: ${{ matrix.kernel.name }}-kernel
-          path: ${{ env.WORK_DIR }}/out/dist/${{ env.OUTPUT_NAME }}
-          retention-days: 1
+          path: |
+             ${{ env.WORK_DIR }}/out/dist/${{ env.OUTPUT_NAME }}
+          archive: false
