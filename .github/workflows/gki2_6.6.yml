@@ -402,10 +402,27 @@ jobs:
       - name: "🔨 Build kernel"
         working-directory: ${{ env.WORK_DIR }}
         run: |
-          KMI_SYMBOL_LIST_STRICT_MODE=0 \
-          LTO=thin \
-          BUILD_CONFIG=${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.gki.aarch64 \
-          build/build.sh -j$(nproc --all)
+          if [ -f build/build.sh ]; then
+            # 5.10 / 5.15 use the legacy build.sh.
+            # No GKI_DEFCONFIG_FRAGMENT here on purpose - the options are already inside
+            # gki_defconfig, and build.sh sources that variable as shell.
+            # No HOSTLD override: the tree ships its own LLVM under prebuilts and build.sh
+            # puts it on PATH. Pointing at /usr/bin/ld.lld only works if lld happens to be
+            # installed system-wide, and on a stock runner it is not.
+            KMI_SYMBOL_LIST_STRICT_MODE=0 \
+            LTO=thin \
+            BUILD_CONFIG=common/build.config.gki.aarch64 \
+            build/build.sh
+            
+          else
+          
+            # 6.1+ use kleaf / bazel. The options come in as a fragment so gki_defconfig
+            # stays canonical and kleaf's own savedefconfig check keeps passing.
+            tools/bazel build --config=fast --lto=thin \
+              # --defconfig_fragment=//common:arch/arm64/configs/evokerr.fragment \
+              //common:kernel_aarch64_dist
+          fi
+                                        
 
       - name: "📁 Copy kernel image"
         working-directory: ${{ env.WORK_DIR }}/out/dist
