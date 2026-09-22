@@ -420,28 +420,3 @@ jobs:
           name: ${{ matrix.kernel.name }}-kernel
           path: ${{ env.WORK_DIR }}/out/dist/${{ env.OUTPUT_NAME }}
           retention-days: 1
-
-
-
-      - name: "Compile Kernel"
-        working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
-        run: |         
-          ROOT_REAL_PATH=$(dirname "$(readlink -f "$PWD")")
-          export KBUILD_GENDWARFKSYMS_STABLE=1
-          export KCFLAGS="-fdebug-prefix-map=$ROOT_REAL_PATH=. -fmacro-prefix-map=$ROOT_REAL_PATH=. -ffile-prefix-map=$ROOT_REAL_PATH=. -no-canonical-prefixes -pipe -fno-stack-protector -D__ANDROID_COMMON_KERNEL__ -Wno-unused-command-line-argument"
-          # export KBUILD_BUILD_HOST=wtc2
-          # export KBUILD_BUILD_USER=freds
-          make -j$(nproc) LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- O=out KCFLAGS+=-O2 KCFLAGS+=-Wno-error gki_defconfig
-          make -j$(nproc) LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- O=out KCFLAGS+=-O2 KCFLAGS+=-Wno-error Image
-          
-         
-      - name: "Upload Build Artifact"
-        uses: actions/upload-artifact@v7
-        with:
-          name: ${{ env.ZIP_NAME }}
-          path: |
-             ${{ env.KERNEL_LOC_DIR }}/${{ env.ZIP_NAME }}
-          archive: false
-
-
-          
