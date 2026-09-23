@@ -32,7 +32,7 @@ jobs:
             enable_resukisu: false
             enable_xxksu: true
             extra_patches:
-              - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-gki-fixup.patch"
+              #- "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-gki-fixup.patch"
               # - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-sign-builds.patch"
               - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-Don-t-append-and-dirty-to-localversion.patch"
               - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-do-not-ship-full-auto_localversion.patch"
@@ -395,26 +395,7 @@ jobs:
       - name: "🔨 Build kernel"
         working-directory: ${{ env.WORK_DIR }}
         run: |
-          if [ -f build/build.sh ]; then
-            # 5.10 / 5.15 use the legacy build.sh.
-            # No GKI_DEFCONFIG_FRAGMENT here on purpose - the options are already inside
-            # gki_defconfig, and build.sh sources that variable as shell.
-            # No HOSTLD override: the tree ships its own LLVM under prebuilts and build.sh
-            # puts it on PATH. Pointing at /usr/bin/ld.lld only works if lld happens to be
-            # installed system-wide, and on a stock runner it is not.
-            KMI_SYMBOL_LIST_STRICT_MODE=0 \
-            LTO=thin \
-            BUILD_CONFIG=common/build.config.gki.aarch64 \
-            build/build.sh
-            
-          else
-          
-            # 6.1+ use kleaf / bazel. The options come in as a fragment so gki_defconfig
-            # stays canonical and kleaf's own savedefconfig check keeps passing.
-            tools/bazel build --config=fast --lto=thin //common:kernel_aarch64_dist
-          
-          fi
-                                        
+          tools/bazel build --config=fast --lto=thin //common:kernel_aarch64_dist                         
 
       - name: "📁 Copy kernel image"
         working-directory: ${{ env.WORK_DIR }}/out/dist
