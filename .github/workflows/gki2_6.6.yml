@@ -393,7 +393,7 @@ jobs:
 
 
       - name: "🔨 Build kernel"
-        working-directory: ${{ env.WORK_DIR }}
+        working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
           tools/bazel build --config=fast --lto=thin //common:kernel_aarch64_dist                         
 
