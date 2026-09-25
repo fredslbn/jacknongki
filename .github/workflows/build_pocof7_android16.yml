@@ -13,7 +13,7 @@ env:
   CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu-"
   
   # EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1 AR=llvm-ar AS=llvm-as NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
-  EXTRA_CMDS : "LD=ld.lld LLVM=1 KCFLAGS="-w" LLVM_IAS=1"
+  EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1"
 
   KERNEL_SOURCE : "https://github.com/fredslbn/gki-clo-onyx.git"
   KERNEL_BRANCH : "main"
