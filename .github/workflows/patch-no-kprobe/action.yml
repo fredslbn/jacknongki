@@ -85,10 +85,7 @@ runs:
              echo "CONFIG_KALLSYMS_ALL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
              echo "CONFIG_KSU_COMPILE_AS_C23=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
              echo "CONFIG_KSU_KPROBES_KSUD=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             
-             echo "KBUILD_CFLAGS += -w" >> ./Makefile
-             echo "Custom Makefile line added successfully"
+             echo "CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}                          
 
              echo "[+] BRANCHLINK GKI HOOK method applied."
   
