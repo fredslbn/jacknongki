@@ -111,10 +111,14 @@ runs:
                     git clone --depth=1 https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android15-6.6
                     
                     SUSFS_KERNEL_PATCH="susfs4ksu/kernel_patches/50_add_susfs_in_gki-android15-6.6.patch"
+                    
                     echo "🔧 Applying SUSFS kernel patch..."
-                       cp /tmp/Patches/Patch/susfs_pocof7_patch_to_6.6.patch ./
-                       # patch -p1 < susfs_pocof7_patch_to_6.6.patch || true
-                       if patch -p1 < susfs_pocof7_patch_to_6.6.patch || true; then
+                    wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh
+                    chmod +x susfs_deinlined.sh
+                    cp /tmp/Patches/Patch/susfs_pocof7_patch_to_6.6.patch ./
+                    
+                    ./susfs_deinlined.sh susfs_pocof7_patch_to_6.6.patch deinlined.patch
+                       if patch -p1 < deinlined.patch || true; then
                           echo "✅ SUSFS patch successfully applied"
                        else
                           echo "⚠️ SUSFS patch failed — copying files manually"
