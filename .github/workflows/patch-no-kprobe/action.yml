@@ -56,8 +56,8 @@ runs:
              echo "CONFIG_KSU_LSM_SECURITY_HOOKS=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}            
             
              echo "CONFIG_KPROBES=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_HAVE_KPROBES=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KPROBE_EVENTS=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+             # echo "CONFIG_HAVE_KPROBES=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+             # echo "CONFIG_KPROBE_EVENTS=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
              echo "CONFIG_KALLSYMS_ALL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
              # echo "CONFIG_CFI_CLANG=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
              # echo "CONFIG_LTO=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
