@@ -154,9 +154,15 @@ jobs:
           
           echo "KBUILD_CFLAGS += -w" >> ./Makefile
           echo "Custom Makefile line added successfully"
-
-          # for Mountify metamodule
-          # echo "CONFIG_TMPFS_XATTR=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+          
+          echo "CONFIG_ARCH_SUPPORTS_LTO_CLANG=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+          echo "CONFIG_ARCH_SUPPORTS_LTO_CLANG_THIN=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+          echo "CONFIG_HAS_LTO_CLANG=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}          
+          echo "CONFIG_LTO=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+          echo "CONFIG_LTO_THIN=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+          echo "# CONFIG_LTO_NONE is not set" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+          echo "CONFIG_LTO_CLANG_THIN=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+          echo "# CONFIG_LTO_CLANG_FULL is not set" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
 
           # sed -i 's/-valeryn/-super.kernel/g' localversion
           # sed -i 's/-cip131//g' localversion-cip
