@@ -57,11 +57,12 @@ env:
 
   ROM_TEXT : "xxKSU"
   GKI_TYPE_KERNEL : true
+  GKI_KERNEL_BRANCH : "5.15"
   CUSTOM_SUSFS_PATCH : true
   CUSTOM_CLEANUP_HARDCODE : false
   CUSTOM_DIR_ANYKERNEL : false
   
-  SUSFS_ENABLE : false
+  SUSFS_ENABLE : true
   SUSFS_FIXED : true
 
   AK3_SOURCE : "https://github.com/fredslbn/AnyKernel3.git"
@@ -165,6 +166,8 @@ jobs:
           echo "CONFIG_LTO_CLANG_THIN=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
           echo "# CONFIG_LTO_CLANG_FULL is not set" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
           
+          echo "# CONFIG_DEBUG_INFO_BTF is not set" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+
           # sed -i 's/-valeryn/-super.kernel/g' localversion
           # sed -i 's/-cip131//g' localversion-cip
           # sed -i 's/-st15//g' localversion-st

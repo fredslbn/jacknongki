@@ -105,18 +105,22 @@ runs:
                  patch -p1 < susfs_renote10pro_patch_to_4.14.patch || true                 
                  echo "[+] Custom Renote10Pro SuSFS Patch completed."
                  
-                 elif [[ "${{ env.DEVICE_CODENAME }}" == "Onyx" ]]; then                 
+                 
+                 ## GKI 6.6
+                 elif [[ "${{ env.GKI_KERNEL_BRANCH }}" == "6.6" ]]; then                 
                     # Clone SUSFS4KSU for kernel patches only (not KSU integration)
                     echo "📦 Cloning SUSFS4KSU for kernel patches..."
                     git clone --depth=1 https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android15-6.6
                     
                     SUSFS_KERNEL_PATCH="susfs4ksu/kernel_patches/50_add_susfs_in_gki-android15-6.6.patch"                   
+                    
                     echo "🔧 Applying SUSFS kernel patch..."
                     wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh
                     chmod +x susfs_deinlined.sh
-                    cp /tmp/Patches/Patch/susfs_pocof7_patch_to_6.6.patch ./
                     
-                    ./susfs_deinlined.sh susfs_pocof7_patch_to_6.6.patch deinlined.patch
+                    cp /tmp/Patches/Patch/50_add_susfs_in_gki-android15-6.6.patch ./
+                    # ./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
+                    ./susfs_deinlined.sh 50_add_susfs_in_gki-android15-6.6.patch deinlined.patch
                        if patch -p1 < deinlined.patch || true; then
                           echo "✅ SUSFS patch successfully applied"
                        else
@@ -140,8 +144,50 @@ runs:
                     echo "✅ SUSFS build wiring verified"                    
                     # cp /tmp/Patches/Patch/susfs_pocof7_patch_to_6.6.patch ./
                     # patch -p1 < susfs_pocof7_patch_to_6.6.patch || true                 
-                    echo "[+] Custom Poco F7 SuSFS Patch completed."                 
-                 fi                            
+                    echo "[+] GKI 6.6 is already in SuSFS Patch completed."
+ 
+ 
+                 ## GKI 5.15
+                 elif [[ "${{ env.GKI_KERNEL_BRANCH }}" == "5.15" ]]; then                 
+                    # Clone SUSFS4KSU for kernel patches only (not KSU integration)
+                    echo "📦 Cloning SUSFS4KSU for kernel patches..."
+                    git clone --depth=1 https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android13-5.15
+                    
+                    SUSFS_KERNEL_PATCH="susfs4ksu/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch"                   
+                    
+                    echo "🔧 Applying SUSFS kernel patch..."
+                    wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh
+                    chmod +x susfs_deinlined.sh
+                    
+                    # cp /tmp/Patches/Patch/50_add_susfs_in_gki-android13-5.15.patch ./
+                    ./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
+                    # ./susfs_deinlined.sh 50_add_susfs_in_gki-android13-5.15.patch deinlined.patch
+                       if patch -p1 < deinlined.patch || true; then
+                          echo "✅ SUSFS patch successfully applied"
+                       else
+                          echo "⚠️ SUSFS patch failed — copying files manually"
+                       fi
+                    
+                    # Always copy fs/susfs.c          
+                    cp -f susfs4ksu/kernel_patches/fs/* fs/
+                    echo "✔ Copied fs/susfs.c"                    
+                    # Always copy include/linux/susfs.h and susfs_def.h         
+                    cp -f susfs4ksu/kernel_patches/include/linux/* include/linux/
+                    echo "✔ Copied include/linux/*"
+                    
+                    echo "🔍 Verifying SUSFS files..."
+                    for f in fs/susfs.c include/linux/susfs.h include/linux/susfs_def.h; do
+                       if [ -f "$f" ]; then echo "✔ Found: $f"; else echo "❌ Missing: $f"; fi
+                    done
+                    
+                    # Clean up SUSFS repo (we only needed kernel patches, not KSU integration)
+                    rm -rf susfs4ksu
+                    echo "✅ SUSFS build wiring verified"                    
+                    # cp /tmp/Patches/Patch/susfs_pocof7_patch_to_6.6.patch ./
+                    # patch -p1 < susfs_pocof7_patch_to_6.6.patch || true                 
+                    echo "[+] GKI 5.15 is already in SuSFS Patch completed."
+                 
+                 fi
               
               else            
                  cp /tmp/Patches/Patch/susfs_patch_to_${{ env.KERNEL_VERSION }}.patch ./
