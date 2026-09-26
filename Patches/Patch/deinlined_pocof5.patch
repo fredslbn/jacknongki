@@ -1929,7 +1929,7 @@ index c6a2e1098..911b6ce2b 100644
  
  	generic_fillattr(inode, stat);
  	return 0;
-@@ -190,12 +240,21 @@ static int vfs_statx(int dfd, const char __user *filename, int flags,
+@@ -190,7 +240,16 @@ static int vfs_statx(int dfd, const char __user *filename, int flags,
  		goto out;
  
  	error = vfs_getattr(&path, stat, request_mask, flags);
