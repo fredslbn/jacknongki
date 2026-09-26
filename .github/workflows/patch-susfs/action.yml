@@ -200,9 +200,9 @@ runs:
                     wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh
                     chmod +x susfs_deinlined.sh
                     
-                    # cp /tmp/Patches/Patch/50_add_susfs_in_gki-android12-5.10.patch ./
-                    ./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
-                    # ./susfs_deinlined.sh 50_add_susfs_in_gki-android12-5.10.patch deinlined.patch
+                    cp /tmp/Patches/Patch/50_add_susfs_in_gki-android12-5.10.patch ./
+                    # ./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
+                    ./susfs_deinlined.sh 50_add_susfs_in_gki-android12-5.10.patch deinlined.patch
                        if patch -p1 < deinlined.patch || true; then
                           echo "✅ SUSFS patch successfully applied"
                        else
