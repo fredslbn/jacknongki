@@ -1,9 +1,11 @@
-name: "Topaz Advanced Build"
+name: "Renote 12 Build"
 
 env:
   OUT_DIR: "out"
   KERNEL_VERSION: "5.15"
   ANDROID_VERSION: "13"
+  DEVICE_CODENAME: "Topaz"
+  KSU_TYPE: "xxKSU"
 
 on:
   workflow_dispatch:
@@ -32,7 +34,7 @@ on:
         description: "Build KSU variant?"
         required: true
         type: choice
-        default: "noksu"
+        default: "ksu"
         options:
           - "noksu"
           - "ksu"
@@ -361,8 +363,8 @@ jobs:
           esac
 
           # Sign Builds
-          curl -L -o sign.patch "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-sign-builds.patch" 
-          patch -p1 < sign.patch || echo "Warning: Strings patch failed"
+          # curl -L -o sign.patch "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-sign-builds.patch" 
+          # patch -p1 < sign.patch || echo "Warning: Strings patch failed"
 
           # localversion
           # curl -L -o localversion.patch "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-do-not-ship-full-auto_localversion.patch" 
@@ -374,19 +376,51 @@ jobs:
           echo "Adding BBG...";
           wget -O- https://github.com/vc-teahouse/Baseband-guard/raw/main/setup.sh | bash
           echo "CONFIG_BBG=y" >> arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-          sed -i '/^config LSM$/,/^help$/{ /^[[:space:]]*default/ { /baseband_guard/! s/selinux/selinux,baseband_guard/ } }' security/Kconfig
-          
-      - name: "🔧 Setup ReSukiSU"
+          sed -i '/^config LSM$/,/^help$/{ /^[[:space:]]*default/ { /baseband_guard/! s/selinux/selinux,baseband_guard/ } }' security/Kconfig          
+      
+      - name: "🔧 Add Nomount"
+        working-directory: ./${{ env.kernelDir }}/${{ env.kernelName }}
+        run: |
+          echo "Adding Nomount...";
+          curl https://raw.githubusercontent.com/maxsteeel/nomount/refs/heads/dev/kernel/setup.sh | bash -s dev
+          echo "CONFIG_NOMOUNT=y" >> arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
+          echo "[+] Patched NoMount for your kernel successfully."
+      
+      
+      - name: "🔧 Setup xxKSU"        
         if: matrix.variant == 'ksu'
         working-directory: ./${{ env.kernelDir }}/${{ env.kernelName }}
         run: |
           rm -rf ./KernelSU ./drivers/kernelsu
 
           echo "📦 Installing KSU..."
-          curl -LSs "https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh" | bash -s main
+          curl -LSs "https://raw.githubusercontent.com/backslashxx/KernelSU/refs/heads/master/kernel/setup.sh" | bash -s master
           
           echo "✔ KSU installed successfully"
+
+          # Create symbolic link for drivers/kernelsu (if needed by build system)
+          if [ ! -L "drivers/kernelsu" ]; then
+            ln -sf ../KernelSU drivers/kernelsu
+            echo "✔ Created drivers/kernelsu symlink"
+          fi                    
+
+          CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          cat >> "$CONFIG_FILE" << 'EOF'
+          CONFIG_KSU=y
+          CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
+          CONFIG_KSU_HOSTSREDIRECT=y          
+          CONFIG_KSU_KPROBES_KSUD=y
+          CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y          
+          EOF
+                    
+          echo "✅ xxKSU configs added"
           
+          echo "🔧 Applying SUSFS xxKSU patch..."
+          ## SUSFS PATCHES FOR KERNELSU SUSFS          
+          patch -p1 -d KernelSU < <(curl -sSfL "https://github.com/midori01/KernelSU/commit/xx~1.patch") || true
+          patch -p1 -d KernelSU < <(curl -sSfL "https://github.com/midori01/KernelSU/commit/xx.patch") || true
+          echo "✅ SUSFS xxKSU patch successfully applied"
+
           # Clone SUSFS4KSU for kernel patches only (not KSU integration)
           echo "📦 Cloning SUSFS4KSU for kernel patches..."
           git clone --depth=1 https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android13-5.15
@@ -412,34 +446,22 @@ jobs:
           SUSFS_KERNEL_PATCH="susfs4ksu/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch"
           
           echo "🔧 Applying SUSFS kernel patch..."
-          if patch -p1 < "$SUSFS_KERNEL_PATCH"; then
-            echo "✅ SUSFS patch successfully applied"
-          else
-            echo "⚠️ SUSFS patch failed — copying files manually"
-          fi
-
-          echo "🔧 Applying SUSFS -> KernelSU patch..."
-          KSU_PATCH="susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch"
-          
-          echo "📄 Forcing SUSFS source injection..."
-          
-          # Always replace fs/susfs.c
-          mkdir -p fs
-          cp -f susfs4ksu/kernel_patches/fs/susfs.c fs/susfs.c
+          wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh
+          chmod +x susfs_deinlined.sh
+          ./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
+             if patch -p1 < deinlined.patch || true; then
+                echo "✅ SUSFS patch successfully applied"
+             else
+                echo "⚠️ SUSFS patch failed — copying files manually"
+             fi
+                    
+          # Always copy fs/susfs.c          
+          cp -f susfs4ksu/kernel_patches/fs/* fs/
           echo "✔ Copied fs/susfs.c"
           
-          # Always replace include/linux/susfs.h
-          mkdir -p include/linux
-          cp -f susfs4ksu/kernel_patches/include/linux/susfs.h include/linux/susfs.h
-          echo "✔ Copied include/linux/susfs.h"
-          
-          # Also install missing susfs_def.h
-          if [ -f susfs4ksu/kernel_patches/include/linux/susfs_def.h ]; then
-            cp -f susfs4ksu/kernel_patches/include/linux/susfs_def.h include/linux/susfs_def.h
-            echo "✔ Copied include/linux/susfs_def.h"
-          else
-            echo "⚠️ susfs_def.h not found in repo"
-          fi
+          # Always copy include/linux/susfs.h and susfs_def.h         
+          cp -f susfs4ksu/kernel_patches/include/linux/* include/linux/
+          echo "✔ Copied include/linux/*"
           
           echo "🔍 Verifying SUSFS files..."
           for f in fs/susfs.c include/linux/susfs.h include/linux/susfs_def.h; do
@@ -447,13 +469,7 @@ jobs:
           done
           
           # Clean up SUSFS repo (we only needed kernel patches, not KSU integration)
-          rm -rf susfs4ksu
-          
-          # Create symbolic link for drivers/kernelsu (if needed by build system)
-          if [ ! -L "drivers/kernelsu" ]; then
-            ln -sf ../KernelSU drivers/kernelsu
-            echo "✔ Created drivers/kernelsu symlink"
-          fi
+          rm -rf susfs4ksu          
 
           echo "✅ SUSFS build wiring verified"
 
@@ -495,9 +511,8 @@ jobs:
             echo "ℹ️ Skipping mm.h restore (not fake-patched or already present)"
           fi
           
-          echo "✅ KSU configs added"
+          echo "🎉 xxKSU installed and SUSFS for GKI android13-5.15 fully integrated!"
 
-          echo "🎉 ReSukiSU installed and SUSFS for GKI android13-5.15 fully integrated!"
 
       - name: "🔨 Build kernel"
         if: github.event.inputs.buildToolchains == 'android-tools'
@@ -546,11 +561,11 @@ jobs:
          cp "${src}" "out/dist/Image.${{ matrix.variant }}"
     
       - name: "📤 Upload kernel"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: kernel-${{ matrix.variant }}
           path: ${{ env.WORK_DIR }}/out/dist/Image.${{ matrix.variant }}
-          retention-days: 3
+          retention-days: 1
 
   Package-Kernels:
     name: "📦 Package kernels"
@@ -558,7 +573,7 @@ jobs:
     needs: Build-Kernel
     steps:
       - name: "📥 Download artifacts"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: ./kernels/
 
@@ -566,12 +581,13 @@ jobs:
         run: |
           BUILD_TIME=$(date +'%Y-%m-%d')
           git clone --depth=1 https://github.com/topnotchfreaks/AnyKernel3 -b master AnyKernel3
+          sed -i 's/by belowzeroiq @ github/Superkernel by freds @ wtc2/g' AnyKernel3/anykernel.sh
           
           # Copy kernels
           find kernels -name "Image.*" -exec cp {} AnyKernel3/ \;
           
           # Create ZIP
-          ZIP_NAME="Anykernel3_${{ github.event.inputs.kernelBranch }}_${BUILD_TIME}.zip"
+          ZIP_NAME="${{ env.DEVICE_CODENAME }}-${{ env.KSU_TYPE }}-${BUILD_TIME}.zip"
           cd AnyKernel3
           zip -r9 "../$ZIP_NAME" * -x .git/*
           cd ..
@@ -579,8 +595,8 @@ jobs:
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
 
       - name: "📤 Upload final package"
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.ZIP_NAME }}
+        uses: actions/upload-artifact@v7
+        with:          
           path: ${{ env.ZIP_PATH }}
+          archive: false
           retention-days: 1
