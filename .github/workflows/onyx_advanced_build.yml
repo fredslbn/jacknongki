@@ -94,6 +94,11 @@ jobs:
       WORK_DIR: ${{ github.workspace }}
 
     steps:
+      - name: "Move Patch"
+        run: |
+          # Move patch folder to tmp
+          mv $WORK_DIR/Patches /tmp/
+
       - name: "✨ Setup workspace"
         run: |
           mkdir -p $kernelDir
@@ -440,7 +445,11 @@ jobs:
           echo "🔧 Applying SUSFS kernel patch..."
           wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh
           chmod +x susfs_deinlined.sh
-          ./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
+          
+          cp /tmp/Patches/Patch/50_add_susfs_in_gki-android15-6.6.patch ./
+          ./susfs_deinlined.sh 50_add_susfs_in_gki-android15-6.6.patch deinlined.patch
+         
+          # ./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
              if patch -p1 < deinlined.patch || true; then
                 echo "✅ SUSFS patch successfully applied"
              else
