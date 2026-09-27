@@ -25,19 +25,32 @@ runs:
           
           ## FREDS MODIF: PATCHING GKI KERNEL          
           cd $GITHUB_WORKSPACE/device_kernel
-          if [[ "${{ env.GKI_KERNEL_TYPE }}" == "true" ]]; then
-             
+          if [[ "${{ env.GKI_KERNEL_TYPE }}" == "true" ]]; then            
              patch -p1 < <(curl -sL "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-gki-fixup.patch") || true
-             patch -p1 < <(curl -sL "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-Don-t-append-and-dirty-to-localversion.patch") || true
-             # patch -p1 < <(curl -sL ".  ") || true
+             patch -p1 < <(curl -sL "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-Don-t-append-and-dirty-to-localversion.patch") || true             
+             echo "[+] GKI kernel patches has been applied." 
              
-             echo "[+] GKI kernel patches has been applied."          
+             config.gki="build.config.gki"
+             sed -i '/^DEFCONFIG=gki_defconfig/d' "config.gki"
+             sed -i '$a\DEFCONFIG=${{ env.DEFCONFIG_NAME }}' "config.gki"
+             sed -i '/^POST_DEFCONFIG_CMDS="check_defconfig"/d' "config.gki"
+
+            config.gki.aarch64="build.config.gki.aarch64"
+            sed -i \
+             -e '/^KMI_SYMBOL_LIST_STRICT_MODE=/d' \
+             -e '/^TRIM_NONLISTED_KMI=/d' \
+             -e '/^KMI_ENFORCED=/d' \
+             -e '$a\KMI_SYMBOL_LIST_STRICT_MODE=0' \
+             -e '$a\TRIM_NONLISTED_KMI=0' \
+             -e '$a\KMI_ENFORCED=0' \
+             -e '/^MODULES_ORDER=/d' \
+             -e '/^MODULES_LIST=/d' \
+            "config.gki.aarch64"
+                      
           fi
         
 
-
           # Get Kernel Version
-
           KERNEL_VERSION=$(head -n 3 $GITHUB_WORKSPACE/device_kernel/Makefile | grep -E 'VERSION|PATCHLEVEL' | awk '{print $3}' | paste -sd '.')
           echo "KERNEL_VERSION=$(head -n 3 device_kernel/Makefile | grep -E 'VERSION|PATCHLEVEL' | awk '{print $3}' | paste -sd '.')" >> $GITHUB_ENV
           echo "FIRST_VERSION=$(echo "$KERNEL_VERSION" | awk -F '.' '{print $1}')" >> $GITHUB_ENV
