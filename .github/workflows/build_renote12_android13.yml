@@ -16,7 +16,7 @@ env:
   EXTRA_CMDS : "LD=ld.lld LLVM=1 AR=llvm-ar AS=llvm-as NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
 
   KERNEL_SOURCE : "https://github.com/topnotchfreaks/kernel_msm-5.15.git"
-  KERNEL_BRANCH : "topnotchfreaks"
+  KERNEL_BRANCH : "zepharo"
   
   # KERNEL_SOURCE : "https://github.com/frstprjkt/valeryn_xiaomi_sm6115.git"
   # KERNEL_BRANCH : "android16"
@@ -46,7 +46,7 @@ env:
   # GCC_32_BRANCH : "master"
 
   DEFCONFIG_SOURCE: ""
-  DEFCONFIG_NAME : "topaz_defconfig"
+  DEFCONFIG_NAME : "unified_defconfig"
   DEFCONFIG_ORIGIN_IMAGE: ""
   DEFCONFIG_FROM_BOOT: false
 
