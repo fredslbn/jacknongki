@@ -415,7 +415,7 @@ jobs:
 
           # Clone SUSFS4KSU for kernel patches only (not KSU integration)
           echo "📦 Cloning SUSFS4KSU for kernel patches..."
-          git clone --depth=1 https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android12-5.10
+          git clone --depth=1 https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android15-6.6
 
           echo "☣️ Applying namespace.c Fake Patch (if applicable)"
           if grep -q '^#include <trace/hooks/blk.h>$' fs/namespace.c; then
@@ -503,7 +503,7 @@ jobs:
             echo "ℹ️ Skipping mm.h restore (not fake-patched or already present)"
           fi
           
-          echo "🎉 xxKSU installed and SUSFS for GKI android13-5.15 fully integrated!"
+          echo "🎉 xxKSU installed and SUSFS for GKI android15-6.6 fully integrated!"
 
 
       - name: "🔨 Build kernel"
