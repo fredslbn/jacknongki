@@ -1983,7 +1983,7 @@ index 357a1db41..832c497db 100644
  	fdput(f);
  	return error;
  }
-@@ -202,6 +263,9 @@ static int vfs_statx(int dfd, const char __user *filename, int flags,
+@@ -205,6 +266,9 @@ static int vfs_statx(int dfd, const char __user *filename, int flags,
  	struct path path;
  	unsigned lookup_flags = 0;
  	int error;
@@ -1993,7 +1993,7 @@ index 357a1db41..832c497db 100644
  
  	if (flags & ~(AT_SYMLINK_NOFOLLOW | AT_NO_AUTOMOUNT | AT_EMPTY_PATH |
  		      AT_STATX_SYNC_TYPE))
-@@ -202,12 +279,38 @@ static int vfs_statx(int dfd, const char __user *filename, int flags,
+@@ -218,12 +282,38 @@ static int vfs_statx(int dfd, const char __user *filename, int flags,
  		lookup_flags |= LOOKUP_EMPTY;
  
  retry:
