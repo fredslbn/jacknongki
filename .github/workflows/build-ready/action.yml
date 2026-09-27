@@ -22,10 +22,18 @@ runs:
           echo "::endgroup::"
           echo "[+] Kernel source code is cloned."
           
+          # Get Kernel Version
+          KERNEL_VERSION=$(head -n 3 $GITHUB_WORKSPACE/device_kernel/Makefile | grep -E 'VERSION|PATCHLEVEL' | awk '{print $3}' | paste -sd '.')
+          echo "KERNEL_VERSION=$(head -n 3 device_kernel/Makefile | grep -E 'VERSION|PATCHLEVEL' | awk '{print $3}' | paste -sd '.')" >> $GITHUB_ENV
+          echo "FIRST_VERSION=$(echo "$KERNEL_VERSION" | awk -F '.' '{print $1}')" >> $GITHUB_ENV
+          echo "SECOND_VERSION=$(echo "$KERNEL_VERSION" | awk -F '.' '{print $2}')" >> $GITHUB_ENV
+
           
-          ## FREDS MODIF: PATCHING GKI KERNEL          
-          cd $GITHUB_WORKSPACE/device_kernel
-          if [[ "${{ env.GKI_KERNEL_TYPE }}" == "true" ]]; then            
+          ## FREDS MODIF: PATCHING GKI KERNEL
+          if [[ "${{ env.GKI_KERNEL_TYPE }}" == "true" ]]; then    
+             
+             cd $GITHUB_WORKSPACE/device_kernel
+             
              patch -p1 < <(curl -sL "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-gki-fixup.patch") || true
              patch -p1 < <(curl -sL "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-Don-t-append-and-dirty-to-localversion.patch") || true             
              echo "[+] GKI kernel patches has been applied." 
@@ -49,13 +57,6 @@ runs:
                       
           fi
         
-
-          # Get Kernel Version
-          KERNEL_VERSION=$(head -n 3 $GITHUB_WORKSPACE/device_kernel/Makefile | grep -E 'VERSION|PATCHLEVEL' | awk '{print $3}' | paste -sd '.')
-          echo "KERNEL_VERSION=$(head -n 3 device_kernel/Makefile | grep -E 'VERSION|PATCHLEVEL' | awk '{print $3}' | paste -sd '.')" >> $GITHUB_ENV
-          echo "FIRST_VERSION=$(echo "$KERNEL_VERSION" | awk -F '.' '{print $1}')" >> $GITHUB_ENV
-          echo "SECOND_VERSION=$(echo "$KERNEL_VERSION" | awk -F '.' '{print $2}')" >> $GITHUB_ENV
-
       - name: Get Kernel Arch
         shell: bash
         run: |
