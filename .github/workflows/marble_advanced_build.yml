@@ -437,7 +437,7 @@ jobs:
           
           SUSFS_KERNEL_PATCH="susfs4ksu/kernel_patches/50_add_susfs_in_gki-android12-5.10.patch"
           
-          cp ${{ env.WORK_DIR }}/Patches/Patch/deinlined_pocof5.patch ./
+          cp /tmp/Patches/Patch/deinlined_pocof5.patch ./
           
           echo "🔧 Applying SUSFS kernel patch..."
           wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh
