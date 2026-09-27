@@ -151,17 +151,17 @@ jobs:
                                         
           CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
            
-           # LTO Configuration - Enable Thin LTO only
-           sed -i '/CONFIG_LTO_CLANG_FULL/d' "$CONFIG_FILE"
-           echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
-           echo "# CONFIG_LTO_CLANG_FULL is not set" >> "$CONFIG_FILE"
-           echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
-           echo "CONFIG_THINLTO=y" >> "$CONFIG_FILE"
+          # LTO Configuration - Enable Thin LTO only
+          sed -i '/CONFIG_LTO_CLANG_FULL/d' "$CONFIG_FILE"
+          echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
+          echo "# CONFIG_LTO_CLANG_FULL is not set" >> "$CONFIG_FILE"
+          echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_THINLTO=y" >> "$CONFIG_FILE"
            
-           # Full Metamodule Support
-           echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
-           echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
-           echo "CONFIG_OVERLAY_FS=y" >> "$CONFIG_FILE"
+          # Full Metamodule Support
+          echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
+          echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
+          echo "CONFIG_OVERLAY_FS=y" >> "$CONFIG_FILE"
 
           # Rewrite Localversion Name
           sed -i '/CONFIG_LOCALVERSION/d' "$CONFIG_FILE"
