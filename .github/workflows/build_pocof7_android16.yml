@@ -147,12 +147,14 @@ jobs:
       - name: 🪛 Extra Kernel Options
         run: |
           # Only ${{ env.DEVICE_NAME }} use it.
-          cd $GITHUB_WORKSPACE
+          cd $GITHUB_WORKSPACE/device_kernel
           
-          sed -i '/^DEFCONFIG=gki_defconfig/d' $GITHUB_WORKSPACE/device_kernel/build.config.gki
-          sed -i '$a\DEFCONFIG=${{ env.DEFCONFIG_NAME }}' $GITHUB_WORKSPACE/device_kernel/build.config.gki
-          sed -i '/^POST_DEFCONFIG_CMDS="check_defconfig"/d' $GITHUB_WORKSPACE/device_kernel/build.config.gki
+          config.gki="build.config.gki"
+          sed -i '/^DEFCONFIG=gki_defconfig/d' "config.gki"
+          sed -i '$a\DEFCONFIG=${{ env.DEFCONFIG_NAME }}' "config.gki"
+          sed -i '/^POST_DEFCONFIG_CMDS="check_defconfig"/d' "config.gki"
 
+         config.gki.aarch64="build.config.gki.aarch64"
          sed -i \
           -e '/^KMI_SYMBOL_LIST_STRICT_MODE=/d' \
           -e '/^TRIM_NONLISTED_KMI=/d' \
@@ -162,11 +164,9 @@ jobs:
           -e '$a\KMI_ENFORCED=0' \
           -e '/^MODULES_ORDER=/d' \
           -e '/^MODULES_LIST=/d' \
-         $GITHUB_WORKSPACE/device_kernel/build.config.gki.aarch64
+         "config.gki.aarch64"
 
-          
-          cd $GITHUB_WORKSPACE/device_kernel
-          
+                    
           CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
            
            # LTO Configuration - Enable Thin LTO only
@@ -193,13 +193,7 @@ jobs:
           echo 'KBUILD_CFLAGS += -Wno-implicit-function-declaration' >> ./Makefile
           echo 'KBUILD_CFLAGS += -Wno-sometimes-uninitialized' >> ./Makefile
           echo "Custom Makefile line added successfully"
-          
-          
-          # sed -i 's/-valeryn/-super.kernel/g' localversion
-          # sed -i 's/-cip131//g' localversion-cip
-          # sed -i 's/-st15//g' localversion-st
-          # echo "Localversion string has been replaced."
-      
+                
       - name: 🚀 Build Process
         uses: ./.github/workflows/build-process
 
