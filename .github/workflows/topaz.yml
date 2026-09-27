@@ -332,7 +332,7 @@ jobs:
       - name: "📦 Create flashable ZIP"
         run: |
           BUILD_TIME=$(date +'%Y%m%d-%H%M%S')
-          git clone --depth=1 https://github.com/topnotchfreaks/AnyKernel3 -b master AnyKernel3
+          git clone --depth=1 https://github.com/topnotchfreaks/AnyKernel3 -b YASK AnyKernel3
           sed -i 's/by belowzeroiq @ github/Superkernel by freds @ wtc2/g' AnyKernel3/anykernel.sh
           sed -i 's/do.devicecheck=1/do.devicecheck=0/g' AnyKernel3/anykernel.sh
           
