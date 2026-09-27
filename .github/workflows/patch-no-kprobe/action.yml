@@ -27,65 +27,57 @@ runs:
             echo "[+] SYSCALL HOOK method applied."
                       
           elif [[ ${{ env.HOOK_METHOD }} == "tamper" ]]; then
-                        
-             echo "CONFIG_KSU=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KSU_TAMPER_SYSCALL_TABLE=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KSU_HOSTSREDIRECT=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             ## default config xxksu for LSM is y
-             echo "CONFIG_KSU_LSM_SECURITY_HOOKS=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}            
+             CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
              
-             echo "CONFIG_KPROBES=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_HAVE_KPROBES=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KPROBE_EVENTS=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KALLSYMS_ALL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}            
-             # echo "CONFIG_CFI_CLANG=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             #e cho "CONFIG_LTO=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KSU_COMPILE_AS_C23=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KSU_FEATURE_SULOG=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KSU_KPROBES_KSUD=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+             sed -i '/CONFIG_KALLSYMS_ALL/d' "$CONFIG_FILE"
+             sed -i '/CONFIG_KPROBES/d' "$CONFIG_FILE"
+             sed -i '/CONFIG_HAVE_KPROBES/d' "$CONFIG_FILE"
+             sed -i '/CONFIG_KPROBE_EVENTS/d' "$CONFIG_FILE"
+
+             echo "CONFIG_KSU=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KSU_TAMPER_SYSCALL_TABLE=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KSU_HOSTSREDIRECT=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KSU_LSM_SECURITY_HOOKS=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KALLSYMS_ALL=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KSU_COMPILE_AS_C23=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KSU_KPROBES_KSUD=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KPROBES=n" >> "$CONFIG_FILE"
+             echo "CONFIG_HAVE_KPROBES=n" >> "$CONFIG_FILE"
+             echo "CONFIG_KPROBE_EVENTS=n" >> "$CONFIG_FILE"
 
              echo "[+] TAMPER HOOK method applied."
             
           elif [[ ${{ env.HOOK_METHOD }} == "branchlink" ]]; then
-                        
-             echo "CONFIG_KSU=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KSU_HOSTSREDIRECT=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             ## default config xxksu for LSM is y
-             echo "CONFIG_KSU_LSM_SECURITY_HOOKS=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}            
-            
-             echo "CONFIG_KPROBES=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             # echo "CONFIG_HAVE_KPROBES=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             # echo "CONFIG_KPROBE_EVENTS=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KALLSYMS_ALL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             # echo "CONFIG_CFI_CLANG=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             # echo "CONFIG_LTO=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+             CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
              
-             ## tesr Kprobes Optimization
-             # echo "CONFIG_OPTPROBES=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             # echo "CONFIG_PREEMPT=n" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}             
-             echo "CONFIG_KSU_COMPILE_AS_C23=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-                                                               
-             ## tesr             
-             echo "CONFIG_KSU_FEATURE_SULOG=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KSU_KPROBES_KSUD=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+             sed -i '/CONFIG_KALLSYMS_ALL/d' "$CONFIG_FILE"
+             sed -i '/CONFIG_KPROBES/d' "$CONFIG_FILE"
+
+             echo "CONFIG_KSU=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KSU_HOSTSREDIRECT=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KSU_LSM_SECURITY_HOOKS=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KALLSYMS_ALL=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KSU_COMPILE_AS_C23=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KSU_KPROBES_KSUD=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KPROBES=y" >> "$CONFIG_FILE"
 
              echo "[+] BRANCHLINK HOOK method applied."
                                                           
           
           elif [[ ${{ env.HOOK_METHOD }} == "branchlink-gki" ]]; then
-                        
-             echo "CONFIG_KSU=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KSU_HOSTSREDIRECT=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             ## default config xxksu for LSM is y
-             echo "CONFIG_KSU_LSM_SECURITY_HOOKS=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}            
-             echo "CONFIG_KALLSYMS_ALL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KSU_COMPILE_AS_C23=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KSU_KPROBES_KSUD=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-             echo "CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}                          
+             CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+             
+             echo "CONFIG_KSU=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KSU_HOSTSREDIRECT=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KSU_LSM_SECURITY_HOOKS=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KALLSYMS_ALL=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KSU_COMPILE_AS_C23=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KSU_KPROBES_KSUD=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y" >> "$CONFIG_FILE"                        
 
              echo "[+] BRANCHLINK GKI HOOK method applied."
   

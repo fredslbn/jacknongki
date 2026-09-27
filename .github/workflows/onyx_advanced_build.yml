@@ -94,10 +94,10 @@ jobs:
       WORK_DIR: ${{ github.workspace }}
 
     steps:
-      - name: "Move Patch"
+      - name: "Copy Patch"
         run: |
           # Move patch folder to tmp
-          mv $WORK_DIR/Patches /tmp/
+          cp $WORK_DIR/Patches /tmp/
 
       - name: "✨ Setup workspace"
         run: |
