@@ -132,8 +132,35 @@ jobs:
           # Only ${{ env.DEVICE_NAME }} use it.
           cd $GITHUB_WORKSPACE/device_kernel
           
-          # enable CONFIG_COMPAT_VDSO and CONFIG_THUMB2_COMPAT_VDSO
-          echo "CONFIG_LOCALVERSION_AUTO=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+          CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          
+          # LTO Configuration - Enable Full LTO only
+          sed -i '/CONFIG_LTO_CLANG/d' "$CONFIG_FILE"
+          sed -i '/CONFIG_LTO_CLANG_FULL/d' "$CONFIG_FILE"
+          sed -i '/CONFIG_LTO_CLANG_THIN/d' "$CONFIG_FILE"
+          sed -i '/CONFIG_THINLTO/d' "$CONFIG_FILE"
+                    
+          echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
+          echo "CONFIG_LTO_CLANG_FULL=y" >> "$CONFIG_FILE"
+          echo "# CONFIG_LTO_CLANG_THIN is not set" >> "$CONFIG_FILE"
+          echo "# CONFIG_THINLTO is not set" >> "$CONFIG_FILE"
+          
+          echo "Full LTO configs applied."
+   
+          # Full Metamodule Support
+          echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
+          echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
+          echo "CONFIG_OVERLAY_FS=y" >> "$CONFIG_FILE"
+          
+          echo "Metamodule configs applied."
+
+          # Rewrite Localversion Name
+          sed -i '/CONFIG_LOCALVERSION/d' "$CONFIG_FILE"
+          sed -i '/CONFIG_LOCALVERSION_AUTO/d' "$CONFIG_FILE"
+          echo "CONFIG_LOCALVERSION=-super.kernel" >> "$CONFIG_FILE"
+          echo "CONFIG_LOCALVERSION_AUTO=y" >> "$CONFIG_FILE"
+          
+          echo "Localversion string has been replaced."
 
       - name: 🚀 Build Process
         uses: ./.github/workflows/build-process
