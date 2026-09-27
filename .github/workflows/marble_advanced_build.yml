@@ -1,10 +1,10 @@
-name: "Renote 12 Build"
+name: "Poco F5 Build"
 
 env:
   OUT_DIR: "out"
-  KERNEL_VERSION: "5.15"
-  ANDROID_VERSION: "13"
-  DEVICE_CODENAME: "Topaz"
+  KERNEL_VERSION: "5.10"
+  ANDROID_VERSION: "12"
+  DEVICE_CODENAME: "Marble"
   KSU_TYPE: "xxKSU"
 
 on:
@@ -14,17 +14,17 @@ on:
         description: "Kernel source URL"
         required: true
         type: string
-        default: "https://github.com/topnotchfreaks/kernel_msm-5.15"
+        default: "https://github.com/fredslbn/android_kernel_marble"
       kernelBranch:
         description: "Kernel branch"
         required: false
         type: string
-        default: "zepharo"
+        default: "android12-5.10-marble"
       kernelDevice:
         description: "Device (used for defconfig)"
         required: true
         type: string
-        default: "unified"
+        default: "gki"
       localVersion:
         description: "Custom localversion name (e.g., -mybuild)"
         required: false
@@ -111,7 +111,7 @@ jobs:
         if: github.event.inputs.buildToolchains == 'android-tools'
         working-directory: ${{ env.WORK_DIR}}
         run: |
-         repo init -u https://android.googlesource.com/kernel/manifest -b common-android13-5.15-lts --depth=1
+         repo init -u https://android.googlesource.com/kernel/manifest -b common-android12-5.10-lts --depth=1
          repo sync --optimized-fetch --prune --no-clone-bundle --no-tags -j$(nproc --all)
     
          rm -rf .repo
@@ -370,14 +370,6 @@ jobs:
           # curl -L -o localversion.patch "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-do-not-ship-full-auto_localversion.patch" 
           # patch -p1 < localversion.patch || echo "Warning: Strings patch failed"
 
-      - name: "🔧 Add BBG Support (KSU variant only)"
-        working-directory: ./${{ env.kernelDir }}/${{ env.kernelName }}
-        run: |
-          echo "Adding BBG...";
-          wget -O- https://github.com/vc-teahouse/Baseband-guard/raw/main/setup.sh | bash
-          echo "CONFIG_BBG=y" >> arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-          sed -i '/^config LSM$/,/^help$/{ /^[[:space:]]*default/ { /baseband_guard/! s/selinux/selinux,baseband_guard/ } }' security/Kconfig          
-      
       - name: "🔧 Add Nomount"
         working-directory: ./${{ env.kernelDir }}/${{ env.kernelName }}
         run: |
@@ -423,7 +415,7 @@ jobs:
 
           # Clone SUSFS4KSU for kernel patches only (not KSU integration)
           echo "📦 Cloning SUSFS4KSU for kernel patches..."
-          git clone --depth=1 https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android13-5.15
+          git clone --depth=1 https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android12-5.10
 
           echo "☣️ Applying namespace.c Fake Patch (if applicable)"
           if grep -q '^#include <trace/hooks/blk.h>$' fs/namespace.c; then
@@ -443,7 +435,7 @@ jobs:
             MM_FAKE_PATCHED=0
           fi
           
-          SUSFS_KERNEL_PATCH="susfs4ksu/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch"
+          SUSFS_KERNEL_PATCH="susfs4ksu/kernel_patches/50_add_susfs_in_gki-android12-5.10.patch"
           
           echo "🔧 Applying SUSFS kernel patch..."
           wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh
