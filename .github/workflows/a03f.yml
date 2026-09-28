@@ -12,8 +12,8 @@ env:
   CUSTOM_CMDS : "BSP_BUILD_DT_OVERLAY=y CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-android-"
   EXTRA_CMDS : "LD=ld.lld"
 
-  KERNEL_SOURCE : "https://github.com/fredslbn/A035f-T-s7.git"
-  KERNEL_BRANCH : "main"
+  KERNEL_SOURCE : "https://github.com/fredslbn/linux-android-samsung-a03.git"
+  KERNEL_BRANCH : "droidian"
 
   # CLANG_SOURCE : "https://github.com/Impqxr/aosp_clang_ci/releases/download/13289611/clang-13289611-linux-x86.tar.xz"
   # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.1/LLVM-23.1.1-Linux-X64.tar.xz"
