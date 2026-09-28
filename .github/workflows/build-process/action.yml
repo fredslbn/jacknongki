@@ -49,11 +49,12 @@ runs:
             
             if [[ "${{ env.DEVICE_CODENAME }}" == "A03F" ]]; then
                export BSP_BUILD_FAMILY=qogirl6
-               export DTC_OVERLAY_TEST_EXT=/tools/mkdtimg/ufdt_apply_overlay
-               export DTC_OVERLAY_VTS_EXT=/tools/mkdtimg/ufdt_verify_overlay_host
+               export DTC_OVERLAY_TEST_EXT=$GITHUB_WORKSPACE/device_kernel/tools/mkdtimg/ufdt_apply_overlay
+               export DTC_OVERLAY_VTS_EXT=$GITHUB_WORKSPACE/device_kernel/tools/mkdtimg/ufdt_verify_overlay_host
                export BSP_BUILD_ANDROID_OS=y               
-            fi            
-            
+            fi
+            echo "BSP BUILD applied!"
+
           fi
 
           if [[ "$BUILD_CLANG" == "true" ]]; then
