@@ -1,0 +1,167 @@
+name: Build Samsung A03F
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+env:
+  # Device env
+  DEVICE_NAME : "samsung_a03f"
+  DEVICE_CODENAME : "A03F"
+
+  CUSTOM_CMDS : "BSP_BUILD_DT_OVERLAY=y CLANG_TRIPLE=aarch64-linux-gnu-"
+  EXTRA_CMDS : "LD=ld.lld"
+
+  KERNEL_SOURCE : "https://github.com/fredslbn/A035f-T-s7.git"
+  KERNEL_BRANCH : "main"
+
+  # CLANG_SOURCE : "https://github.com/Impqxr/aosp_clang_ci/releases/download/13289611/clang-13289611-linux-x86.tar.xz"
+  # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.1/LLVM-23.1.1-Linux-X64.tar.xz"
+  CLANG_SOURCE : "https://github.com/greenforce-project/greenforce_clang/releases/download/20260926/gf-clang-24.0.0-20260926.tar.gz"
+  CLANG_BRANCH : ""
+
+  GCC_GNU : false
+  GCC_64_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  GCC_64_BRANCH : "aarch64"
+  GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  GCC_32_BRANCH : "arm32"
+
+  DEFCONFIG_SOURCE: ""
+  DEFCONFIG_NAME : "a03_cis_open_defconfig"
+  DEFCONFIG_ORIGIN_IMAGE: ""
+  DEFCONFIG_FROM_BOOT: false
+
+  KERNELSU_SOURCE : ""
+  KERNELSU_BRANCH : ""
+
+  KERNELSU_AUTO_GET : "true" # if u want easy setting kernelsu, u can true.
+  KERNELSU_AUTO_FORK : "xxksu" # magic, rsuntk, next, resukisu and sukisu
+
+  SUSFS_ENABLE : false
+  SUSFS_FIXED : true
+
+  AK3_SOURCE : "https://github.com/fredslbn/AnyKernel3.git"
+  AK3_BRANCH : "master"
+  
+  BOOT_SOURCE : ""
+
+  NEED_DTBO : false
+  NEED_SAFE_DTBO : false
+
+  ROM_TEXT : "xxKSU"
+  CUSTOM_SUSFS_PATCH : false
+  CUSTOM_CLEANUP_HARDCODE : false
+  CUSTOM_DIR_ANYKERNEL : false
+  
+  # Other env
+  PYTHON_VERSION: "3" # Only 2(Ubuntu 22.04 and Ubuntu 20.04) or 3(Any OS Versions).
+
+  PACK_METHOD: "Anykernel3" # Anykernel3 need SOURCE and BRANCH, MKBOOTIMG needn't it.
+  PACK_KMODULES: "false" # if u want pack kernel modules (.ko) into Anykernel3.
+
+  KERNELSU_METHOD: "shell" # shell, manual and only.
+
+  PATCHES_SOURCE: "fredslbn/jacknongki" # [your_name]/[your_patch] -> gooder123/NonGKI_Patcher
+  PATCHES_BRANCH: "main" # [your_branch] -> main
+
+  SUSFS_FOLDER_FIXED: "Patches/Patch/Fixed" # Fill in your patch prefix directory here. Leave it blank if there isn't one. -> your_folder
+  SUSFS_PATCH_FIXED: "" # Fill in your patches here. If there are multiple patches, please separate them with a comma. Leave it blank if there isn't one. -> patch1,patch2
+
+  REKERNEL_ENABLE: "false" # if u need Re:Kernel.
+  DROIDSPACES_ENABLE: "false" # if u need Droidspaces or LXC/Docker.
+  NOMOUNT_ENABLE: "true" # if u need NoMount.
+
+  HOOK_METHOD: "tamper" # Manual hook method -> syscall.
+
+  KERNEL_PATCH: "false" # If your kernel version is <= 4.9, you have the option of enabling the patch to patch the kernel_write and kernel_read functions.
+
+  KPM_ENABLE: "false" # Anyone devices.
+  KPM_INLINE: "false" # Only use it for SukiSU-Ultra.
+  KPM_KPATCH_NEXT: "false" # If u want hook KPatch-Next in build step.
+  KPM_PATCH_SOURCE: "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU_patch/refs/heads/main/kpm/patch_linux" # If u want to use KPM Inline,so you need set patch exec file source -> raw.githubusercontent.com/Test/Test/patch .
+
+  BASEBAND_GUARD_ENABLE: "false" #if u want prevent unauthorized writes to critical partitions/device nodes.
+  BASEBAND_GUARD_BOOT: "false" #if u want to protect boot partition.
+
+  GENERATE_DTB: "false" # if u kernel need DTB , but cannot auto generate it. (Only Anykernel3).
+  GENERATE_CHIP: "qcom" # only supported for qcom and mediatek.
+
+  BUILD_DEBUGGER: "false" # Output build errors.
+  SKIP_PATCH: "false" # Ignore errors found in Patch Debugger.
+
+  BUILD_OTHER_CONFIG: "false" # Merge config files.
+  MERGE_CONFIG_FILES: "vendor/debugfs.config,vendor/lahaina_QGKI.config"
+
+  FREE_MORE_SPACE: "false" # if u want get more space, enabled it.
+
+jobs:
+  build-kernel:
+    name: Build Samsung A03F
+    runs-on: ubuntu-24.04 # u can changed to ubuntu 22.04, and need container set ubuntu-latest
+    # container: archlinux/archlinux:latest # if u need use arch linux -> archlinux/archlinux:latest or ubuntu 20.04 -> ubuntu:focal
+    env:
+      CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
+      CCACHE_NOHASHDIR: "true"
+      CCACHE_HARDLINK: "true"
+
+    steps:
+      - name: ⏰ Checkout repository
+        uses: actions/checkout@v6
+
+      - name: ⌛️ Compilation environment preparation
+        uses: ./.github/workflows/build-env
+
+      - name: ⚙️ Get neccssary tools
+        uses: ./.github/workflows/build-ready
+
+      - name: 🪝 Patch Kernel of SUSFS
+        uses: ./.github/workflows/patch-susfs
+
+      - name: 🔗 Patch for no-kprobe
+        uses: ./.github/workflows/patch-no-kprobe
+
+      - name: "BSP Configs"
+        run: |
+        
+          cd $GITHUB_WORKSPACE/device_kernel
+          
+          BSP="tools/mkdtimg"
+          export BSP_BUILD_FAMILY=wtc2
+          export DTC_OVERLAY_TEST_EXT="$BSP"/ufdt_apply_overlay
+          export DTC_OVERLAY_VTS_EXT="$BSP"/ufdt_verify_overlay_host
+          export BSP_BUILD_ANDROID_OS=y
+
+      
+      - name: 🪛 Extra Kernel Options
+        run: |
+          # Only ${{ env.DEVICE_NAME }} use it.
+          cd $GITHUB_WORKSPACE/device_kernel
+
+          CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          
+          # Full Metamodule Support
+          echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
+          echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
+          echo "CONFIG_OVERLAY_FS=y" >> "$CONFIG_FILE"
+          
+          echo "Metamodule configs applied."
+
+          # Rewrite Localversion Name
+          sed -i '/CONFIG_LOCALVERSION/d' "$CONFIG_FILE"
+          sed -i '/CONFIG_LOCALVERSION_AUTO/d' "$CONFIG_FILE"
+          echo "CONFIG_LOCALVERSION=-super.kernel" >> "$CONFIG_FILE"
+          echo "CONFIG_LOCALVERSION_AUTO=y" >> "$CONFIG_FILE"
+                    
+          echo "Localversion string has been replaced."
+
+      - name: 🔒 Patch Kernel of nomount
+        uses: ./.github/workflows/patch-nomount
+
+      - name: 🚀 Build Process
+        uses: ./.github/workflows/build-process
+
+      - name: 🔩 Pack Process
+        uses: ./.github/workflows/pack-process
+
+      - name: ✏️ Upload Artifacts
+        uses: ./.github/workflows/upload-files
