@@ -158,11 +158,12 @@ jobs:
         uses: ./.github/workflows/patch-nomount
 
       - name: 🚀 Build Process
-   #     uses: ./.github/workflows/build-process
-        run: |      
+        # uses: ./.github/workflows/build-process
+        run: |
+        
            cd $GITHUB_WORKSPACE/device_kernel
            chmod +x *.sh
-          ./build_kernel.sh
+           ./build_kernel.sh
 
       - name: 🔩 Pack Process
         uses: ./.github/workflows/pack-process
