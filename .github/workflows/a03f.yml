@@ -12,8 +12,8 @@ env:
   CUSTOM_CMDS : "BSP_BUILD_DT_OVERLAY=y CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-android-"
   EXTRA_CMDS : "LD=ld.lld"
 
-  KERNEL_SOURCE : "https://github.com/fredslbn/linux-android-samsung-a03.git"
-  KERNEL_BRANCH : "droidian"
+  KERNEL_SOURCE : "https://github.com/fredslbn/A035f-T-s7.git"
+  KERNEL_BRANCH : "main"
 
   # CLANG_SOURCE : "https://github.com/Impqxr/aosp_clang_ci/releases/download/13289611/clang-13289611-linux-x86.tar.xz"
   # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.1/LLVM-23.1.1-Linux-X64.tar.xz"
@@ -158,7 +158,11 @@ jobs:
         uses: ./.github/workflows/patch-nomount
 
       - name: 🚀 Build Process
-        uses: ./.github/workflows/build-process
+   #     uses: ./.github/workflows/build-process
+        run: |      
+           cd $GITHUB_WORKSPACE/device_kernel
+           chmod +x *.sh
+          ./build_kernel.sh
 
       - name: 🔩 Pack Process
         uses: ./.github/workflows/pack-process
