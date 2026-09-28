@@ -140,6 +140,10 @@ jobs:
 
           CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           
+          # Disable Stack Strong Protector
+          sed -i '/CONFIG_CC_STACKPROTECTOR_STRONG/d' "$CONFIG_FILE"
+          echo "Stack Strong Protector configs disabled."
+          
           # Full Metamodule Support
           echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
           echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
