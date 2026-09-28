@@ -12,7 +12,7 @@ env:
   CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu-"
   EXTRA_CMDS : "LD=ld.lld"
 
-  KERNEL_SOURCE : "https://github.com/IverCoder/android_kernel_samsung_a03.git"
+  KERNEL_SOURCE : "https://github.com/fredslbn/android_kernel_samsung_a03.git"
   # KERNEL_SOURCE : "https://github.com/IverCoder/linux-android-samsung-a03.git"
   # KERNEL_SOURCE : "https://github.com/fredslbn/A035f-T-s7.git"
   KERNEL_BRANCH : "main"
