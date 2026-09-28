@@ -25,7 +25,7 @@ env:
   GCC_64_BRANCH : "aarch64"
 
   DEFCONFIG_SOURCE: ""
-  DEFCONFIG_NAME : "rsuntk_defconfig"
+  DEFCONFIG_NAME : "a03_cis_open_defconfig"
   DEFCONFIG_ORIGIN_IMAGE: ""
   DEFCONFIG_FROM_BOOT: false
 
