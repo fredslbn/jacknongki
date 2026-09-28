@@ -242,13 +242,14 @@ runs:
             rm -f libtinfo5.deb
 
             # Get MKDTBO tool to System
-            mkdir $GITHUB_WORKSPACE/mkdtbo
-            cd $GITHUB_WORKSPACE/mkdtbo
-            ${{ env.CURLX }} https://android.googlesource.com/platform/system/libufdt/+archive/refs/heads/main/utils/src.tar.gz src.tar.gz
-            tar zxvf src.tar.gz
-            rm -f src.tar.gz
-            sudo ln -s mkdtboimg.py /usr/bin/mkdtboimg
-            sudo ln -s mkdtboimg.py /usr/bin/mkdtimg
+            # mkdir $GITHUB_WORKSPACE/mkdtbo
+            # cd $GITHUB_WORKSPACE/mkdtbo
+            # ${{ env.CURLX }} https://android.googlesource.com/platform/system/libufdt/+archive/refs/heads/main/utils/src.tar.gz src.tar.gz
+            # tar zxvf src.tar.gz
+            # rm -f src.tar.gz
+            # sudo ln -s mkdtboimg.py /usr/bin/mkdtboimg
+            # sudo ln -s mkdtboimg.py /usr/bin/mkdtimg
+            
             cd $GITHUB_WORKSPACE
 
             if [ "${{ env.PYTHON_VERSION }}" == "3" ]; then
