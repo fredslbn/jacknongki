@@ -12,8 +12,8 @@ env:
   CUSTOM_CMDS : "BSP_BUILD_DT_OVERLAY=y CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-android-"
   EXTRA_CMDS : "LD=ld.lld"
 
-  KERNEL_SOURCE : "https://github.com/fredslbn/A035f-T-s7.git"
-  KERNEL_BRANCH : "main"
+  KERNEL_SOURCE : "https://github.com/IverCoder/linux-android-samsung-a03.git"
+  KERNEL_BRANCH : "droidian"
 
   # CLANG_SOURCE : "https://github.com/Impqxr/aosp_clang_ci/releases/download/13289611/clang-13289611-linux-x86.tar.xz"
   # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.1/LLVM-23.1.1-Linux-X64.tar.xz"
@@ -25,7 +25,7 @@ env:
   GCC_64_BRANCH : "aarch64"
 
   DEFCONFIG_SOURCE: ""
-  DEFCONFIG_NAME : "a03_cis_open_defconfig"
+  DEFCONFIG_NAME : "rsuntk_defconfig"
   DEFCONFIG_ORIGIN_IMAGE: ""
   DEFCONFIG_FROM_BOOT: false
 
@@ -137,6 +137,9 @@ jobs:
           
           # Disable Stack Strong Protector
           sed -i '/CONFIG_CC_STACKPROTECTOR_STRONG/d' "$CONFIG_FILE"
+          sed -i '/CONFIG_CC_STACKPROTECTOR/d' "$CONFIG_FILE"
+          sed -i '/CONFIG_HAVE_CC_STACKPROTECTOR/d' "$CONFIG_FILE"
+
           echo "Stack Strong Protector configs disabled."
           
           # Full Metamodule Support
@@ -158,12 +161,7 @@ jobs:
         uses: ./.github/workflows/patch-nomount
 
       - name: 🚀 Build Process
-        # uses: ./.github/workflows/build-process
-        run: |
-        
-           cd $GITHUB_WORKSPACE/device_kernel
-           chmod +x *.sh
-           ./build_kernel.sh
+        uses: ./.github/workflows/build-process
 
       - name: 🔩 Pack Process
         uses: ./.github/workflows/pack-process
