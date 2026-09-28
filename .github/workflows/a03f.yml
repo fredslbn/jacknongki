@@ -17,14 +17,14 @@ env:
 
   # CLANG_SOURCE : "https://github.com/Impqxr/aosp_clang_ci/releases/download/13289611/clang-13289611-linux-x86.tar.xz"
   # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.1/LLVM-23.1.1-Linux-X64.tar.xz"
-  CLANG_SOURCE : "https://github.com/greenforce-project/greenforce_clang/releases/download/20260926/gf-clang-24.0.0-20260926.tar.gz"
-  CLANG_BRANCH : ""
+  CLANG_SOURCE : "https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-6443078.git"
+  CLANG_BRANCH : "10.0"
 
   GCC_GNU : false
-  GCC_64_SOURCE : "https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9.git"
-  GCC_64_BRANCH : "android12L-release"
-  GCC_32_SOURCE : "https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9.git"
-  GCC_32_BRANCH : "android12L-release"
+  GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
+  GCC_64_BRANCH : "master"
+  GCC_32_SOURCE : "https://github.com/mhdzumair/toolchain.git"
+  GCC_32_BRANCH : "master"
 
 
   DEFCONFIG_SOURCE: ""
