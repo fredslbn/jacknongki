@@ -124,7 +124,7 @@ jobs:
           cd $GITHUB_WORKSPACE/device_kernel
           
           BSP="tools/mkdtimg"
-          export BSP_BUILD_FAMILY=wtc2
+          export BSP_BUILD_FAMILY=qogirl6
           export DTC_OVERLAY_TEST_EXT=$BSP/ufdt_apply_overlay
           export DTC_OVERLAY_VTS_EXT=$BSP/ufdt_verify_overlay_host
           export BSP_BUILD_ANDROID_OS=y
