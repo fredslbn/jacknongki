@@ -21,7 +21,11 @@ env:
   # CLANG_SOURCE : "https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-6443078.git"
   CLANG_BRANCH : "lineage-20.0"
 
-  GCC_GNU : true  
+  GCC_GNU : false
+  GCC_64_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  GCC_64_BRANCH : "aarch64"
+  GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  GCC_32_BRANCH : "arm32"
   
   DEFCONFIG_SOURCE: ""
   DEFCONFIG_NAME : "rsuntk_defconfig"
