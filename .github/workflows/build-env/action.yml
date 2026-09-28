@@ -223,7 +223,7 @@ runs:
             fi
             
             if [ "${{ env.DEVICE_CODENAME }}" == "A03F" ]; then
-               sudo apt install libc++-dev -y
+               sudo apt install libc++1 libc++-dev -y
             fi
             
             echo "::endgroup::"
