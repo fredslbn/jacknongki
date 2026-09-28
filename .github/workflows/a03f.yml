@@ -12,9 +12,10 @@ env:
   CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu-"
   EXTRA_CMDS : "LD=ld.lld BSP_BUILD_DT_OVERLAY=y"
 
-  KERNEL_SOURCE : "https://github.com/IverCoder/linux-android-samsung-a03.git"
+  KERNEL_SOURCE : "https://github.com/IverCoder/android_kernel_samsung_a03.git"
+  # KERNEL_SOURCE : "https://github.com/IverCoder/linux-android-samsung-a03.git"
   # KERNEL_SOURCE : "https://github.com/fredslbn/A035f-T-s7.git"
-  KERNEL_BRANCH : "droidian"
+  KERNEL_BRANCH : "main"
 
   # CLANG_SOURCE : "https://github.com/Impqxr/aosp_clang_ci/releases/download/13289611/clang-13289611-linux-x86.tar.xz"
   # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.1/LLVM-23.1.1-Linux-X64.tar.xz"
@@ -29,7 +30,7 @@ env:
   GCC_32_BRANCH : "android12L-release"
   
   DEFCONFIG_SOURCE: ""
-  DEFCONFIG_NAME : "rsuntk_defconfig"
+  DEFCONFIG_NAME : "a03_cis_open_defconfig"
   DEFCONFIG_ORIGIN_IMAGE: ""
   DEFCONFIG_FROM_BOOT: false
 
