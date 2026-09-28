@@ -25,7 +25,7 @@ env:
   GCC_64_BRANCH : "aarch64"
 
   DEFCONFIG_SOURCE: ""
-  DEFCONFIG_NAME : "a03_cis_open_defconfig"
+  DEFCONFIG_NAME : "rsuntk_defconfig"
   DEFCONFIG_ORIGIN_IMAGE: ""
   DEFCONFIG_FROM_BOOT: false
 
@@ -119,8 +119,7 @@ jobs:
         uses: ./.github/workflows/patch-no-kprobe
 
       - name: ⚙️ BSP Configs
-        run: |
-        
+        run: |        
           cd $GITHUB_WORKSPACE/device_kernel
           
           BSP="tools/mkdtimg"
@@ -128,8 +127,7 @@ jobs:
           export DTC_OVERLAY_TEST_EXT=$BSP/ufdt_apply_overlay
           export DTC_OVERLAY_VTS_EXT=$BSP/ufdt_verify_overlay_host
           export BSP_BUILD_ANDROID_OS=y
-
-      
+     
       - name: 🪛 Extra Kernel Options
         run: |
           # Only ${{ env.DEVICE_NAME }} use it.
