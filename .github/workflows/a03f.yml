@@ -23,9 +23,6 @@ env:
   GCC_GNU : false
   GCC_64_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
   GCC_64_BRANCH : "aarch64"
-  GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
-  GCC_32_BRANCH : "arm32"
-
 
   DEFCONFIG_SOURCE: ""
   DEFCONFIG_NAME : "a03_cis_open_defconfig"
@@ -121,15 +118,15 @@ jobs:
       - name: 🔗 Patch for no-kprobe
         uses: ./.github/workflows/patch-no-kprobe
 
-      - name: "BSP Configs"
+      - name: ⚙️ BSP Configs
         run: |
         
           cd $GITHUB_WORKSPACE/device_kernel
           
           BSP="tools/mkdtimg"
           export BSP_BUILD_FAMILY=wtc2
-          export DTC_OVERLAY_TEST_EXT="$BSP"/ufdt_apply_overlay
-          export DTC_OVERLAY_VTS_EXT="$BSP"/ufdt_verify_overlay_host
+          export DTC_OVERLAY_TEST_EXT=$BSP/ufdt_apply_overlay
+          export DTC_OVERLAY_VTS_EXT=$BSP/ufdt_verify_overlay_host
           export BSP_BUILD_ANDROID_OS=y
 
       
