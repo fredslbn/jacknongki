@@ -10,7 +10,7 @@ env:
   DEVICE_CODENAME : "A03F"
 
   CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu-"
-  EXTRA_CMDS : "LD=ld.lld BSP_BUILD_DT_OVERLAY=y"
+  EXTRA_CMDS : "LD=ld.lld"
 
   KERNEL_SOURCE : "https://github.com/IverCoder/android_kernel_samsung_a03.git"
   # KERNEL_SOURCE : "https://github.com/IverCoder/linux-android-samsung-a03.git"
