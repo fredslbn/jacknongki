@@ -45,15 +45,22 @@ runs:
           fi
 
           if [ -n "${{ env.CLANG_SOURCE }}" ]; then
-            export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
-            
+          
             if [[ "${{ env.DEVICE_CODENAME }}" == "A03F" ]]; then
+               export CLANG_TOOL_PATH=$GITHUB_WORKSPACE/device_kernel/toolchain/clang/host/linux-x86/clang-r383902/bin/
+               export PATH=${CLANG_TOOL_PATH}:${PATH//"${CLANG_TOOL_PATH}:"}
+               export CROSS_COMPILE=$GITHUB_WORKSPACE/device_kernel/toolchain/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-
+               echo "Clang Path applied!"
+               
                export BSP_BUILD_FAMILY=qogirl6
                export DTC_OVERLAY_TEST_EXT=$GITHUB_WORKSPACE/device_kernel/tools/mkdtimg/ufdt_apply_overlay
                export DTC_OVERLAY_VTS_EXT=$GITHUB_WORKSPACE/device_kernel/tools/mkdtimg/ufdt_verify_overlay_host
-               export BSP_BUILD_ANDROID_OS=y               
-            fi
-            echo "BSP BUILD applied!"
+               export BSP_BUILD_ANDROID_OS=y
+               echo "Export BSP build applied!"
+            
+            else
+               export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
+            fi            
 
           fi
 

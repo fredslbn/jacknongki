@@ -12,10 +12,10 @@ env:
   CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu-"
   EXTRA_CMDS : "LD=ld.lld"
 
-  KERNEL_SOURCE : "https://github.com/weduzzz/android_kernel_samsung_a03.git"
+  # KERNEL_SOURCE : "https://github.com/weduzzz/android_kernel_samsung_a03.git"
   # KERNEL_SOURCE : "https://github.com/IverCoder/linux-android-samsung-a03.git"
-  # KERNEL_SOURCE : "https://github.com/fredslbn/A035f-T-s7.git"
-  KERNEL_BRANCH : "upstream-test"
+  KERNEL_SOURCE : "https://github.com/fredslbn/A035f-T-s7.git"
+  KERNEL_BRANCH : "main"
 
   # CLANG_SOURCE : "https://github.com/Impqxr/aosp_clang_ci/releases/download/13289611/clang-13289611-linux-x86.tar.xz"
   # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.1/LLVM-23.1.1-Linux-X64.tar.xz"
@@ -24,13 +24,11 @@ env:
   CLANG_BRANCH : "10.0"
 
   GCC_GNU : false
-  GCC_64_SOURCE : "https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9.git"
-  GCC_64_BRANCH : "android12L-release"
-  GCC_32_SOURCE : "https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9.git"
-  GCC_32_BRANCH : "android12L-release"
+  # GCC_64_SOURCE : "https://github.com/physwizz/compiler.git"
+  # GCC_64_BRANCH : "main"
   
   DEFCONFIG_SOURCE: ""
-  DEFCONFIG_NAME : "rsuci_defconfig"
+  DEFCONFIG_NAME : "a03_cis_open_defconfig"
   DEFCONFIG_ORIGIN_IMAGE: ""
   DEFCONFIG_FROM_BOOT: false
 
