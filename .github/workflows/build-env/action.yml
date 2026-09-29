@@ -503,6 +503,9 @@ runs:
                 if [ -n "$SUBDIR" ]; then
                     mv "$SUBDIR"/* clang-custom/
                 fi
+                
+            elif [[ "${{ env.CLANG_SOURCE }}" == *"github.com/fredslbn/A035f-T-s7"* ]]; then
+                export CLANG_TOOL_PATH=$GITHUB_WORKSPACE/device_kernel/toolchain/clang/host/linux-x86/clang-r383902/bin/
 
             else
                 echo "::endgroup::"

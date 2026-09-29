@@ -21,6 +21,7 @@ env:
   # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.1/LLVM-23.1.1-Linux-X64.tar.xz"
   # CLANG_SOURCE : "https://github.com/LineageOS/android_prebuilts_clang_kernel_linux-x86_clang-r416183b.git"
   # CLANG_SOURCE : "https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-6443078.git"
+  CLANG_SOURCE : "https://github.com/fredslbn/A035f-T-s7/tree/c11c8c98965e297068549c985eafa441f8273fd9/toolchain/clang/host/linux-x86/clang-r383902"
   # CLANG_BRANCH : "10.0"
   
   CUSTOM_CLANG : true
