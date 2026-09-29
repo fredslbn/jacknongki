@@ -39,9 +39,9 @@ runs:
           BUILD_PROCESS(){
           if [ -n "$1" ]; then
             echo "Select: $1"
-            local BUILD_CLANG="$1"
+            local BUILD_CLANGS="$1"
           else
-            BUILD_CLANG=""
+            BUILD_CLANGS=""
           fi
           
           if [[ "${{ env.CUSTOM_CLANG }}"  == "true" ]]; then
@@ -55,7 +55,7 @@ runs:
                export BSP_BUILD_ANDROID_OS=y
                echo "Export BSP build applied!"          
                          
-             if [[ "$BUILD_CLANG" == "true" ]]; then
+             if [[ "$BUILD_CLANGS" == "true" ]]; then
                echo "=============================="
                echo "=CUSTOM CLANG Read Defconfig ="
                make BSP_BUILD_DT_OVERLAY=y CC="ccache clang" O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.DEFCONFIG_NAME }}
