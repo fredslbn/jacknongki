@@ -99,11 +99,18 @@ runs:
                     patch -p1 < susfs_pocom3_patch_to_4.19.patch || true
                  
                     # Always copy fs/susfs.c          
-                    cp -f /tmp/Patches/Patch/fs/* fs/
-                    echo "✔ Copied fs/susfs.c"                    
+                    # cp -f /tmp/Patches/Patch/fs/* fs/
+                    # echo "✔ Copied fs/susfs.c"                    
                     # Always copy include/linux/susfs.h and susfs_def.h         
-                    cp -f /tmp/Patches/Patch/include/linux/* include/linux/
-                    echo "✔ Copied include/linux/*"
+                    #cp -f /tmp/Patches/Patch/include/linux/* include/linux/
+                    #echo "✔ Copied include/linux/*"
+                    
+                    cp /tmp/Patches/Patch/susfs.c.patch ./
+                    cp /tmp/Patches/Patch/susfs.h.patch ./
+                    cp /tmp/Patches/Patch/susfs_def.h.patch ./
+                    patch -p1 < susfs.c.patch || true
+                    patch -p1 < susfs.h.patch || true
+                    patch -p1 < susfs_def.h.patch || true
                     
                     echo "🔍 Verifying SUSFS files..."
                     for f in fs/susfs.c include/linux/susfs.h include/linux/susfs_def.h; do
