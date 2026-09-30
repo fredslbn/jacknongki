@@ -35,8 +35,7 @@ runs:
           echo "✅ SUSFS build wiring verified"
 
           CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-
-          if [[ "${{ env.DEVICE_CODENAME }}" == "Citrus" ]]; then
+          
              cat >> "$CONFIG_FILE" << 'EOF'
              CONFIG_KSU_SUSFS=y
              CONFIG_KSU_SUSFS_SUS_PATH=y
@@ -47,25 +46,8 @@ runs:
              CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
              CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
              CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
-             CONFIG_KSU_SUSFS_SUS_MAP=y
-             CONFIG_KSU_SUSFS_SUS_MEMFD=y
+             CONFIG_KSU_SUSFS_SUS_MAP=y             
              EOF
-             echo "[+] Enable SuSFS sus_memfd config for PocoM3."
-          else
-             cat >> "$CONFIG_FILE" << 'EOF'
-             CONFIG_KSU_SUSFS=y
-             CONFIG_KSU_SUSFS_SUS_PATH=y
-             CONFIG_KSU_SUSFS_SUS_MOUNT=y
-             CONFIG_KSU_SUSFS_SUS_KSTAT=y
-             CONFIG_KSU_SUSFS_SPOOF_UNAME=y
-             CONFIG_KSU_SUSFS_ENABLE_LOG=y
-             CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
-             CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
-             CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
-             CONFIG_KSU_SUSFS_SUS_MAP=y
-             CONFIG_KSU_SUSFS_SUS_MEMFD=n
-             EOF
-          fi          
 
       - name: Patch SuSFS
         if: env.SUSFS_ENABLE == 'true'
