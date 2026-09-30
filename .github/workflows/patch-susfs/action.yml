@@ -34,21 +34,18 @@ runs:
           
           echo "✅ SUSFS build wiring verified"
 
-          CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-          cat >> "$CONFIG_FILE" << 'EOF'
-          CONFIG_KSU_SUSFS=y
-          CONFIG_KSU_SUSFS_SUS_PATH=y
-          CONFIG_KSU_SUSFS_SUS_MOUNT=y
-          CONFIG_KSU_SUSFS_SUS_KSTAT=y
-          CONFIG_KSU_SUSFS_SPOOF_UNAME=y
-          CONFIG_KSU_SUSFS_ENABLE_LOG=y
-          CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
-          CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
-          CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
-          CONFIG_KSU_SUSFS_SUS_MAP=y
-          EOF
+          CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"       
+          echo "CONFIG_KSU_SUSFS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> "$CONFIG_FILE"
+          echo "CONFIG_KSU_SUSFS_SUS_MOUNT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_KSU_SUSFS_SUS_KSTAT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_KSU_SUSFS_SPOOF_UNAME=y" >> "$CONFIG_FILE"
+          echo "CONFIG_KSU_SUSFS_ENABLE_LOG=y" >> "$CONFIG_FILE"
+          echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> "$CONFIG_FILE"
+          echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_KSU_SUSFS_SUS_MAP=y" >> "$CONFIG_FILE"
 
-          
 
       - name: Patch SuSFS
         if: env.SUSFS_ENABLE == 'true'
@@ -98,10 +95,10 @@ runs:
               if [[ "${{ env.CUSTOM_SUSFS_PATCH }}" == "true" ]]; then
               
                  if [[ "${{ env.DEVICE_CODENAME }}" == "Citrus" ]]; then
-                 cp /tmp/Patches/Patch/susfs_pocom3_patch_to_4.19.patch ./
-                 patch -p1 < susfs_pocom3_patch_to_4.19.patch || true
+                    cp /tmp/Patches/Patch/susfs_pocom3_patch_to_4.19.patch ./
+                    patch -p1 < susfs_pocom3_patch_to_4.19.patch || true
                  
-                 # Always copy fs/susfs.c          
+                    # Always copy fs/susfs.c          
                     cp -f /tmp/Patches/Patch/fs/* fs/
                     echo "✔ Copied fs/susfs.c"                    
                     # Always copy include/linux/susfs.h and susfs_def.h         
@@ -112,12 +109,12 @@ runs:
                     for f in fs/susfs.c include/linux/susfs.h include/linux/susfs_def.h; do
                        if [ -f "$f" ]; then echo "✔ Found: $f"; else echo "❌ Missing: $f"; fi
                     done                   
-                 echo "[+] PocoM3 SuSFS Patch completed."
+                    echo "[+] PocoM3 SuSFS Patch completed."
                  
                  elif [[ "${{ env.DEVICE_CODENAME }}" == "Sweet" ]]; then
-                 cp /tmp/Patches/Patch/susfs_renote10pro_patch_to_4.14.patch ./
-                 patch -p1 < susfs_renote10pro_patch_to_4.14.patch || true                 
-                 echo "[+] Renote10Pro SuSFS Patch completed."
+                    cp /tmp/Patches/Patch/susfs_renote10pro_patch_to_4.14.patch ./
+                    patch -p1 < susfs_renote10pro_patch_to_4.14.patch || true                 
+                    echo "[+] Renote10Pro SuSFS Patch completed."
                  
                  
                  ## GKI 6.6
