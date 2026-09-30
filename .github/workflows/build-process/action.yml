@@ -45,30 +45,20 @@ runs:
           fi
 
           if [ -n "${{ env.CLANG_SOURCE }}" ]; then
-               # export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
-               
-               export CLANG_TOOL_PATH="$CLANG_TOOL"/bin/
-               export PATH=${CLANG_TOOL_PATH}:${PATH//"${CLANG_TOOL_PATH}:"}
-               export CROSS_COMPILE=$GITHUB_WORKSPACE/device_kernel/toolchain/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-
-               echo "Clang Path applied!"               
-               export BSP_BUILD_FAMILY=qogirl6
-               export DTC_OVERLAY_TEST_EXT=$GITHUB_WORKSPACE/device_kernel/tools/mkdtimg/ufdt_apply_overlay
-               export DTC_OVERLAY_VTS_EXT=$GITHUB_WORKSPACE/device_kernel/tools/mkdtimg/ufdt_verify_overlay_host
-               export BSP_BUILD_ANDROID_OS=y
-               echo "Export BSP build applied!"
+               export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH                              
           fi
 
           if [[ "$BUILD_CLANG" == "true" ]]; then
             echo "========================"
             echo "=Read Defconfig (Clang)="
             echo "========================"
-            make BSP_BUILD_DT_OVERLAY=y CC="ccache clang" O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.DEFCONFIG_NAME }}
-            make BSP_BUILD_DT_OVERLAY=y CC="ccache clang" O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }}
+            make CC="ccache clang" O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.DEFCONFIG_NAME }}
+            make CC="ccache clang" O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }}
           else
             echo "================"
             echo "=Read Defconfig="
             echo "================"
-            make BSP_BUILD_DT_OVERLAY=y O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.DEFCONFIG_NAME }}
+            make O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.DEFCONFIG_NAME }}
           fi
 
           if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
