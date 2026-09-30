@@ -111,8 +111,7 @@ runs:
             apt-get update
             apt-get install git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 lib32ncurses5-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler wget curl cpio liblz4-tool lz4 libz3-4 -y
             apt-get install p7zip p7zip-full libelf-dev -y
-            apt-get install libtinfo5 -y
-            sudo apt install libc++1 libc++-dev libc++abi-dev libyaml-dev -y
+            apt-get install libtinfo5 -y            
             if [ "${{ env.GKI_TYPE_KERNEL }}" == "true" ]; then
                sudo apt-get install libelf-dev -y
             fi
@@ -166,8 +165,7 @@ runs:
             sudo apt-get install git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 lib32ncurses5-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler wget curl cpio liblz4-tool lz4 libz3-4 -y
             sudo apt-get install p7zip p7zip-full libelf-dev -y
             sudo apt-get install libtinfo5 -y
-            sudo apt install libc++1 libc++-dev libc++abi-dev libyaml-dev -y
-            
+                        
             if [ "${{ env.GKI_TYPE_KERNEL }}" == "true" ]; then
                sudo apt-get install libelf-dev -y
             fi
@@ -221,8 +219,7 @@ runs:
             sudo apt update
             sudo apt install git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler cpio liblz4-tool lz4 libz3-4 -y
             sudo apt-get install zstd libc6 binutils libc6-dev-i386 gcc g++ p7zip p7zip-full -y
-            sudo apt install libc++1 libc++-dev libc++abi-dev libyaml-dev -y
-            
+                        
             if [ "${{ env.GKI_TYPE_KERNEL }}" == "true" ]; then
                sudo apt-get install libelf-dev -y
             fi                       
@@ -504,7 +501,7 @@ runs:
                     mv "$SUBDIR"/* clang-custom/
                 fi
                 
-            elif [[ "${{ env.CLANG_SOURCE }}" == *"github.com/fredslbn/A035f-T-s7"* ]]; then
+            elif [[ "${{ env.CLANG_SOURCE }}" == *"A035f-T-s7"* ]]; then
                 CLANG_TOOL="$GITHUB_WORKSPACE/device_kernel/toolchain/clang/host/linux-x86/clang-r383902"
                 # export CLANG_TOOL_PATH=$GITHUB_WORKSPACE/device_kernel/toolchain/clang/host/linux-x86/clang-r383902/bin/
 
