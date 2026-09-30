@@ -35,20 +35,37 @@ runs:
           echo "✅ SUSFS build wiring verified"
 
           CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-          cat >> "$CONFIG_FILE" << 'EOF'
-          CONFIG_KSU_SUSFS=y
-          CONFIG_KSU_SUSFS_SUS_PATH=y
-          CONFIG_KSU_SUSFS_SUS_MOUNT=y
-          CONFIG_KSU_SUSFS_SUS_KSTAT=y
-          CONFIG_KSU_SUSFS_SPOOF_UNAME=y
-          CONFIG_KSU_SUSFS_ENABLE_LOG=y
-          CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
-          CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
-          CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
-          CONFIG_KSU_SUSFS_SUS_MAP=y
-          EOF
 
-          
+          if [[ "${{ env.DEVICE_CODENAME }}" == "Citrus" ]]; then
+             cat >> "$CONFIG_FILE" << 'EOF'
+             CONFIG_KSU_SUSFS=y
+             CONFIG_KSU_SUSFS_SUS_PATH=y
+             CONFIG_KSU_SUSFS_SUS_MOUNT=y
+             CONFIG_KSU_SUSFS_SUS_KSTAT=y
+             CONFIG_KSU_SUSFS_SPOOF_UNAME=y
+             CONFIG_KSU_SUSFS_ENABLE_LOG=y
+             CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
+             CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
+             CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
+             CONFIG_KSU_SUSFS_SUS_MAP=y
+             CONFIG_KSU_SUSFS_SUS_MEMFD=y
+             EOF
+             echo "[+] Enable SuSFS sus_memfd config for PocoM3."
+          else
+             cat >> "$CONFIG_FILE" << 'EOF'
+             CONFIG_KSU_SUSFS=y
+             CONFIG_KSU_SUSFS_SUS_PATH=y
+             CONFIG_KSU_SUSFS_SUS_MOUNT=y
+             CONFIG_KSU_SUSFS_SUS_KSTAT=y
+             CONFIG_KSU_SUSFS_SPOOF_UNAME=y
+             CONFIG_KSU_SUSFS_ENABLE_LOG=y
+             CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
+             CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
+             CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
+             CONFIG_KSU_SUSFS_SUS_MAP=y
+             CONFIG_KSU_SUSFS_SUS_MEMFD=n
+             EOF
+          fi          
 
       - name: Patch SuSFS
         if: env.SUSFS_ENABLE == 'true'
@@ -99,13 +116,25 @@ runs:
               
                  if [[ "${{ env.DEVICE_CODENAME }}" == "Citrus" ]]; then
                  cp /tmp/Patches/Patch/susfs_pocom3_patch_to_4.19.patch ./
-                 patch -p1 < susfs_pocom3_patch_to_4.19.patch || true                 
-                 echo "[+] Custom PocoM3 SuSFS Patch completed."
+                 patch -p1 < susfs_pocom3_patch_to_4.19.patch || true
+                 
+                 # Always copy fs/susfs.c          
+                    cp -f /tmp/Patches/Patch/fs/* fs/
+                    echo "✔ Copied fs/susfs.c"                    
+                    # Always copy include/linux/susfs.h and susfs_def.h         
+                    cp -f /tmp/Patches/Patch/include/linux/* include/linux/
+                    echo "✔ Copied include/linux/*"
+                    
+                    echo "🔍 Verifying SUSFS files..."
+                    for f in fs/susfs.c include/linux/susfs.h include/linux/susfs_def.h; do
+                       if [ -f "$f" ]; then echo "✔ Found: $f"; else echo "❌ Missing: $f"; fi
+                    done                   
+                 echo "[+] PocoM3 SuSFS Patch completed."
                  
                  elif [[ "${{ env.DEVICE_CODENAME }}" == "Sweet" ]]; then
                  cp /tmp/Patches/Patch/susfs_renote10pro_patch_to_4.14.patch ./
                  patch -p1 < susfs_renote10pro_patch_to_4.14.patch || true                 
-                 echo "[+] Custom Renote10Pro SuSFS Patch completed."
+                 echo "[+] Renote10Pro SuSFS Patch completed."
                  
                  
                  ## GKI 6.6
