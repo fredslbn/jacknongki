@@ -3,7 +3,7 @@ new file mode 100644
 index 0000000..125ec8f
 --- /dev/null
 +++ b/include/linux/susfs.h
-@@ -0,0 +1,261 @@
+@@ -0,0 +1,262 @@
 +#ifndef KSU_SUSFS_H
 +#define KSU_SUSFS_H
 +

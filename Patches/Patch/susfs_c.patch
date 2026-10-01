@@ -3,7 +3,7 @@ new file mode 100644
 index 0000000..f879857
 --- /dev/null
 +++ b/fs/susfs.c
-@@ -0,0 +1,1637 @@
+@@ -0,0 +1,1638 @@
 +#include <linux/version.h>
 +#include <linux/cred.h>
 +#include <linux/fs.h>
