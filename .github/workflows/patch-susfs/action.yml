@@ -105,12 +105,12 @@ runs:
                     #cp -f /tmp/Patches/Patch/include/linux/* include/linux/
                     #echo "✔ Copied include/linux/*"
                     
-                    cp /tmp/Patches/Patch/susfs.c.patch ./
-                    cp /tmp/Patches/Patch/susfs.h.patch ./
-                    cp /tmp/Patches/Patch/susfs_def.h.patch ./
-                    patch -p1 < susfs.c.patch || true
-                    patch -p1 < susfs.h.patch || true
-                    patch -p1 < susfs_def.h.patch || true
+                    cp /tmp/Patches/Patch/susfs_c.patch ./
+                    cp /tmp/Patches/Patch/susfs_h.patch ./
+                    cp /tmp/Patches/Patch/susfs_def_h.patch ./
+                    patch -p1 < susfs_c.patch || true
+                    patch -p1 < susfs_h.patch || true
+                    patch -p1 < susfs_def_h.patch || true
                     
                     echo "🔍 Verifying SUSFS files..."
                     for f in fs/susfs.c include/linux/susfs.h include/linux/susfs_def.h; do
