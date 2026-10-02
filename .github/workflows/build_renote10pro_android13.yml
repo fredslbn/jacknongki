@@ -133,6 +133,9 @@ jobs:
           cd $GITHUB_WORKSPACE/device_kernel
           
           CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          # Enable SUSFS_MEMFD
+          echo "CONFIG_KSU_SUSFS_SUS_MEMFD=y" >> "$CONFIG_FILE"
+          echo "Susfs_memfd configs applied."
           
           # LTO Configuration - Enable Full LTO only
           sed -i '/CONFIG_LTO_CLANG/d' "$CONFIG_FILE"

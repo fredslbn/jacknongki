@@ -121,8 +121,20 @@ runs:
                  elif [[ "${{ env.DEVICE_CODENAME }}" == "Sweet" ]]; then
                     cp /tmp/Patches/Patch/susfs_renote10pro_patch_to_4.14.patch ./
                     patch -p1 < susfs_renote10pro_patch_to_4.14.patch || true                 
+                    
+                    cp /tmp/Patches/Patch/susfs_c.patch ./
+                    cp /tmp/Patches/Patch/susfs_h.patch ./
+                    cp /tmp/Patches/Patch/susfs_def_h.patch ./
+                    patch -p1 < susfs_c.patch || true
+                    patch -p1 < susfs_h.patch || true
+                    patch -p1 < susfs_def_h.patch || true
+                    
+                    echo "🔍 Verifying SUSFS files..."
+                    for f in fs/susfs.c include/linux/susfs.h include/linux/susfs_def.h; do
+                       if [ -f "$f" ]; then echo "✔ Found: $f"; else echo "❌ Missing: $f"; fi
+                    done                   
                     echo "[+] Renote10Pro SuSFS Patch completed."
-                 
+                                                                             
                  
                  ## GKI 6.6
                  elif [[ "${{ env.GKI_KERNEL_BRANCH }}" == "6.6" ]]; then                 
