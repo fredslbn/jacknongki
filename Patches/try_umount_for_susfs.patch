@@ -82,7 +82,7 @@ index 737a217..13e4654 100644
  /* spoof_uname */
  #ifdef CONFIG_KSU_SUSFS_SPOOF_UNAME
  static struct st_susfs_uname my_uname = {0};
-@@ -1275,6 +1332,11 @@ void susfs_get_enabled_features(void __user **user_info) {
+@@ -1340,6 +1397,11 @@ void susfs_get_enabled_features(void __user **user_info) {
  	if (info->err) goto out_copy_to_user;
  	buf_ptr = info->enabled_features + copied_size;
  #endif
@@ -119,7 +119,7 @@ index 6ede629..a0c7dfa 100644
  /* spoof_uname */
  #ifdef CONFIG_KSU_SUSFS_SPOOF_UNAME
  struct st_susfs_uname {
-@@ -203,6 +217,12 @@ void susfs_add_sus_kstat(void __user **user_info);
+@@ -216,6 +230,12 @@ void susfs_add_sus_kstat(void __user **user_info);
  void susfs_update_sus_kstat(void __user **user_info);
  #endif
  
