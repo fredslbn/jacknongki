@@ -9,8 +9,8 @@ env:
   DEVICE_NAME : "poco_m3"
   DEVICE_CODENAME : "Citrus"
 
-  CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-"
-  # CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu-"
+  # CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-"
+  CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu-"
   
   # EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1 AR=llvm-ar AS=llvm-as NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
   EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1"
@@ -21,10 +21,10 @@ env:
   # KERNEL_SOURCE : "https://github.com/frstprjkt/valeryn_xiaomi_sm6115.git"
   # KERNEL_BRANCH : "android16"
 
-  CLANG_SOURCE : "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/28337064939c0b4bb5804cddf35fb03d860edcf6/clang-r614150.tar.gz"
+  # CLANG_SOURCE : "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/28337064939c0b4bb5804cddf35fb03d860edcf6/clang-r614150.tar.gz"
   # CLANG_SOURCE : "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
   # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.1/LLVM-23.1.1-Linux-X64.tar.xz"
-  # CLANG_SOURCE : "https://github.com/greenforce-project/greenforce_clang/releases/download/20260926/gf-clang-24.0.0-20260926.tar.gz"
+  CLANG_SOURCE : "https://github.com/greenforce-project/greenforce_clang/releases/download/20260926/gf-clang-24.0.0-20260926.tar.gz"
   CLANG_BRANCH : ""
 
   GCC_GNU : false
@@ -42,11 +42,11 @@ env:
   # https://mirrors.cstcloud.cn/armbian-releases/_toolchain/gcc-linaro-7.4.1-2019.02-x86_64_arm-linux-gnueabi.tar.xz
   
   # GCC_64_SOURCE : "https://huggingface.co/csukuangfj/sherpa-ncnn-toolchains/resolve/main/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz"
-  # GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
-  # GCC_64_BRANCH : "master"
+  GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
+  GCC_64_BRANCH : "master"
   # GCC_32_SOURCE : "https://huggingface.co/csukuangfj/sherpa-ncnn-toolchains/resolve/main/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf.tar.xz"
-  # GCC_32_SOURCE : "https://github.com/mhdzumair/toolchain.git"
-  # GCC_32_BRANCH : "master"
+  GCC_32_SOURCE : "https://github.com/mhdzumair/toolchain.git"
+  GCC_32_BRANCH : "master"
 
   DEFCONFIG_SOURCE: ""
   DEFCONFIG_NAME : "vendor/bengal-perf_defconfig"
@@ -131,17 +131,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: ⌛️ Compilation environment preparation
-        uses: ./.github/workflows/build-env
-        
-      - name: "📐 Setup SWAP 10GB"
-        uses: pierotofy/set-swap-space@master
-        with:
-          swap-size-gb: 10
-            
-      - name: "📐 Tune Swap"
-        run: |
-          echo "vm.swappiness=80" | sudo tee -a /etc/sysctl.conf
-          sudo sysctl -p
+        uses: ./.github/workflows/build-env        
 
       - name: ⚙️ Get neccssary tools
         uses: ./.github/workflows/build-ready
@@ -166,17 +156,17 @@ jobs:
           echo "Susfs_memfd configs applied."
           
           # LTO Configuration - Enable Full LTO only
-          # sed -i '/CONFIG_LTO_CLANG/d' "$CONFIG_FILE"
-          # sed -i '/CONFIG_LTO_CLANG_FULL/d' "$CONFIG_FILE"
-          # sed -i '/CONFIG_LTO_CLANG_THIN/d' "$CONFIG_FILE"
-          # sed -i '/CONFIG_THINLTO/d' "$CONFIG_FILE"
+          sed -i '/CONFIG_LTO_CLANG/d' "$CONFIG_FILE"
+          sed -i '/CONFIG_LTO_CLANG_FULL/d' "$CONFIG_FILE"
+          sed -i '/CONFIG_LTO_CLANG_THIN/d' "$CONFIG_FILE"
+          sed -i '/CONFIG_THINLTO/d' "$CONFIG_FILE"
                     
-          # echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_LTO_CLANG_FULL=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_THINLTO=y" >> "$CONFIG_FILE"
+          echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
+          echo "CONFIG_LTO_CLANG_FULL=y" >> "$CONFIG_FILE"
+          echo "# CONFIG_LTO_CLANG_THIN is not set" >> "$CONFIG_FILE"
+          echo "# CONFIG_THINLTO is not set" >> "$CONFIG_FILE"
           
-          # echo "Thin LTO configs applied."
+          echo "Full LTO configs applied."
    
           # Full Metamodule Support
           echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
