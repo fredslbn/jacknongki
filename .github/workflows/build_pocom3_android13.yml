@@ -129,6 +129,16 @@ jobs:
 
       - name: ⌛️ Compilation environment preparation
         uses: ./.github/workflows/build-env
+        
+      - name: "📐 Setup SWAP 10GB"
+        uses: pierotofy/set-swap-space@master
+        with:
+          swap-size-gb: 10
+            
+      - name: "📐 Tune Swap"
+        run: |
+          echo "vm.swappiness=80" | sudo tee -a /etc/sysctl.conf
+          sudo sysctl -p
 
       - name: ⚙️ Get neccssary tools
         uses: ./.github/workflows/build-ready
