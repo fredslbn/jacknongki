@@ -19,7 +19,7 @@ diff --git a/kernel/Kconfig b/kernel/Kconfig
 index 45e09d1faf12..91de6c1aed46 100644
 --- a/kernel/Kconfig
 +++ b/kernel/Kconfig
-@@ -130,4 +130,106 @@ config KSU_HEURISTIC_IN_TREE_BUILD
+@@ -131,4 +131,106 @@ config KSU_HEURISTIC_IN_TREE_BUILD
  	depends on KSU
  	default y
  
@@ -184,7 +184,7 @@ diff --git a/kernel/ksu.c b/kernel/ksu.c
 index a0acfc3a2953..db3e7669a5fd 100644
 --- a/kernel/ksu.c
 +++ b/kernel/ksu.c
-@@ -20,6 +20,10 @@
+@@ -30,6 +30,10 @@
  
  #include "kernel_includes.h"
  
@@ -195,7 +195,7 @@ index a0acfc3a2953..db3e7669a5fd 100644
  // uapi
  #include "include/uapi/app_profile.h"
  #include "include/uapi/feature.h"
-@@ -263,6 +267,10 @@ static int __init kernelsu_init(void)
+@@ -264,6 +268,10 @@ static int __init kernelsu_init(void)
  
  	ksu_throne_tracker_init();
  
@@ -353,7 +353,7 @@ index 0352bb928c58..412420161def 100644
  static int do_grant_root(void __user *arg)
  {
  	int ret;
-@@ -86,6 +90,9 @@ static int do_report_event(void __user *arg)
+@@ -90,6 +94,9 @@ static int do_report_event(void __user *arg)
  			boot_complete_lock = true;
  			pr_info("boot_complete triggered\n");
  			on_boot_completed();
