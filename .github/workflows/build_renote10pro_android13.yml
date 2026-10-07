@@ -16,7 +16,8 @@ env:
   KERNEL_BRANCH : "stable"
 
   # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.7/LLVM-19.1.7-Linux-X64.tar.xz"
-  CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.1/LLVM-23.1.1-Linux-X64.tar.xz"
+  # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.1/LLVM-23.1.1-Linux-X64.tar.xz"
+  CLANG_SOURCE : "https://github.com/greenforce-project/greenforce_clang/releases/download/20260926/gf-clang-24.0.0-20260926.tar.gz"
   CLANG_BRANCH : ""
 
   GCC_GNU : false
@@ -144,11 +145,11 @@ jobs:
           sed -i '/CONFIG_THINLTO/d' "$CONFIG_FILE"
                     
           echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
-          echo "CONFIG_LTO_CLANG_FULL=y" >> "$CONFIG_FILE"
-          echo "# CONFIG_LTO_CLANG_THIN is not set" >> "$CONFIG_FILE"
-          echo "# CONFIG_THINLTO is not set" >> "$CONFIG_FILE"
+          echo "# CONFIG_LTO_CLANG_FULL is not set" >> "$CONFIG_FILE"
+          echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_THINLTO=y" >> "$CONFIG_FILE"
           
-          echo "Full LTO configs applied."
+          echo "Thin LTO configs applied."
    
           # Full Metamodule Support
           echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
