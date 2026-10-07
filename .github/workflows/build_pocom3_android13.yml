@@ -16,7 +16,7 @@ env:
   # EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1"
 
   KERNEL_SOURCE : "https://github.com/fredslbn/superchime.git"
-  KERNEL_BRANCH : "main"
+  KERNEL_BRANCH : "bbrv3"
   
   # KERNEL_SOURCE : "https://github.com/frstprjkt/valeryn_xiaomi_sm6115.git"
   # KERNEL_BRANCH : "android16"
