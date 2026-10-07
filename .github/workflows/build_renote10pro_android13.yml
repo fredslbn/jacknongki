@@ -136,27 +136,9 @@ jobs:
           CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           # Enable SUSFS_MEMFD
           echo "CONFIG_KSU_SUSFS_SUS_MEMFD=y" >> "$CONFIG_FILE"
-          echo "Susfs_memfd configs applied."
-          
-          # LTO Configuration - Enable Full LTO only
-          sed -i '/CONFIG_LTO_CLANG/d' "$CONFIG_FILE"
-          sed -i '/CONFIG_LTO_CLANG_FULL/d' "$CONFIG_FILE"
-          sed -i '/CONFIG_LTO_CLANG_THIN/d' "$CONFIG_FILE"
-          sed -i '/CONFIG_THINLTO/d' "$CONFIG_FILE"
-                    
-          echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
-          echo "# CONFIG_LTO_CLANG_FULL is not set" >> "$CONFIG_FILE"
-          echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
-          echo "CONFIG_THINLTO=y" >> "$CONFIG_FILE"
-          
-          echo "Thin LTO configs applied."
+          echo "Susfs_memfd configs applied."          
    
-          # Full Metamodule Support
-          echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
-          echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
-          echo "CONFIG_OVERLAY_FS=y" >> "$CONFIG_FILE"
-          
-          echo "Metamodule configs applied."
+          echo "Metamodule configs already in defconfig."
 
           # Rewrite Localversion Name
           sed -i '/CONFIG_LOCALVERSION/d' "$CONFIG_FILE"
