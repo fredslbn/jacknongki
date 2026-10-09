@@ -184,7 +184,7 @@ diff --git a/kernel/ksu.c b/kernel/ksu.c
 index a0acfc3a2953..db3e7669a5fd 100644
 --- a/kernel/ksu.c
 +++ b/kernel/ksu.c
-@@ -30,6 +30,10 @@
+@@ -20,6 +20,10 @@
  
  #include "kernel_includes.h"
  
@@ -192,10 +192,10 @@ index a0acfc3a2953..db3e7669a5fd 100644
 +#include <linux/susfs.h>
 +#endif
 +
- // uapi
- #include "include/uapi/app_profile.h"
- #include "include/uapi/feature.h"
-@@ -264,6 +268,10 @@ static int __init kernelsu_init(void)
+ // selinux includes
+ #include "avc_ss.h"
+ #include "objsec.h"
+@@ -265,6 +269,10 @@ static int __init kernelsu_init(void)
  
  	ksu_throne_tracker_init();
  
