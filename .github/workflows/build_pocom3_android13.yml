@@ -193,6 +193,24 @@ jobs:
           sed -i 's/-st15//g' localversion-st
           
           echo "Localversion string has been replaced."
+          
+          # Modif for performance
+          echo "CONFIG_HZ_250=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HZ=250" >> "$CONFIG_FILE"
+          
+          # TCP ALGO
+          echo "CONFIG_TCP_CONG_ADVANCED=y" >> "$CONFIG_FILE"
+          echo "CONFIG_TCP_CONG_BBR=y" >> "$CONFIG_FILE"
+          echo "CONFIG_TCP_CONG_WESTWOOD=y" >> "$CONFIG_FILE"
+          echo "CONFIG_TCP_CONG_HTCP=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DEFAULT_BBR=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DEFAULT_TCP_CONG="bbr"" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_FQ_CODEL=y" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_FQ=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DEFAULT_FQ=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DEFAULT_NET_SCH="fq"" >> "$CONFIG_FILE"
+          
+          echo "TCP algo and tweak performance applied."
       
       - name: 🚀 Build Process
         uses: ./.github/workflows/build-process
