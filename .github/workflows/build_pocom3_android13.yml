@@ -9,12 +9,11 @@ env:
   DEVICE_NAME : "poco_m3"
   DEVICE_CODENAME : "Citrus"
 
-  CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu-"
-  # CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-"
+  CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-"
   # CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu-"
   
-  EXTRA_CMDS : "LD=ld.lld -S LLVM=1 LLVM_IAS=0"
-  # EXTRA_CMDS : "LD=ld.lld -S LLVM=1 LLVM_IAS=1 AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
+  # EXTRA_CMDS : "LD=ld.lld -S LLVM=1 LLVM_IAS=0"
+  EXTRA_CMDS : "LD=ld.lld -S LLVM=1 LLVM_IAS=1 AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
   # EXTRA_CMDS : "LD=ld.lld -S LLVM=1 LLVM_IAS=1"
 
   KERNEL_SOURCE : "https://github.com/fredslbn/superchime.git"
@@ -45,11 +44,11 @@ env:
   # https://mirrors.cstcloud.cn/armbian-releases/_toolchain/gcc-linaro-7.4.1-2019.02-x86_64_arm-linux-gnueabi.tar.xz
   
   # GCC_64_SOURCE : "https://huggingface.co/csukuangfj/sherpa-ncnn-toolchains/resolve/main/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz"
-  GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
-  GCC_64_BRANCH : "master"
+  # GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
+  # GCC_64_BRANCH : "master"
   # GCC_32_SOURCE : "https://huggingface.co/csukuangfj/sherpa-ncnn-toolchains/resolve/main/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf.tar.xz"
-  GCC_32_SOURCE : "https://github.com/mhdzumair/toolchain.git"
-  GCC_32_BRANCH : "master"
+  # GCC_32_SOURCE : "https://github.com/mhdzumair/toolchain.git"
+  # GCC_32_BRANCH : "master"
 
   DEFCONFIG_SOURCE: ""
   DEFCONFIG_NAME : "vendor/bengal-perf_defconfig"
