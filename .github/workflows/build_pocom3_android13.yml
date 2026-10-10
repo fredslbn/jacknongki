@@ -163,7 +163,7 @@ jobs:
 
           echo "CONFIG_LTO=y" >> "$CONFIG_FILE"
           echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
-          echo "CONFIG_LTO_CLANG_FULL=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_LTO_CLANG_FULL=y" >> "$CONFIG_FILE"
           echo "# CONFIG_LTO_CLANG_THIN is not set" >> "$CONFIG_FILE"
           echo "# CONFIG_THINLTO is not set" >> "$CONFIG_FILE"
           
@@ -173,7 +173,7 @@ jobs:
           sed -i '/CONFIG_SHADOW_CALL_STACK/d' "$CONFIG_FILE"
           echo "# CONFIG_SHADOW_CALL_STACK is not set" >> "$CONFIG_FILE"
           echo "# CONFIG_CFI_CLANG is not set" >> "$CONFIG_FILE"
-          echo "CONFIG_ARM64_LSE_ATOMICS=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_ARM64_LSE_ATOMICS=y" >> "$CONFIG_FILE"
    
           # Full Metamodule Support
           echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
@@ -205,10 +205,10 @@ jobs:
           echo "CONFIG_TCP_CONG_HTCP=y" >> "$CONFIG_FILE"
           echo "CONFIG_DEFAULT_BBR=y" >> "$CONFIG_FILE"
           echo "CONFIG_DEFAULT_TCP_CONG="bbr"" >> "$CONFIG_FILE"
-          echo "CONFIG_NET_SCH_FQ_CODEL=y" >> "$CONFIG_FILE"
-          echo "CONFIG_NET_SCH_FQ=y" >> "$CONFIG_FILE"
-          echo "CONFIG_DEFAULT_FQ=y" >> "$CONFIG_FILE"
-          echo "CONFIG_DEFAULT_NET_SCH="fq"" >> "$CONFIG_FILE"
+          # echo "CONFIG_NET_SCH_FQ_CODEL=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_NET_SCH_FQ=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_NET_SCH_DEFAULT=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_DEFAULT_NET_SCH="fq_codel"" >> "$CONFIG_FILE"
           
           echo "TCP algo and tweak performance applied."
       
