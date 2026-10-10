@@ -62,7 +62,7 @@ runs:
              echo "CONFIG_KSU_COMPILE_AS_C23=y" >> "$CONFIG_FILE"
              echo "CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y" >> "$CONFIG_FILE"
              echo "CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y" >> "$CONFIG_FILE"
-             echo "CONFIG_KPROBES=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KPROBES=n" >> "$CONFIG_FILE"
              echo "CONFIG_HAVE_OPTPROBES=y" >> "$CONFIG_FILE"
              echo "CONFIG_OPTPROBES=y" >> "$CONFIG_FILE"
 
