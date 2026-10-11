@@ -197,22 +197,22 @@ jobs:
           echo "Localversion string has been replaced."
           
           # Modif for performance
-          echo "CONFIG_HZ_250=y" >> "$CONFIG_FILE"
-          echo "CONFIG_HZ=250" >> "$CONFIG_FILE"
+          # echo "CONFIG_HZ_250=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_HZ=250" >> "$CONFIG_FILE"
           
           # TCP ALGO
-          echo "CONFIG_TCP_CONG_ADVANCED=y" >> "$CONFIG_FILE"
-          echo "CONFIG_TCP_CONG_BBR=y" >> "$CONFIG_FILE"
-          echo "CONFIG_TCP_CONG_WESTWOOD=y" >> "$CONFIG_FILE"
-          echo "CONFIG_TCP_CONG_HTCP=y" >> "$CONFIG_FILE"
-          echo "CONFIG_DEFAULT_BBR=y" >> "$CONFIG_FILE"
-          echo "CONFIG_DEFAULT_TCP_CONG="bbr"" >> "$CONFIG_FILE"
+          # echo "CONFIG_TCP_CONG_ADVANCED=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_TCP_CONG_BBR=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_TCP_CONG_WESTWOOD=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_TCP_CONG_HTCP=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_DEFAULT_BBR=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_DEFAULT_TCP_CONG="bbr"" >> "$CONFIG_FILE"
           # echo "CONFIG_NET_SCH_FQ_CODEL=y" >> "$CONFIG_FILE"
           # echo "CONFIG_NET_SCH_FQ=y" >> "$CONFIG_FILE"
           # echo "CONFIG_NET_SCH_DEFAULT=y" >> "$CONFIG_FILE"
           # echo "CONFIG_DEFAULT_NET_SCH="fq_codel"" >> "$CONFIG_FILE"
           
-          echo "TCP algo and tweak performance applied."
+          # echo "TCP algo and tweak performance applied."
       
       - name: 🚀 Build Process
         uses: ./.github/workflows/build-process
