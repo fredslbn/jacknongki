@@ -1,4 +1,4 @@
-From 7d5ee32899b0940ca5c130ad7e02c5a08520838e Mon Sep 17 00:00:00 2001
+From c642d439e8dbfd69c92cf0300cbbbb4380a1df6a Mon Sep 17 00:00:00 2001
 From: backslashxx <118538522+backslashxx@users.noreply.github.com>
 Date: Mon, 14 Sep 2026 19:50:53 +0900
 Subject: [PATCH] extra
@@ -11,7 +11,7 @@ Signed-off-by: midori01 <lv@lvlv.lv>
  3 files changed, 89 insertions(+)
 
 diff --git a/kernel/hook/branch_link_hook_arm64.c b/kernel/hook/branch_link_hook_arm64.c
-index d4c1e0ee932e..a8cf65219450 100644
+index 20fd9c6d2c37..3965e1e40ba3 100644
 --- a/kernel/hook/branch_link_hook_arm64.c
 +++ b/kernel/hook/branch_link_hook_arm64.c
 @@ -523,12 +523,16 @@ static int bl_hack_init_thread(void *data)
@@ -32,7 +32,7 @@ index d4c1e0ee932e..a8cf65219450 100644
  
  	return 0;
 diff --git a/kernel/include/uapi/supercall.h b/kernel/include/uapi/supercall.h
-index 9a3df99c866c..4dce382b6977 100644
+index 014415d57246..f4aae816aa5f 100644
 --- a/kernel/include/uapi/supercall.h
 +++ b/kernel/include/uapi/supercall.h
 @@ -148,6 +148,18 @@ struct ksu_get_sulog_fd_cmd {
@@ -64,10 +64,10 @@ index 9a3df99c866c..4dce382b6977 100644
  
  #endif
 diff --git a/kernel/supercall/dispatch.c b/kernel/supercall/dispatch.c
-index fe628e38a0e1..0352bb928c58 100644
+index 350b03c50617..6597c98d79df 100644
 --- a/kernel/supercall/dispatch.c
 +++ b/kernel/supercall/dispatch.c
-@@ -351,9 +351,15 @@ static int do_get_feature(void __user *arg)
+@@ -351,6 +351,9 @@ static int do_get_feature(void __user *arg)
  		return -EFAULT;
  	}
  
@@ -75,14 +75,18 @@ index fe628e38a0e1..0352bb928c58 100644
 +	if (is_avc_spoof) cmd.feature_id = 4; // KSU_FEATURE_SELINUX_HIDE
 +
  	ret = ksu_get_feature(cmd.feature_id, &cmd.value, &supported);
-	cmd.supported = 0;
-+
+ 	cmd.supported = 0;
+ 	if (supported) {
+@@ -360,6 +363,8 @@ static int do_get_feature(void __user *arg)
+ 		}
+ 	}
+ 
 +	if (is_avc_spoof) cmd.feature_id = 10003;
 +
-  	if (supported) {
- 		cmd.supported |= KSU_FEATURE_FLAG_SUPPORTED;
- 		if (ksu_feature_is_forced(cmd.feature_id)) {
-@@ -383,6 +389,9 @@ static int do_set_feature(void __user *arg)
+ 	if (ret && supported) {
+ 		pr_err("get_feature: failed for feature %u: %d\n", cmd.feature_id, ret);
+ 		return ret;
+@@ -383,6 +388,9 @@ static int do_set_feature(void __user *arg)
  		return -EFAULT;
  	}
  
@@ -92,7 +96,7 @@ index fe628e38a0e1..0352bb928c58 100644
  	ret = ksu_set_feature(cmd.feature_id, cmd.value);
  	if (ret) {
  		pr_err("set_feature: failed for feature %u: %d\n", cmd.feature_id, ret);
-@@ -707,6 +716,65 @@ static int do_disable_escape_to_root(void __user *arg)
+@@ -707,6 +715,65 @@ static int do_disable_escape_to_root(void __user *arg)
  	return 0;
  }
  
@@ -158,7 +162,7 @@ index fe628e38a0e1..0352bb928c58 100644
  // IOCTL handlers mapping table
  static const struct ksu_ioctl_cmd_map ksu_ioctl_handlers[] = {
  	{ .cmd = KSU_IOCTL_GRANT_ROOT, .name = "GRANT_ROOT", .handler = do_grant_root, .perm_check = allowed_for_su },
-@@ -733,6 +801,9 @@ static const struct ksu_ioctl_cmd_map ksu_ioctl_handlers[] = {
+@@ -733,6 +800,9 @@ static const struct ksu_ioctl_cmd_map ksu_ioctl_handlers[] = {
  	{ .cmd = KSU_IOCTL_SET_INIT_PGRP, .name = "SET_INIT_PGRP", .handler = do_set_init_pgrp, .perm_check = only_root },
  	{ .cmd = KSU_IOCTL_GET_SULOG_FD, .name = "GET_SULOG_FD", .handler = do_get_sulog_fd, .perm_check = only_root },
  	{ .cmd = KSU_IOCTL_DISABLE_ESCAPE_TO_ROOT, .name = "DISABLE_ESCAPE_TO_ROOT", .handler = do_disable_escape_to_root, .perm_check = only_root, .allow_su_session = true },
