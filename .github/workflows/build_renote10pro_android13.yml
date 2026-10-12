@@ -138,10 +138,10 @@ jobs:
           # Only ${{ env.DEVICE_NAME }} use it.
           cd $GITHUB_WORKSPACE/device_kernel
           
-          CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          # CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           # Enable SUSFS_MEMFD
-          echo "CONFIG_KSU_SUSFS_SUS_MEMFD=y" >> "$CONFIG_FILE"
-          echo "Susfs_memfd configs applied."          
+          # echo "CONFIG_KSU_SUSFS_SUS_MEMFD=y" >> "$CONFIG_FILE"
+          # echo "Susfs_memfd configs applied."          
    
           echo "Metamodule configs already in defconfig."
 
@@ -151,7 +151,7 @@ jobs:
           # echo "CONFIG_LOCALVERSION=-super.kernel" >> "$CONFIG_FILE"
           # echo "CONFIG_LOCALVERSION_AUTO=y" >> "$CONFIG_FILE"
           
-          # echo "Localversion string has been replaced."
+          echo "Localversion string has been replaced."
 
       - name: 🚀 Build Process
         uses: ./.github/workflows/build-process

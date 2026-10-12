@@ -1,4 +1,4 @@
-From c0e9536e7e4438f85a6151a7ff8f317e9a1a64bf Mon Sep 17 00:00:00 2001
+From 27a053a38327a747ab638c0c7e8aa79f189838fd Mon Sep 17 00:00:00 2001
 From: midori01 <lv@lvlv.lv>
 Date: Mon, 14 Sep 2026 19:50:53 +0900
 Subject: [PATCH] de-inlined susfs
@@ -16,10 +16,10 @@ Signed-off-by: midori01 <lv@lvlv.lv>
  8 files changed, 340 insertions(+)
 
 diff --git a/kernel/Kconfig b/kernel/Kconfig
-index 45e09d1faf12..91de6c1aed46 100644
+index ed3165b9e9ad..bb50e63c497d 100644
 --- a/kernel/Kconfig
 +++ b/kernel/Kconfig
-@@ -131,4 +131,106 @@ config KSU_HEURISTIC_IN_TREE_BUILD
+@@ -131,4 +131,99 @@ config KSU_HEURISTIC_IN_TREE_BUILD
  	depends on KSU
  	default y
  
@@ -116,13 +116,6 @@ index 45e09d1faf12..91de6c1aed46 100644
 +	  - Effective only on zygote/zygote_next spawned user app process that is marked with TIF_PROC_UMOUNTED
 +	    and with (uid % 100000) >= 10000.
 +
-+config KSU_SUSFS_SUS_MEMFD
-+    bool "Enable to hide or spoof suspicous memfd (experimental)"
-+    depends on KSU_SUSFS
-+    default n
-+    help
-+        - Allow preventing the user-defined memfd name from being created.
-+
 +endmenu
 +
  endmenu
@@ -181,33 +174,33 @@ index 925798048a86..4d169f763619 100644
  
  install_ksu_fd:
 diff --git a/kernel/ksu.c b/kernel/ksu.c
-index a0acfc3a2953..db3e7669a5fd 100644
+index c4c812038c47..1a38fdd865c4 100644
 --- a/kernel/ksu.c
 +++ b/kernel/ksu.c
-@@ -20,6 +20,10 @@
- 
- #include "kernel_includes.h"
+@@ -30,6 +30,10 @@
+ #include "avc.h"
+ #endif
  
 +#ifdef CONFIG_KSU_SUSFS
 +#include <linux/susfs.h>
 +#endif
 +
- // selinux includes
- #include "avc_ss.h"
- #include "objsec.h"
-@@ -265,6 +269,10 @@ static int __init kernelsu_init(void)
+ // uapi
+ #include "include/uapi/app_profile.h"
+ #include "include/uapi/feature.h"
+@@ -272,6 +276,10 @@ static int __init kernelsu_init(void)
  
+ 	ksu_allowlist_init();
  	ksu_throne_tracker_init();
- 
++
 +#ifdef CONFIG_KSU_SUSFS
 +	susfs_init();
 +#endif // #ifdef CONFIG_KSU_SUSFS
-+
  	ksu_ksud_init();
- 
  	ksu_file_wrapper_init();
+ 
 diff --git a/kernel/selinux/rules.c b/kernel/selinux/rules.c
-index b510ba2d85aa..862f1af7aaeb 100644
+index a9d4f672f58c..1991ef9bb8fe 100644
 --- a/kernel/selinux/rules.c
 +++ b/kernel/selinux/rules.c
 @@ -23,6 +23,9 @@ static void reset_avc_cache()
@@ -221,10 +214,10 @@ index b510ba2d85aa..862f1af7aaeb 100644
  
  #if LINUX_VERSION_CODE < KERNEL_VERSION(5, 10, 0)
 diff --git a/kernel/selinux/selinux.c b/kernel/selinux/selinux.c
-index 04e5ffe0c46d..0560625ac70a 100644
+index 17b241644f30..6654176d279f 100644
 --- a/kernel/selinux/selinux.c
 +++ b/kernel/selinux/selinux.c
-@@ -227,3 +227,97 @@ void escape_to_root_for_adb_root(void)
+@@ -241,3 +241,97 @@ void escape_to_root_for_adb_root(void)
  	}
  	commit_creds(cred);
  }
@@ -323,10 +316,10 @@ index 04e5ffe0c46d..0560625ac70a 100644
 +}
 +#endif // #ifdef CONFIG_KSU_SUSFS
 diff --git a/kernel/selinux/selinux.h b/kernel/selinux/selinux.h
-index cbeac553d20a..1b99c0744645 100644
+index 79d7da2dbf35..5386b524f38e 100644
 --- a/kernel/selinux/selinux.h
 +++ b/kernel/selinux/selinux.h
-@@ -37,4 +37,14 @@ void setup_ksu_cred();
+@@ -40,4 +40,14 @@ void setup_ksu_cred();
  
  void escape_to_root_for_adb_root();
  
@@ -342,7 +335,7 @@ index cbeac553d20a..1b99c0744645 100644
 +#endif // #ifdef CONFIG_KSU_SUSFS
  #endif
 diff --git a/kernel/supercall/dispatch.c b/kernel/supercall/dispatch.c
-index 0352bb928c58..412420161def 100644
+index 056957bf0954..d81bbc6a7727 100644
 --- a/kernel/supercall/dispatch.c
 +++ b/kernel/supercall/dispatch.c
 @@ -1,3 +1,7 @@
@@ -374,7 +367,7 @@ index 48ad88427768..a3e8dae5a553 100644
  #define KSU_DRIVER_PERMISSION_SU_SESSION (1UL << 0)
  
  struct ksu_driver_context {
-@@ -83,6 +86,94 @@ int ksu_handle_sys_reboot(int magic1, int magic2, unsigned int cmd, void __user
+@@ -83,6 +86,88 @@ int ksu_handle_sys_reboot(int magic1, int magic2, unsigned int cmd, void __user
  	if (magic1 != KSU_INSTALL_MAGIC1)
  		return 0;
  
@@ -440,12 +433,6 @@ index 48ad88427768..a3e8dae5a553 100644
 +			return 0;
 +		}
 +#endif // #ifdef CONFIG_KSU_SUSFS_SUS_MAP
-+#ifdef CONFIG_KSU_SUSFS_SUS_MEMFD
-+        if (cmd == CMD_SUSFS_ADD_SUS_MEMFD) {
-+            return susfs_add_sus_memfd(arg);
-+			return 0;
-+        }
-+#endif // #ifdef CONFIG_KSU_SUSFS_SUS_MEMFD
 +		if (cmd == CMD_SUSFS_ENABLE_AVC_LOG_SPOOFING) {
 +			susfs_set_avc_log_spoofing(arg);
 +			return 0;
