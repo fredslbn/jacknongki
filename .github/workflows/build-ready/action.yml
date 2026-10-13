@@ -148,6 +148,10 @@ runs:
                 echo "::group::[+] Starting clean Renote10Pro hook..."
                 cp /tmp/Bin/clean_renote10pro_hook.sh ./
                 bash clean_renote10pro_hook.sh
+             elif [[ "${{ env.DEVICE_CODENAME }}" == "Surya" ]]; then 
+                echo "::group::[+] Starting clean PocoX3 hook..."
+                cp /tmp/Bin/clean_pocox3_hook.sh ./
+                bash clean_pocox3_hook.sh
              fi
              
           else
@@ -325,7 +329,7 @@ runs:
                 echo "[+] Susfs patch for xxKSU has been completed."          
             
             else
-                echo "[-] SUSFS is disabled, patches being skipped."
+                echo "[-] SUSFS disabled, then patches being skipped."
             fi
             
           else
