@@ -53,6 +53,8 @@ runs:
              
              sed -i '/CONFIG_KALLSYMS_ALL/d' "$CONFIG_FILE"
              sed -i '/CONFIG_KPROBES/d' "$CONFIG_FILE"
+             sed -i '/CONFIG_HAVE_KPROBES/d' "$CONFIG_FILE"
+             sed -i '/CONFIG_KPROBE_EVENTS/d' "$CONFIG_FILE"
 
              echo "CONFIG_KSU=y" >> "$CONFIG_FILE"
              echo "CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y" >> "$CONFIG_FILE"
@@ -62,7 +64,10 @@ runs:
              echo "CONFIG_KSU_COMPILE_AS_C23=y" >> "$CONFIG_FILE"
              echo "CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y" >> "$CONFIG_FILE"
              echo "CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y" >> "$CONFIG_FILE"             
-             echo "CONFIG_KPROBES=y" >> "$CONFIG_FILE"
+             echo "CONFIG_KPROBES=n" >> "$CONFIG_FILE"
+             echo "CONFIG_HAVE_KPROBES=n" >> "$CONFIG_FILE"
+             echo "CONFIG_KPROBE_EVENTS=n" >> "$CONFIG_FILE"
+             echo "CONFIG_CFI_CLANG=y" >> "$CONFIG_FILE"
              
              echo "[+] BRANCHLINK HOOK method applied."
                                                           
