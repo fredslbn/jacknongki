@@ -4248,7 +4248,7 @@ diff --git a/mm/memory.c b/mm/memory.c
 index 0879df7..23c4b11 100644
 --- a/mm/memory.c
 +++ b/mm/memory.c
-@@ -79,6 +79,10 @@
+@@ -80,6 +80,10 @@
  #include <asm/tlbflush.h>
  #include <asm/pgtable.h>
  
@@ -4259,7 +4259,7 @@ index 0879df7..23c4b11 100644
  #include "internal.h"
  
  #define CREATE_TRACE_POINTS
-@@ -5087,12 +5091,20 @@ int __access_remote_vm(struct task_struct *tsk, struct mm_struct *mm,
+@@ -4364,12 +4368,20 @@ int __access_remote_vm(struct task_struct *tsk, struct mm_struct *mm,
  	int write = gup_flags & FOLL_WRITE;
  
  	down_read(&mm->mmap_sem);
