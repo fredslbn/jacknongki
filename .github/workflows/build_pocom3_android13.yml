@@ -213,6 +213,9 @@ jobs:
           # echo "CONFIG_DEFAULT_NET_SCH="fq_codel"" >> "$CONFIG_FILE"
           
           # echo "TCP algo and tweak performance applied."
+          
+          echo "CONFIG_HAVE_OPTPROBES=y" >> "$CONFIG_FILE"
+          echo "CONFIG_OPTPROBES=y" >> "$CONFIG_FILE"
       
       - name: 🚀 Build Process
         uses: ./.github/workflows/build-process

@@ -1,8 +1,43 @@
+diff --git a/fs/namei.c b/fs/namei.c
+index 80b743c..86447fa 100644
+--- a/fs/namei.c
++++ b/fs/namei.c
+@@ -3657,9 +3816,30 @@ out:
+ 
+ static int do_o_path(struct nameidata *nd, unsigned flags, struct file *file)
+ {
++#ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
++	int old_dfd = nd->dfd;
++	struct filename *fake_filename = NULL;
++#endif // #ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
+ 	struct path path;
+ 	int error = path_lookupat(nd, flags, &path);
+ 	if (!error) {
++#ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
++		if (old_dfd != -1 &&
++			SUSFS_IS_INODE_OPEN_REDIRECT_WITHOUT_UID_CHECK(path.dentry->d_inode))
++		{
++			fake_filename = susfs_open_redirect_spoof_do_sys_openat(path.dentry->d_inode);
++			if (fake_filename && !IS_ERR(fake_filename)) {
++				struct path fake_path;
++
++				/* filename_lookup() consumes fake_filename */
++				error = filename_lookup(old_dfd, fake_filename, flags, &fake_path, NULL);
++				path_put(&path);
++				if (unlikely(error))
++					return error;
++				path = fake_path;
++			}
++		}
++#endif // #ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
+ 		audit_inode(nd->name, path.dentry, 0);
+ 		error = vfs_open(&path, file, current_cred());
+ 		path_put(&path);
 diff --git a/kernel/sys.c b/kernel/sys.c
 index b276a5e..898dbf1 100644
 --- a/kernel/sys.c
 +++ b/kernel/sys.c
-@@ -1183,13 +1183,21 @@ static int override_release(char __user *release, size_t len)
+@@ -1182,13 +1182,21 @@ static int override_release(char __user *release, size_t len)
  return ret;
  }
  
