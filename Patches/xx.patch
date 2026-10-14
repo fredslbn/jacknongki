@@ -19,7 +19,7 @@ diff --git a/kernel/Kconfig b/kernel/Kconfig
 index ed3165b9e9ad..bb50e63c497d 100644
 --- a/kernel/Kconfig
 +++ b/kernel/Kconfig
-@@ -131,4 +131,99 @@ config KSU_HEURISTIC_IN_TREE_BUILD
+@@ -143,4 +143,99 @@ config KSU_HEURISTIC_IN_TREE_BUILD
  	depends on KSU
  	default y
  
@@ -188,7 +188,7 @@ index c4c812038c47..1a38fdd865c4 100644
  // uapi
  #include "include/uapi/app_profile.h"
  #include "include/uapi/feature.h"
-@@ -272,6 +276,10 @@ static int __init kernelsu_init(void)
+@@ -276,6 +280,10 @@ static int __init kernelsu_init(void)
  
  	ksu_allowlist_init();
  	ksu_throne_tracker_init();
