@@ -5,7 +5,7 @@
 
 KSU_FOLDER=("drivers/kernelsu" "KernelSU" "KernelSU-Next")
 
-KSU_CLEAN_FILES=("fs/exec.c" "fs/read_write.c" "fs/open.c" "fs/stat.c" "fs/devpts/inode.c" "fs/namei.c" "drivers/input/input.c" "drivers/tty/pty.c" "security/selinux/hooks.c" "kernel/reboot.c" "kernel/sys.c")
+# KSU_CLEAN_FILES=("fs/exec.c" "fs/read_write.c" "fs/open.c" "fs/stat.c" "fs/devpts/inode.c" "fs/namei.c" "drivers/input/input.c" "drivers/tty/pty.c" "security/selinux/hooks.c" "kernel/reboot.c" "kernel/sys.c")
 
 ## FRED MODIF
 ## exclude fs/proc/cmdline.c. kernel/sys.c fs/stat.c
@@ -27,15 +27,7 @@ done
 
 # Removal of KernelSU Hook
 
-for file in "${KSU_CLEAN_FILES[@]}"; do
-    sed -i '/#ifdef CONFIG_KSU/,/#endif/d' "${file}"
 
-    if grep -q "CONFIG_KSU" "${file}"; then
-        echo "[-] Could not remove KernelSU hook from ${file}."
-    else
-        echo "[+] Cleaned KernelSU Hook for ${file}."
-    fi
-done
 
 # Removal of SuSFS
 
