@@ -17,7 +17,7 @@ env:
 
   KERNEL_SOURCE : "https://github.com/fredslbn/android_kernel_xiaomi_surya.git"
   # KERNEL_SOURCE : "https://github.com/fredslbn/halycon_surya.git"
-  KERNEL_BRANCH : "backup"
+  KERNEL_BRANCH : "rethinking"
 
   # CLANG_SOURCE : "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/28337064939c0b4bb5804cddf35fb03d860edcf6/clang-r614150.tar.gz"
   # CLANG_SOURCE : "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
