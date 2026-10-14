@@ -85,7 +85,7 @@ runs:
                 echo "CONFIG_KSU_LSM_SECURITY_HOOKS=y" >> "$CONFIG_FILE"
                 echo "CONFIG_KALLSYMS_ALL=y" >> "$CONFIG_FILE"
                 echo "CONFIG_KSU_COMPILE_AS_C23=y" >> "$CONFIG_FILE"
-                echo "CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y" >> "$CONFIG_FILE"
+                # echo "CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y" >> "$CONFIG_FILE"
                 echo "CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y" >> "$CONFIG_FILE"             
                 echo "CONFIG_KPROBES=n" >> "$CONFIG_FILE"
                                        
@@ -127,7 +127,7 @@ runs:
           SECOND_VERSION=$(echo "$KERNEL_VERSION" | awk -F '.' '{print $2}')
 
           if ! grep -rq "check_symbol_export" "drivers/kernelsu/tools/static_export_check.mk" >/dev/null 2>&1; then
-            echo "[-] Your KernelSU needn't this check progress, Skipped."
+            echo "[-] Your KernelSU doesn't need static state in partial functions. Skipped."
 
           elif [[ "${{ env.KPM_ENABLE }}" == "true" ]]; then
             echo "[+] Detected KPM, Skipped."
@@ -138,14 +138,15 @@ runs:
           else
             if grep "const write_op" "security/selinux/selinuxfs.c" >/dev/null 2>&1; then
                 sed -i 's/static ssize_t (\*const write_op\[\])(struct file \*, char \*, size_t)/ssize_t (*const write_op[])(struct file *, char *, size_t)/' security/selinux/selinuxfs.c
-
             else
                 sed -i 's/static ssize_t (\*write_op\[\])(struct file \*, char \*, size_t)/ssize_t (*write_op[])(struct file *, char *, size_t)/' security/selinux/selinuxfs.c
-
             fi
+            
             sed -i 's/^static const struct file_operations sel_handle_status_ops = {/const struct file_operations sel_handle_status_ops = {/' security/selinux/selinuxfs.c
-
-            echo "[+] Removed write_op and sel_handle_status_ops static state."
+            sed -i 's/static void security_dump_masked_av(struct policydb \*policydb,/void security_dump_masked_av(struct policydb *policydb,/' security/selinux/ss/services.c
+            sed -i 's/static void context_struct_compute_av(struct policydb \*policydb,/void context_struct_compute_av(struct policydb *policydb,/' security/selinux/ss/services.c
+            
+            echo "[+] Removed write_op, sel_handle_status_ops, security_dump_masked_av and context_struct_compute_av static state."
 
             if [ "$FIRST_VERSION" -lt 5 ] && [ "$SECOND_VERSION" -lt 15 ]; then
                 if grep -q "sel_mutex" "security/selinux/selinuxfs.c" >/dev/null 2>&1; then
