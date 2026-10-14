@@ -15,8 +15,9 @@ env:
   # EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1 AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
   EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1"
 
-  KERNEL_SOURCE : "https://github.com/fredslbn/android_kernel_xiaomi_surya.git"
-  KERNEL_BRANCH : "backup"
+  # KERNEL_SOURCE : "https://github.com/fredslbn/android_kernel_xiaomi_surya.git"
+  KERNEL_SOURCE : "https://github.com/fredslbn/halycon_surya.git"
+  KERNEL_BRANCH : "lineage-20"
 
   # CLANG_SOURCE : "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/28337064939c0b4bb5804cddf35fb03d860edcf6/clang-r614150.tar.gz"
   # CLANG_SOURCE : "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
@@ -59,8 +60,8 @@ env:
   NEED_SAFE_DTBO : false
 
   ROM_TEXT : "xxKSU"
-  CUSTOM_SUSFS_PATCH : true
-  CUSTOM_CLEANUP_HARDCODE : true
+  CUSTOM_SUSFS_PATCH : false
+  CUSTOM_CLEANUP_HARDCODE : false
   CUSTOM_DIR_ANYKERNEL : true
   
   # Other env
@@ -139,9 +140,9 @@ jobs:
 
           # Rewrite Localversion Name
           sed -i '/CONFIG_LOCALVERSION/d' "$CONFIG_FILE"
-          #sed -i '/CONFIG_LOCALVERSION_AUTO/d' "$CONFIG_FILE"
+          sed -i '/CONFIG_LOCALVERSION_AUTO/d' "$CONFIG_FILE"
           echo "CONFIG_LOCALVERSION=-super.kernel" >> "$CONFIG_FILE"
-          #echo "CONFIG_LOCALVERSION_AUTO=y" >> "$CONFIG_FILE"
+          echo "CONFIG_LOCALVERSION_AUTO=y" >> "$CONFIG_FILE"
           
           # sed -i 's/-valeryn/-super.kernel/g' localversion
           # sed -i 's/-cip131//g' localversion-cip
