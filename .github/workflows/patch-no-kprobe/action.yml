@@ -9,12 +9,26 @@ runs:
           cd $GITHUB_WORKSPACE/device_kernel
           
           # Patching xxKSU for clang inline optimization
-          if [[ "${{ env.KERNELSU_SOURCE }}" == *backslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]]; then            
+          if [[ "${{ env.KERNELSU_SOURCE }}" == *backslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]]; then
+             
+             if [[ "${{ env.KERNEL_TYPE }}" == 4.19 ]]; then
+                cp /tmp/Patches/4.19_scope_minimized_manual_hooks_2.3.patch ./
+                patch -p1 < 4.19_scope_minimized_manual_hooks_2.3.patch || true
+                echo "[...] 4.19_scope_minimized_manual_hooks_2.3 patch applied." 
+             elif [[ "${{ env.KERNEL_TYPE }}" == 4.14 ]]; then
+                cp /tmp/Patches/4.14_scope_minimized_manual_hooks_2.3.patch ./
+                patch -p1 < 4.14_scope_minimized_manual_hooks_2.3.patch || true
+                echo "[...] 4.14_scope_minimized_manual_hooks_2.3 patch applied." 
+             fi
+             
              cp /tmp/Patches/clang_xxksu_inline.patch ./
              patch -p1 < clang_xxksu_inline.patch || true
-             echo "[...] clang_xxksu_inline patch applied." 
+             echo "[...] clang_xxksu_inline patch applied."
+             
           else
+          
             echo "[-] Your KernelSU is not xxKSU, patch clang_xxksu_inline being skipped."
+          
           fi
           
           # Detect SuSFS is used to enable the SuSFS inline hook

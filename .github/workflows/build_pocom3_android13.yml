@@ -66,6 +66,7 @@ env:
   CUSTOM_SUSFS_PATCH : true
   CUSTOM_CLEANUP_HARDCODE : true
   CUSTOM_DIR_ANYKERNEL : false
+  KERNEL_TYPE : "4.19"
   
   SUSFS_ENABLE : true
   SUSFS_FIXED : true
