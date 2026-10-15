@@ -29,7 +29,7 @@ diff --git a/fs/open.c b/fs/open.c
 index 4833dbd6b42d..f18db0b9dabb 100644
 --- a/fs/open.c
 +++ b/fs/open.c
-@@ -453,6 +453,10 @@ long do_faccessat(int dfd, const char __user *filename, int mode)
+@@ -483,6 +483,10 @@ long do_faccessat(int dfd, const char __user *filename, int mode)
  
  SYSCALL_DEFINE3(faccessat, int, dfd, const char __user *, filename, int, mode)
  {
