@@ -5,7 +5,9 @@
 
 KSU_FOLDER=("drivers/kernelsu" "KernelSU" "KernelSU-Next")
 
-KSU_CLEAN_FILES=("fs/exec.c" "fs/read_write.c" "fs/open.c" "fs/stat.c" "fs/devpts/inode.c" "fs/namei.c" "drivers/input/input.c" "drivers/tty/pty.c" "security/selinux/hooks.c" "kernel/reboot.c" "kernel/sys.c")
+## FRED MODIF
+## exclude fs/open.c
+KSU_CLEAN_FILES=("fs/exec.c" "fs/read_write.c" "fs/stat.c" "fs/devpts/inode.c" "fs/namei.c" "drivers/input/input.c" "drivers/tty/pty.c" "security/selinux/hooks.c" "kernel/reboot.c" "kernel/sys.c")
 
 ## FRED MODIF
 ## exclude fs/namespace.c kernel/sys.c fs/proc/taskmmu.c fs/super.c
