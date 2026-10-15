@@ -9,13 +9,13 @@ runs:
           cd $GITHUB_WORKSPACE/device_kernel
           
           # Patching xxKSU for clang inline optimization and scope minimized security 2.3
-          if [[ ${{ env.PATCH_XXKSU_MANUAL }} == "true" ]] && { [[ "${{ env.KERNELSU_SOURCE }}" == *backslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]]; }; then
+          if [[ ${{ env.PATCH_XXKSU_MANUAL }} == "true" ]]; then
                                            
-                 if [[ ${{ env.KERNEL_TYPE }} == "4.19" ]]; then
+                 if [[ "${{ env.KERNEL_TYPE }}" == "4.19" ]]; then
                      cp /tmp/Patches/4.19_scope_minimized_manual_hooks_2.3.patch ./
                      patch -p1 < 4.19_scope_minimized_manual_hooks_2.3.patch || true
                      echo "[...] 4.19_scope_minimized_manual_hooks_2.3 patch applied." 
-                 elif [[ ${{ env.KERNEL_TYPE }} == "4.14" ]]; then
+                 elif [[ "${{ env.KERNEL_TYPE }}" == "4.14" ]]; then
                      cp /tmp/Patches/4.14_scope_minimized_manual_hooks_2.3.patch ./
                      patch -p1 < 4.14_scope_minimized_manual_hooks_2.3.patch || true
                      echo "[...] 4.14_scope_minimized_manual_hooks_2.3 patch applied." 
