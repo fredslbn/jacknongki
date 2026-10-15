@@ -66,6 +66,7 @@ env:
   CUSTOM_SUSFS_PATCH : true
   CUSTOM_CLEANUP_HARDCODE : true
   CUSTOM_DIR_ANYKERNEL : false
+  PATCH_XXKSU_TYPE : "" # manual, only if patching manually scope minimized security hooks 2.3
   KERNEL_TYPE : "4.19"
   
   SUSFS_ENABLE : true
