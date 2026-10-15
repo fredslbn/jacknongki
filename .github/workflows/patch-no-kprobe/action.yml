@@ -7,9 +7,18 @@ runs:
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel
-
+          
+          # Patching xxKSU for clang inline optimization
+          if [[ "${{ env.KERNELSU_SOURCE }}" == *backslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]]; then            
+             cp /tmp/Patches/clang_xxksu_inline.patch ./
+             patch -p1 < clang_xxksu_inline.patch || true
+             echo "[...] clang_xxksu_inline patch applied." 
+          else
+            echo "[-] Your KernelSU is not xxKSU, patch clang_xxksu_inline being skipped."
+          fi
+          
           # Detect SuSFS is used to enable the SuSFS inline hook
-          if [[ ${{ env.SUSFS_ENABLE }} == "true" ]] && { [[ "${{ env.KERNELSU_SOURCE }}" == *ReSukiSU* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "resukisu" ]]; }; then
+          if [[ ${{ env.SUSFS_ENABLE }} == "true" ]] && { [[ "${{ env.KERNELSU_SOURCE }}" == *BakaSU* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "bakasu" ]]; }; then
             # Core
             cp /tmp/Patches/susfs_inline_hook_patches.sh ./
             bash susfs_inline_hook_patches.sh ./
