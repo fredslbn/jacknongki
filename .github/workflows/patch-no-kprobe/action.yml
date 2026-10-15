@@ -9,9 +9,8 @@ runs:
           cd $GITHUB_WORKSPACE/device_kernel
           
           # Patching xxKSU for clang inline optimization and scope minimized security 2.3
-          if [[ ${{ env.PATCH_XXKSU_MANUAL }} == "true" ]]; then
-                  
-             if [[ "${{ env.KERNELSU_SOURCE }}" == *backslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]]; then             
+          if [[ ${{ env.PATCH_XXKSU_MANUAL }} == "true" ]] && { [[ "${{ env.KERNELSU_SOURCE }}" == *backslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]]; }; then
+                                           
                  if [[ ${{ env.KERNEL_TYPE }} == "4.19" ]]; then
                      cp /tmp/Patches/4.19_scope_minimized_manual_hooks_2.3.patch ./
                      patch -p1 < 4.19_scope_minimized_manual_hooks_2.3.patch || true
@@ -25,10 +24,7 @@ runs:
                  cp /tmp/Patches/clang_xxksu_inline.patch ./
                  patch -p1 < clang_xxksu_inline.patch || true
                  echo "[...] clang_xxksu_inline patch applied."             
-             else          
-                echo "[-] Your KernelSU is not xxKSU, patch clang_xxksu_inline being skipped."          
-             fi
-             
+                          
           else
           
               echo "[+] Your KernelSU is not manually patched, continue to next step!"   
