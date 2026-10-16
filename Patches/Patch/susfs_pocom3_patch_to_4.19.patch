@@ -636,7 +636,7 @@ index 78692a8..6100839 100644
  	pathname = d_path(path, tmp, PAGE_SIZE);
  	len = PTR_ERR(pathname);
  	if (IS_ERR(pathname))
-@@ -2529,6 +2547,10 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
+@@ -2535,6 +2553,10 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
  				vma = vma->vm_next) {
  			if (!vma->vm_file)
  				continue;
