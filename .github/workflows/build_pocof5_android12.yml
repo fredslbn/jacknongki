@@ -161,24 +161,25 @@ jobs:
           # Full Metamodule Support
           echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
           echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
-          echo "CONFIG_OVERLAY_FS=y" >> "$CONFIG_FILE"          
+          # echo "CONFIG_OVERLAY_FS=y" >> "$CONFIG_FILE"          
           
-          # echo "KBUILD_CFLAGS += -w" >> ./Makefile          
-          echo 'KBUILD_CFLAGS += -Wno-default-const-init-unsafe' >> ./Makefile
-          echo 'KBUILD_CFLAGS += -Wno-uninitialized-const-pointer' >> ./Makefile
-          echo 'KBUILD_CFLAGS += -Wno-implicit-function-declaration' >> ./Makefile
-          echo 'KBUILD_CFLAGS += -Wno-sometimes-uninitialized' >> ./Makefile
+          # Kbuild flags
+          echo "KBUILD_CFLAGS += -w" >> ./Makefile          
+          # echo 'KBUILD_CFLAGS += -Wno-default-const-init-unsafe' >> ./Makefile
+          # echo 'KBUILD_CFLAGS += -Wno-uninitialized-const-pointer' >> ./Makefile
+          # echo 'KBUILD_CFLAGS += -Wno-implicit-function-declaration' >> ./Makefile
+          # echo 'KBUILD_CFLAGS += -Wno-sometimes-uninitialized' >> ./Makefile
           
-          echo "Custom Makefile line added successfully"   
+          echo "Custom Kbuild for Makefile line added successfully"   
           
           # LTO Configuration - Enable Thin LTO only
           sed -i '/CONFIG_LTO_CLANG_FULL/d' "$CONFIG_FILE"
           echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
           echo "# CONFIG_LTO_CLANG_FULL is not set" >> "$CONFIG_FILE"
-          echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
           echo "CONFIG_THINLTO=y" >> "$CONFIG_FILE"
                    
-          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$CONFIG_FILE"
           echo "# CONFIG_DEBUG_INFO_BTF is not set" >> "$CONFIG_FILE"                    
           
           # TCP optimization
