@@ -9,7 +9,7 @@ runs:
           cd $GITHUB_WORKSPACE/device_kernel
           
           # Patching xxKSU for clang inline optimization and scope minimized security 2.3
-          if [[ ${{ env.PATCH_XXKSU_MANUAL }} == "true" ]]; then
+          if [[ "${{ env.PATCH_XXKSU_MANUAL }}" == "true" ]]; then
                                            
                  if [[ "${{ env.KERNEL_TYPE }}" == "4.19" ]]; then
                      cp /tmp/Patches/4.19_scope_minimized_manual_hooks_2.3.patch ./
