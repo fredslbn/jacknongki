@@ -169,6 +169,8 @@ jobs:
           sed -i '/CONFIG_LOCALVERSION_AUTO/d' "$CONFIG_FILE"
           echo "CONFIG_LOCALVERSION=-super.kernel" >> "$CONFIG_FILE"
           echo "CONFIG_LOCALVERSION_AUTO=y" >> "$CONFIG_FILE"
+          
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$CONFIG_FILE"
                     
           # echo "KBUILD_CFLAGS += -w" >> ./Makefile
           echo 'KBUILD_CFLAGS += -Wno-default-const-init-unsafe' >> ./Makefile

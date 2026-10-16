@@ -9,11 +9,11 @@ env:
   DEVICE_NAME : "poco_f5"
   DEVICE_CODENAME : "Marble"
 
-  # CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-"
-  CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu-"
+  CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-"
+  # CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu-"
   
-  # EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1 AR=llvm-ar AS=llvm-as NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
-  EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1"
+  EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1 AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
+  # EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1"
 
   KERNEL_SOURCE : "https://github.com/fredslbn/android_kernel_marble.git"
   KERNEL_BRANCH : "android12-5.10-marble"
@@ -25,7 +25,8 @@ env:
   # CLANG_SOURCE : "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
   # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.1/LLVM-23.1.1-Linux-X64.tar.xz"
   # CLANG_SOURCE : "https://github.com/greenforce-project/greenforce_clang/releases/download/20260926/gf-clang-24.0.0-20260926.tar.gz"
-  CLANG_SOURCE : "https://www.kernel.org/pub/tools/llvm/files/llvm-22.1.8-aarch64.tar.gz"
+  # CLANG_SOURCE : "https://www.kernel.org/pub/tools/llvm/files/llvm-22.1.8-aarch64.tar.gz"
+  CLANG_SOURCE : "https://github.com/Impqxr/aosp_clang_ci/releases/download/13289611/clang-13289611-linux-x86.tar.xz"
   CLANG_BRANCH : ""
 
   GCC_GNU : false
@@ -40,11 +41,11 @@ env:
   # GCC_32_BRANCH : ""
   
   # GCC_64_SOURCE : "https://huggingface.co/csukuangfj/sherpa-ncnn-toolchains/resolve/main/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz"
-  GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
-  GCC_64_BRANCH : "master"
+  # GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
+  # GCC_64_BRANCH : "master"
   # GCC_32_SOURCE : "https://huggingface.co/csukuangfj/sherpa-ncnn-toolchains/resolve/main/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf.tar.xz"
-  GCC_32_SOURCE : "https://github.com/mhdzumair/toolchain.git"
-  GCC_32_BRANCH : "master"
+  # GCC_32_SOURCE : "https://github.com/mhdzumair/toolchain.git"
+  # GCC_32_BRANCH : "master"
 
   DEFCONFIG_SOURCE: ""
   DEFCONFIG_NAME : "gki_defconfig"
@@ -67,7 +68,7 @@ env:
   SUSFS_ENABLE : true
   SUSFS_FIXED : true
 
-  AK3_SOURCE : "https://github.com/fredslbn/AnyKernel3.git"
+  AK3_SOURCE : "https://github.com/topnotchfreaks/AnyKernel3.git"
   AK3_BRANCH : "master"
 
   BOOT_SOURCE : ""
@@ -149,31 +150,46 @@ jobs:
         run: |
           # Only ${{ env.DEVICE_NAME }} use it.
           cd $GITHUB_WORKSPACE/device_kernel
+          
+          CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"          
+          # Rewrite Localversion Name
+          # sed -i '/CONFIG_LOCALVERSION/d' "$CONFIG_FILE"
+          sed -i '/CONFIG_LOCALVERSION_AUTO/d' "$CONFIG_FILE"
+          # echo "CONFIG_LOCALVERSION=-super.kernel" >> "$CONFIG_FILE"
+          echo "CONFIG_LOCALVERSION_AUTO=y" >> "$CONFIG_FILE"
 
-          # enable CONFIG_COMPAT_VDSO and CONFIG_THUMB2_COMPAT_VDSO
-          echo "CONFIG_LOCALVERSION=-super.kernel" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-          echo "CONFIG_LOCALVERSION_AUTO=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-          echo "CONFIG_TMPFS_XATTR=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-          echo "CONFIG_TMPFS_POSIX_ACL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+          # Full Metamodule Support
+          echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
+          echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
+          echo "CONFIG_OVERLAY_FS=y" >> "$CONFIG_FILE"          
           
-          echo "KBUILD_CFLAGS += -w" >> ./Makefile
-          echo "Custom Makefile line added successfully"          
+          # echo "KBUILD_CFLAGS += -w" >> ./Makefile          
+          echo 'KBUILD_CFLAGS += -Wno-default-const-init-unsafe' >> ./Makefile
+          echo 'KBUILD_CFLAGS += -Wno-uninitialized-const-pointer' >> ./Makefile
+          echo 'KBUILD_CFLAGS += -Wno-implicit-function-declaration' >> ./Makefile
+          echo 'KBUILD_CFLAGS += -Wno-sometimes-uninitialized' >> ./Makefile
           
-          echo "CONFIG_ARCH_SUPPORTS_LTO_CLANG=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-          echo "CONFIG_ARCH_SUPPORTS_LTO_CLANG_THIN=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-          echo "CONFIG_HAS_LTO_CLANG=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}          
-          echo "CONFIG_LTO=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-          echo "CONFIG_LTO_THIN=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-          echo "# CONFIG_LTO_NONE is not set" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-          echo "CONFIG_LTO_CLANG_THIN=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-          echo "# CONFIG_LTO_CLANG_FULL is not set" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
+          echo "Custom Makefile line added successfully"   
           
-          echo "# CONFIG_DEBUG_INFO_BTF is not set" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-
-          # sed -i 's/-valeryn/-super.kernel/g' localversion
-          # sed -i 's/-cip131//g' localversion-cip
-          # sed -i 's/-st15//g' localversion-st
-          # echo "Localversion string has been replaced."
+          # LTO Configuration - Enable Thin LTO only
+          sed -i '/CONFIG_LTO_CLANG_FULL/d' "$CONFIG_FILE"
+          echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
+          echo "# CONFIG_LTO_CLANG_FULL is not set" >> "$CONFIG_FILE"
+          echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_THINLTO=y" >> "$CONFIG_FILE"
+                   
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$CONFIG_FILE"
+          echo "# CONFIG_DEBUG_INFO_BTF is not set" >> "$CONFIG_FILE"                    
+          
+          # TCP optimization
+          echo "CONFIG_TCP_CONG_ADVANCED=y" >> "$CONFIG_FILE"
+          echo "CONFIG_TCP_CONG_BIC=n" >> "$CONFIG_FILE"
+          echo "CONFIG_TCP_CONG_WESTWOOD=y" >> "$CONFIG_FILE"
+          echo "CONFIG_TCP_CONG_HTCP=n" >> "$CONFIG_FILE"
+          echo "CONFIG_TCP_CONG_BBR=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DEFAULT_WESTWOOD=y" >> "$CONFIG_FILE"
+          
+          echo "TCP optimization added successfully"  
       
       - name: 🚀 Build Process
         uses: ./.github/workflows/build-process

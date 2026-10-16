@@ -10,6 +10,7 @@ runs:
           path: |
             device_kernel/${{ env.PACK_NAME }}
           archive: false
+          retention-days: 1
 
       - name: Upload Build Artifacts For Boot Image
         if: env.PACK_METHOD == 'MKBOOTIMG'
@@ -18,3 +19,4 @@ runs:
           path: |
             ${{ env.PACK_NAME }}
           archive: false
+          retention-days: 1

@@ -191,7 +191,7 @@ runs:
                     echo "✅ SUSFS build wiring verified"                    
                     # cp /tmp/Patches/Patch/susfs_pocof7_patch_to_6.6.patch ./
                     # patch -p1 < susfs_pocof7_patch_to_6.6.patch || true                 
-                    echo "[+] GKI 6.6 is already in SuSFS Patch completed."
+                    echo "[+] GKI 6.6 kernel has SuSFS patched completely."
  
  
                  ## GKI 5.15
@@ -232,7 +232,7 @@ runs:
                     echo "✅ SUSFS build wiring verified"                    
                     # cp /tmp/Patches/Patch/susfs_pocof7_patch_to_6.6.patch ./
                     # patch -p1 < susfs_pocof7_patch_to_6.6.patch || true                 
-                    echo "[+] GKI 5.15 is already in SuSFS Patch completed."
+                    echo "[+] GKI 5.15 kernel has SuSFS patched completely."
                     
                     
                     ## GKI 5.10
@@ -274,7 +274,7 @@ runs:
                     echo "✅ SUSFS build wiring verified"                    
                     # cp /tmp/Patches/Patch/susfs_pocof7_patch_to_6.6.patch ./
                     # patch -p1 < susfs_pocof7_patch_to_6.6.patch || true                 
-                    echo "[+] GKI 5.15 is already in SuSFS Patch completed."
+                    echo "[+] GKI 5.10 kernel has SuSFS patched completely."
 
                  
                  fi
