@@ -1,0 +1,22 @@
+From a740b909c08f8591bab263d709737712c46448f6 Mon Sep 17 00:00:00 2001
+From: gavdov38 <gavin.a.docherty@gmail.com>
+Date: Tue, 22 Sep 2026 14:39:53 +0100
+Subject: [PATCH] selinux_hide.c: do not init avc spoofing as susfs does this
+
+---
+ kernel/feature/selinux_hide.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/feature/selinux_hide.c b/kernel/feature/selinux_hide.c
+index afcc30938872..b9a5facf4c20 100644
+--- a/kernel/feature/selinux_hide.c
++++ b/kernel/feature/selinux_hide.c
+@@ -327,7 +327,7 @@ init_hooks:; // apply_kernelsu_rules_fn
+ 	// selinux_setprocattr hook init is on lsm.
+ 	
+ 	// downstream/slow_avc_audit_defs.h
+-	ksu_init_slow_avc_audit_hook();
++	// ksu_init_slow_avc_audit_hook();
+ 
+ 	return 0;
+ }

@@ -181,6 +181,16 @@ runs:
                     KERNELSU_BRANCH="master"
                 fi
 
+            elif [[ "${{ env.KERNELSU_AUTO_FORK }}" == "ffksu" ]]; then
+                KERNELSU_AUTHOR="fredslbn"
+                KERNELSU_NAME="KernelSU"
+                KERNELSU_ORIGIN_BRANCH="master"
+                if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then
+                    KERNELSU_BRANCH="master"
+                else
+                    KERNELSU_BRANCH="master"
+                fi
+            
             elif [[ "${{ env.KERNELSU_AUTO_FORK }}" == "rsuntk" ]]; then
                 KERNELSU_AUTHOR="rsuntk"
                 KERNELSU_NAME="KernelSU"
@@ -312,7 +322,7 @@ runs:
           fi
      
       ### FREDS MODIF
-      - name: xxKSU + SuSFS
+      - name: xxKSU | ffKSU + SuSFS
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/KernelSU
@@ -332,6 +342,30 @@ runs:
                 echo "[-] SUSFS disabled, then patches being skipped."
             fi
             
+          elif [[ "${{ env.KERNELSU_SOURCE }}" == *fredslbn* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "ffksu" ]]; then
+            if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then                                        
+                cp /tmp/Patches/1-1.patch $GITHUB_WORKSPACE/device_kernel/KernelSU
+                patch -p1 < 1-1.patch || true
+                echo "[...] 1-1 patch applied." 
+                
+                cp /tmp/Patches/1-2.patch $GITHUB_WORKSPACE/device_kernel/KernelSU
+                patch -p1 < 1-2.patch || true
+                echo "[...] 1-2 patch applied." 
+                
+                cp /tmp/Patches/1-3.patch $GITHUB_WORKSPACE/device_kernel/KernelSU
+                patch -p1 < 1-3.patch || true
+                echo "[...] 1-3 patch applied." 
+                
+                cp /tmp/Patches/xx-1.patch $GITHUB_WORKSPACE/device_kernel/KernelSU
+                patch -p1 < xx-1.patch || true
+                echo "[...] xx-1 patch applied." 
+                                
+                echo "[+] Susfs patch for ffKSU has been completed."          
+            
+            else
+                echo "[-] SUSFS disabled, then patches being skipped."
+            fi
+          
           else
             echo "[-] Your KernelSU is not xxKSU, patch SUSFS be skipped."
 
@@ -414,7 +448,7 @@ runs:
         run: |
           cd $GITHUB_WORKSPACE/device_kernel
           
-          if [[ "${{ env.KERNELSU_SOURCE }}" == *backslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]]; then                          
+          if [[ "${{ env.KERNELSU_SOURCE }}" == *backslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]] || [[ "${{ env.KERNELSU_SOURCE }}" == *fredslbn* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "ffksu" ]]; then
             echo "[+] CONFIG_KSU applied from specific defconfig."
             
           else

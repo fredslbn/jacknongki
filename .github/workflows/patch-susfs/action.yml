@@ -292,19 +292,19 @@ runs:
               
               fi
                           
-              if [[ "${{ env.KERNELSU_SOURCE }}" == *backslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]]; then                  
+              if [[ "${{ env.KERNELSU_SOURCE }}" == *backslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]] || [[ "${{ env.KERNELSU_SOURCE }}" == *fredslbn* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "ffksu" ]]; then
                   if [[ "${{ env.GKI_TYPE_KERNEL }}" == "true" ]]; then
                      echo "[+] This is GKI 2.0 kernel, no need for patching try_umount susfs."
                   else                  
                      cp /tmp/Patches/try_umount_for_susfs.patch ./
                      patch -p1 < try_umount_for_susfs.patch || true              
                      # patch -p1 < <(curl -sL "https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/patches/55_try_umount_for_susfs.patch") || true
-                     echo "[+] auto_try_umount patch for xxKSU successfully applied."
+                     echo "[+] auto_try_umount patch for xxKSU | ffKSU successfully applied."
                   fi
 
               else
               
-                  echo "[+] This is not xxKSU, so no need for patching try_umount susfs."
+                  echo "[+] This is not xxKSU or ffKSU, so no need for patching try_umount susfs."
               
               fi
             
