@@ -73,6 +73,7 @@ runs:
  
                        
           elif [[ ${{ env.HOOK_METHOD }} == "branchlink" ]]; then
+          
              if [[ ${{ env.DEVICE_CODENAME }} == "Surya" ]]; then
                 CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
              

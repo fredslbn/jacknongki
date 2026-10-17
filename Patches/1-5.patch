@@ -1,0 +1,22 @@
+From 107cb0a4ab3430fbd83c0731f64bc1ac9a299023 Mon Sep 17 00:00:00 2001
+From: fredslbn <fh.silaban@gmail.com>
+Date: Sat, 17 Oct 2026 23:07:12 +0700
+Subject: [PATCH] hostredirect
+
+---
+ kernel/downstream/ksu_hostsredirect.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/downstream/ksu_hostsredirect.h b/kernel/downstream/ksu_hostsredirect.h
+index 4d98a8bd64c6..31e8d95b6b37 100644
+--- a/kernel/downstream/ksu_hostsredirect.h
++++ b/kernel/downstream/ksu_hostsredirect.h
+@@ -14,7 +14,7 @@
+ #ifndef __KSU_H_HOSTSREDIRECT
+ #define __KSU_H_HOSTSREDIRECT
+ 
+-static bool ksu_kernel_umount_enabled __read_mostly;
++bool ksu_kernel_umount_enabled;
+ 
+ static __always_inline void ksu_hosts_file_redirect(const char __user *filename, int flags, int *fd_ptr)
+ {

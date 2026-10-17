@@ -157,9 +157,10 @@ diff --git a/kernel/feature/kernel_umount.c b/kernel/feature/kernel_umount.c
 index 1d8cd81b8813..6e0f81aafe98 100644
 --- a/kernel/feature/kernel_umount.c
 +++ b/kernel/feature/kernel_umount.c
-@@ -1,4 +1,6 @@
+@@ -1,4 +1,8 @@
 +#ifndef CONFIG_KSU_SUSFS
--static bool ksu_kernel_umount_enabled __read_mostly = true;
+ static bool ksu_kernel_umount_enabled __read_mostly = true;
+#else
 +bool ksu_kernel_umount_enabled = true;
 +#endif // #ifndef CONFIG_KSU_SUSFS
  

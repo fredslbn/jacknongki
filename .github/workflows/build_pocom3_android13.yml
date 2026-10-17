@@ -174,7 +174,11 @@ jobs:
           
           # echo "Full LTO configs applied."
           
-          # strip kernel
+          #
+          echo "CONFIG_COMPAT_VDSO=y" >> "$CONFIG_FILE"
+          echo "CONFIG_THUMB2_COMPAT_VDSO=y" >> "$CONFIG_FILE"
+          
+          # 
           sed -i '/CONFIG_SHADOW_CALL_STACK/d' "$CONFIG_FILE"
           echo "# CONFIG_SHADOW_CALL_STACK is not set" >> "$CONFIG_FILE"
           echo "CONFIG_CFI_CLANG=y" >> "$CONFIG_FILE"
@@ -219,6 +223,10 @@ jobs:
           
           echo "CONFIG_HAVE_OPTPROBES=y" >> "$CONFIG_FILE"
           echo "CONFIG_OPTPROBES=y" >> "$CONFIG_FILE"
+          
+          sed -i '/CONFIG_DEBUG_FS/d' "$CONFIG_FILE"
+          echo "CONFIG_DEBUG_FS=n" >> "$CONFIG_FILE"
+          
       
       - name: 🚀 Build Process
         uses: ./.github/workflows/build-process
