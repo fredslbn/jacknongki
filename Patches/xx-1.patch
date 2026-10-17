@@ -14,7 +14,7 @@ diff --git a/kernel/hook/branch_link_hook_arm64.c b/kernel/hook/branch_link_hook
 index 20fd9c6d2c37..3965e1e40ba3 100644
 --- a/kernel/hook/branch_link_hook_arm64.c
 +++ b/kernel/hook/branch_link_hook_arm64.c
-@@ -523,12 +523,16 @@ static int bl_hack_init_thread(void *data)
+@@ -498,12 +498,16 @@ static int bl_hack_init_thread(void *data)
  {
  	set_user_nice(current, 19); // low prio
  
