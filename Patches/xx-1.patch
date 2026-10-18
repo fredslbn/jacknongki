@@ -1,4 +1,4 @@
-From ebc0fb820e94d412018a76046f5786c31f818f5f Mon Sep 17 00:00:00 2001
+From 4a39f6a4d665f42cbe2f0daddb9a01a4db89d95f Mon Sep 17 00:00:00 2001
 From: backslashxx <118538522+backslashxx@users.noreply.github.com>
 Date: Mon, 14 Sep 2026 19:50:53 +0900
 Subject: [PATCH] extra
@@ -11,10 +11,10 @@ Signed-off-by: midori01 <lv@lvlv.lv>
  3 files changed, 89 insertions(+)
 
 diff --git a/kernel/hook/branch_link_hook_arm64.c b/kernel/hook/branch_link_hook_arm64.c
-index 20fd9c6d2c37..3965e1e40ba3 100644
+index b1577d060c31..410e01021f51 100644
 --- a/kernel/hook/branch_link_hook_arm64.c
 +++ b/kernel/hook/branch_link_hook_arm64.c
-@@ -503,12 +503,16 @@ static int bl_hack_init_thread(void *data)
+@@ -462,12 +462,16 @@ static int bl_hack_init_thread(void *data)
  {
  	set_user_nice(current, 19); // low prio
  
