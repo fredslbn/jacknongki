@@ -327,7 +327,7 @@ runs:
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/KernelSU
 
-          if [[ "${{ env.KERNELSU_SOURCE }}" == *backslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]]; then
+          if [[ "${{ env.KERNELSU_SOURCE }}" == *backslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]] || [[ "${{ env.KERNELSU_SOURCE }}" == *fredslbn* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "ffksu" ]]; then
             if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then
                 cp /tmp/Patches/xx-1.patch $GITHUB_WORKSPACE/device_kernel/KernelSU
                 patch -p1 < xx-1.patch || true
@@ -343,39 +343,11 @@ runs:
             
             else
                 echo "[-] SUSFS disabled, then patches being skipped."
-            fi
-            
-          elif [[ "${{ env.KERNELSU_SOURCE }}" == *fredslbn* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "ffksu" ]]; then
-            if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then                                        
-                cp /tmp/Patches/1-1.patch $GITHUB_WORKSPACE/device_kernel/KernelSU
-                patch -p1 < 1-1.patch || true
-                echo "[...] 1-1 patch applied." 
-                
-                #cp /tmp/Patches/1-2.patch $GITHUB_WORKSPACE/device_kernel/KernelSU
-                #patch -p1 < 1-2.patch || true
-                echo "[...] 1-2 patch being skipped, addons module will take over it." 
-                
-                cp /tmp/Patches/1-3.patch $GITHUB_WORKSPACE/device_kernel/KernelSU
-                patch -p1 < 1-3.patch || true
-                echo "[...] 1-3 patch applied." 
-                
-                cp /tmp/Patches/1-4.patch $GITHUB_WORKSPACE/device_kernel/KernelSU
-                patch -p1 < 1-4.patch || true
-                echo "[...] 1-4 patch applied."
-                
-                cp /tmp/Patches/1-5.patch $GITHUB_WORKSPACE/device_kernel/KernelSU
-                patch -p1 < 1-5.patch || true
-                echo "[...] 1-5 patch applied."
-                                
-                echo "[+] Susfs patch for ffKSU has been completed."          
-            
-            else
-                echo "[-] SUSFS disabled, then patches being skipped."
-            fi
+            fi                                    
           
           else
           
-            echo "[-] Your KernelSU is not xxKSU, patch SUSFS be skipped."
+            echo "[-] Your KernelSU is not xxKSU or ffKSU, patch SUSFS be skipped."
 
           fi
 
