@@ -26,8 +26,8 @@ jobs:
             defconfig: "gki_defconfig"
             local_version: "-super.kernel-gki"
             output_name: "Image.gki.ksu"
-            enable_xxksu: false
-            enable_ffksu: true
+            enable_xxksu: true
+            enable_ffksu: false
             extra_patches:
               - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.10/gki_fixup.patch"
               - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.10/gki_hostbuild.patch"              
@@ -40,8 +40,8 @@ jobs:
             defconfig: "gki_defconfig"
             local_version: "-super.kernel-clo"
             output_name: "Image.clo.ksu"
-            enable_xxksu: false
-            enable_ffksu: true
+            enable_xxksu: true
+            enable_ffksu: false
             extra_patches:
               - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.10/gki_fixup.patch"
               - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.10/gki_hostbuild.patch"              
@@ -312,7 +312,7 @@ jobs:
           echo "🎉 ffKSU installed and SUSFS for GKI android10-5.10 fully integrated!"
 
       
-      - name: Apply BBRv3 Patch
+      - name: "🧩 Apply BBRv3 Patch"
         shell: bash
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
