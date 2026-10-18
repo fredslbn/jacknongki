@@ -26,8 +26,8 @@ jobs:
             defconfig: "gki_defconfig"
             local_version: "-super.kernel-gki"
             output_name: "Image.gki.ksu"
-            enable_xxksu: false
-            enable_ffksu: true
+            enable_xxksu: true
+            enable_ffksu: false
             extra_patches:
               - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_fixup.patch"
               - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_hostbuild.patch"
@@ -39,8 +39,8 @@ jobs:
             defconfig: "gki_defconfig"
             local_version: "-super.kernel-clo"
             output_name: "Image.clo.ksu"
-            enable_xxksu: false
-            enable_ffksu: true
+            enable_xxksu: true
+            enable_ffksu: false
             extra_patches:
               - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_fixup.patch"
               - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_hostbuild.patch"
@@ -359,7 +359,7 @@ jobs:
 
           tools/bazel build \
           --config=fast \
-          //${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}:kernel_aarch64/Image
+          //common:kernel_aarch64/Image
 
       - name: "📁 Copy kernel image"
         working-directory: ${{ env.WORK_DIR }}/out/dist
