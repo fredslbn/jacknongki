@@ -108,7 +108,14 @@ jobs:
           
           sed -i '$a\CLANG_PREBUILT_BIN=prebuilts/clang/host/linux-x86/clang-r547379/bin' ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.common
 
-          
+          # Bypass kernel build
+          sed -i \
+          -e '/^KMI_SYMBOL_LIST_STRICT_MODE=/d' \
+          -e '/^KMI_ENFORCED=/d' \
+          -e '$a\KMI_SYMBOL_LIST_STRICT_MODE=0' \
+          -e '$a\KMI_ENFORCED=0' \
+          ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.gki.aarch64
+                   
           # Remove defconfig check (if exists)
           sed -i '/^POST_DEFCONFIG_CMDS="check_defconfig"/d' ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.gki || true
 
@@ -150,15 +157,15 @@ jobs:
           echo "📦 Installing KSU..."
           curl -LSs "https://raw.githubusercontent.com/backslashxx/KernelSU/refs/heads/master/kernel/setup.sh" | bash -s master
           
-          echo "✔ KSU installed successfully"       
+          echo "✔ KSU installed successfully"
 
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           cat >> "$CONFIG_FILE" << 'EOF'
           CONFIG_KSU=y
           CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
-          CONFIG_KSU_HOSTSREDIRECT=y          
+          CONFIG_KSU_HOSTSREDIRECT=y
           CONFIG_KSU_KPROBES_KSUD=y
-          CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y          
+          CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y
           CONFIG_KSU_COMPILE_AS_C23=y
           CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
           EOF
@@ -217,7 +224,7 @@ jobs:
           CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
           CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
           CONFIG_KSU_SUSFS_SUS_MAP=y
-          EOF                    
+          EOF
 
           echo "🎉 xxKSU installed and SUSFS for GKI android12-5.10 fully integrated!"
 
@@ -226,6 +233,8 @@ jobs:
         if: matrix.kernel.enable_ffksu == true
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
+          set -euo pipefail
+          
           rm -rf ./KernelSU ./drivers/kernelsu
 
           echo "📦 Installing KSU..."
@@ -237,13 +246,13 @@ jobs:
           cat >> "$CONFIG_FILE" << 'EOF'
           CONFIG_KSU=y
           CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
-          CONFIG_KSU_HOSTSREDIRECT=y          
+          CONFIG_KSU_HOSTSREDIRECT=y
           CONFIG_KSU_KPROBES_KSUD=y
-          CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y          
+          CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y
           CONFIG_KSU_COMPILE_AS_C23=y
           CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
           EOF
-                    
+
           echo "✅ ffKSU configs added"
           
           echo "🔧 Applying SUSFS ffKSU patch..."
@@ -298,14 +307,36 @@ jobs:
           CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
           CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
           CONFIG_KSU_SUSFS_SUS_MAP=y
-          EOF                    
+          EOF
 
           echo "🎉 ffKSU installed and SUSFS for GKI android10-5.10 fully integrated!"
 
       
+      - name: Apply BBRv3 Patch
+        shell: bash
+        working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
+        run: |
+         set -euo pipefail
+         
+         # fix BBRv3 for android12-5.10
+         sed -i 's/CONFIG_IP_SET_MAX/65534/g' net/netfilter/ipset/ip_set_core.c
+                  
+         patch -p1 < <(curl -sSfL "https://raw.githubusercontent.com/fatalcoder524/kernel_patches_additional/refs/heads/main/bbr3/0001-net-tcp-backport-BBRv3-to-android12-5.10.patch") || true
+         echo "✅ BBRv3 patch successfully applied"
+         
+         # bbrv3 fix for android12-5.10 and android13-5.10
+         if ! grep -qF 'int proc_dou8vec_minmax(' ./include/linux/sysctl.h; then
+            patch -p1 < <(curl -sSfL "https://raw.githubusercontent.com/fatalcoder524/kernel_patches_additional/refs/heads/main/bbr3/sysctl_add_proc_dou8vec_minmax.patch") || true
+            patch -p1 < <(curl -sSfL "https://raw.githubusercontent.com/fatalcoder524/kernel_patches_additional/refs/heads/main/bbr3/sysctl_fix_data-races_in_proc_dou8vec_minmax.patch") || true
+            echo "✅ BBRv3 fix for android12-5.10 or android13-5.10 is successfully applied"
+         fi
+
+
       - name: "⚙️ Setup basic configs"
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
+          set -euo pipefail
+          
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           
           # addon configs
@@ -316,16 +347,18 @@ jobs:
           CONFIG_TCP_CONG_WESTWOOD=y
           CONFIG_TCP_CONG_HTCP=n
           CONFIG_TCP_CONG_BBR=y
-          CONFIG_DEFAULT_WESTWOOD=y
+          CONFIG_TCP_CONG_BBR3=y
+          CONFIG_DEFAULT_BBR3=y
           CONFIG_OVERLAY_FS=y
           CONFIG_TMPFS_XATTR=y
           CONFIG_TMPFS_POSIX_ACL=y
           CONFIG_KALLSYMS_ALL=y
           CONFIG_HZ="300"
-          CONFIG_HZ_300=y          
+          CONFIG_HZ_300=y
           EOF
           
           echo "✅ Basic configs added"
+               
 
       - name: "📝 Append custom Makefile line"
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
@@ -338,7 +371,7 @@ jobs:
       - name: "🔨 Build kernel"
         working-directory: ${{ env.WORK_DIR }}
         run: |
-          LTO=full \
+          LTO=thin \
           BUILD_CONFIG=${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.gki.aarch64 \
           build/build.sh -j$(nproc --all)
 

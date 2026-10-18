@@ -160,13 +160,13 @@ jobs:
           cat >> "$CONFIG_FILE" << 'EOF'
           CONFIG_KSU=y
           CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
-          CONFIG_KSU_HOSTSREDIRECT=y          
+          CONFIG_KSU_HOSTSREDIRECT=y
           CONFIG_KSU_KPROBES_KSUD=y
-          CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y          
+          CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y
           CONFIG_KSU_COMPILE_AS_C23=y
           CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
           EOF
-                    
+
           echo "✅ xxKSU configs added"
           
           echo "🔧 Applying SUSFS xxKSU patch..."
@@ -239,36 +239,10 @@ jobs:
           CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
           CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
           CONFIG_KSU_SUSFS_SUS_MAP=y
-          EOF
-
-          echo "↩️ Reverting namespace.c Fake Patch (if applicable)"
-          if [ "$NS_FAKE_PATCHED" = "1" ] && ! grep -q 'trace/hooks/blk.h' fs/namespace.c; then
-            if grep -q '^#include "internal.h"$' fs/namespace.c; then
-              sed -i '/^#include "internal.h"$/a #include <trace/hooks/blk.h>' fs/namespace.c
-              echo "✔ Restored blk.h include"
-            else
-              echo "⚠️ Anchor #include \"internal.h\" not found — could not restore blk.h include, check fs/namespace.c manually"
-            fi
-          else
-            echo "ℹ️ Skipping blk.h restore (not fake-patched or already present)"
-          fi
-
-          echo "↩️ Reverting task_mmu.c Fake Patch (if applicable)"
-          if [ "$MM_FAKE_PATCHED" = "1" ] && ! grep -q 'trace/hooks/mm.h' fs/proc/task_mmu.c; then
-            if grep -q '^#include <linux/pkeys.h>$' fs/proc/task_mmu.c; then
-              sed -i '/^#include <linux\/pkeys.h>$/a #include <trace/hooks/mm.h>' fs/proc/task_mmu.c
-              echo "✔ Restored mm.h include"
-            else
-              echo "⚠️ Anchor #include <linux/pkeys.h> not found — could not restore mm.h include, check fs/proc/task_mmu.c manually"
-            fi
-          else
-            echo "ℹ️ Skipping mm.h restore (not fake-patched or already present)"
-          fi
-          
+          EOF                    
 
           echo "🎉 xxKSU installed and SUSFS for GKI android13-5.15 fully integrated!"
 
-      
 
       - name: "⚙️ Setup basic configs"
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
