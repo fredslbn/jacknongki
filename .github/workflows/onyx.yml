@@ -353,13 +353,13 @@ jobs:
 
       
       - name: "🔨 Build kernel"
-        working-directory: ${{ env.WORK_DIR }}
+        working-directory: ./${{ env.KERNEL_LOC_DIR }}
         run: |           
-          sed -i '/name = "kernel_aarch64",/a\    check_defconfig = "disabled",' ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/BUILD.bazel
+          sed -i '/name = "kernel_aarch64",/a\    check_defconfig = "disabled",' ${{ env.KERNEL_NAME }}/BUILD.bazel
 
           tools/bazel build \
           --config=fast \
-          //common:kernel_aarch64/Image
+          //${{ env.KERNEL_NAME }}:kernel_aarch64/Image
 
       - name: "📁 Copy kernel image"
         working-directory: ${{ env.WORK_DIR }}/out/dist
