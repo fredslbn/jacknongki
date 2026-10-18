@@ -1,4 +1,4 @@
-name: "Build Redmi A5"
+name: "Build v2 Redmi A5"
 
 env:
   OUT_DIR: "out"
@@ -29,10 +29,9 @@ jobs:
             output_bootimg_name: "boot.gki.ksu.img"
             enable_xxksu: true
             extra_patches:
-              - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-gki-fixup.patch"
-              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki-hostbuild.patch"
-              #- "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-Don-t-append-and-dirty-to-localversion.patch"
-              - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-do-not-ship-full-auto_localversion.patch"
+              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_fixup.patch"
+              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_hostbuild.patch"              
+              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_force_loading_modules_fail_symbol_version_checks.patch"
           - name: "CLO"
             dir: "common_clo"
             repo_name: "clo"
@@ -44,10 +43,9 @@ jobs:
             output_bootimg_name: "boot.clo.ksu.img"
             enable_xxksu: true
             extra_patches:
-              - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-gki-fixup.patch"
-              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki-hostbuild.patch"
-              #- "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-Don-t-append-and-dirty-to-localversion.patch"
-              - "https://raw.githubusercontent.com/topnotchfreaks/kernel_patches/main/0001-scripts-do-not-ship-full-auto_localversion.patch"
+              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_fixup.patch"
+              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_hostbuild.patch"              
+              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_force_loading_modules_fail_symbol_version_checks.patch"
 
     env:
       KERNEL_LOC_DIR: ${{ matrix.kernel.dir }}
@@ -119,8 +117,8 @@ jobs:
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
           CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-          echo "CONFIG_LOCALVERSION=\"${{ env.LOCAL_VERSION }}-${{ env.BUILD_TIME }}\"" >> "$CONFIG_FILE"
-          echo "CONFIG_LOCALVERSION_AUTO=n" >> "$CONFIG_FILE"
+          echo "CONFIG_LOCALVERSION=\"${{ env.LOCAL_VERSION }}\"" >> "$CONFIG_FILE"
+          echo "CONFIG_LOCALVERSION_AUTO=y" >> "$CONFIG_FILE"
 
           # Helper
           apply_patch() {
