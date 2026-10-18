@@ -29,9 +29,9 @@ jobs:
             enable_xxksu: false
             enable_ffksu: true
             extra_patches:
-              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_fixup.patch"
-              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_hostbuild.patch"              
-              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_force_loading_modules_fail_symbol_version_checks.patch"
+              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.10/gki_fixup.patch"
+              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.10/gki_hostbuild.patch"              
+              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.10/gki_force_loading_modules_fail_symbol_version_checks.patch"
           - name: "CLO"
             dir: "common_clo"
             repo_name: "clo"
@@ -43,9 +43,9 @@ jobs:
             enable_xxksu: false
             enable_ffksu: true
             extra_patches:
-              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_fixup.patch"
-              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_hostbuild.patch"              
-              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_force_loading_modules_fail_symbol_version_checks.patch"
+              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.10/gki_fixup.patch"
+              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.10/gki_hostbuild.patch"              
+              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.10/gki_force_loading_modules_fail_symbol_version_checks.patch"
 
     env:
       KERNEL_LOC_DIR: ${{ matrix.kernel.dir }}
@@ -115,7 +115,7 @@ jobs:
       - name: "🧩 Configure kernel & patches"
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
-          CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           echo "CONFIG_LOCALVERSION=\"${{ env.LOCAL_VERSION }}\"" >> "$CONFIG_FILE"
           echo "CONFIG_LOCALVERSION_AUTO=y" >> "$CONFIG_FILE"
 
@@ -152,7 +152,7 @@ jobs:
           
           echo "✔ KSU installed successfully"       
 
-          CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           cat >> "$CONFIG_FILE" << 'EOF'
           CONFIG_KSU=y
           CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
@@ -205,7 +205,7 @@ jobs:
 
           echo "✅ SUSFS build wiring verified"
 
-          CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           cat >> "$CONFIG_FILE" << 'EOF'
           CONFIG_KSU_SUSFS=y
           CONFIG_KSU_SUSFS_SUS_PATH=y
@@ -233,7 +233,7 @@ jobs:
           
           echo "✔ KSU installed successfully"       
 
-          CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           cat >> "$CONFIG_FILE" << 'EOF'
           CONFIG_KSU=y
           CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
@@ -286,7 +286,7 @@ jobs:
 
           echo "✅ SUSFS build wiring verified"
 
-          CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           cat >> "$CONFIG_FILE" << 'EOF'
           CONFIG_KSU_SUSFS=y
           CONFIG_KSU_SUSFS_SUS_PATH=y
