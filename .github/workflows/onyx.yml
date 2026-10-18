@@ -340,22 +340,21 @@ jobs:
       - name: "⚙️ Clean Dirty Flags and ABI Exports"
         shell: bash
         working-directory: ${{ env.WORK_DIR }}
-        run: | 
-        
-        # Clean dirty flags and ABI exports based on build system
-        if [ -f "build/build.sh" ]; then
+        run: |        
+         # Clean dirty flags and ABI exports based on build system
+         if [ -f "build/build.sh" ]; then
           # Old build system (5.10, 5.15, early 6.1)
           sed -i 's/-dirty//' ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/scripts/setlocalversion
-        else
+         else
           # Bazel build system (newer kernels)
           sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" build/kernel/kleaf/impl/stamp.bzl
           sed -i 's/-dirty//' ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/scripts/setlocalversion
-        fi
+         fi
 
-        # Commit changes to avoid dirty state during build
-        cd ${{ env.WORK_DIR }}/${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
-        git add .
-        git commit -m "Wild: Clean Dirty Flag"
+         # Commit changes to avoid dirty state during build
+         cd ${{ env.WORK_DIR }}/${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
+         git add .
+         git commit -m "Wild: Clean Dirty Flag"
 
       
       - name: "🔨 Build kernel"
@@ -368,9 +367,9 @@ jobs:
           //${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}:kernel_aarch64/Image
 
       - name: "📁 Copy kernel image"
-        working-directory: ${{ env.WORK_DIR }}/bazel-bin/${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/kernel_aarch64
-        run: |
-          cp Image "${{ env.OUTPUT_NAME }}"
+        working-directory: ${{ env.WORK_DIR }}/out/dist
+        run: |          
+          cp ${{ env.WORK_DIR }}/bazel-bin/${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/kernel_aarch64/Image "${{ env.OUTPUT_NAME }}"
 
       - name: "📤 Upload kernel artifact"
         uses: actions/upload-artifact@v7
