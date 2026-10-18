@@ -324,15 +324,13 @@ jobs:
          patch -p1 < <(curl -sSfL "https://raw.githubusercontent.com/fatalcoder524/kernel_patches_additional/refs/heads/main/bbr3/0001-net-tcp-backport-BBRv3-to-android12-5.10.patch") || true
          echo "✅ BBRv3 patch successfully applied"
          
-         # bbrv3 fix for android12-5.10 and android13-5.10
-         if ! grep -qF 'int proc_dou8vec_minmax(' ./include/linux/sysctl.h; then
-            patch -p1 < <(curl -sSfL "https://raw.githubusercontent.com/fatalcoder524/kernel_patches_additional/refs/heads/main/bbr3/sysctl_add_proc_dou8vec_minmax.patch") || true
-            patch -p1 < <(curl -sSfL "https://raw.githubusercontent.com/fatalcoder524/kernel_patches_additional/refs/heads/main/bbr3/sysctl_fix_data-races_in_proc_dou8vec_minmax.patch") || true
-            echo "✅ BBRv3 fix for android12-5.10 or android13-5.10 is successfully applied"
-         fi
-
+         # bbrv3 fix for android12-5.10 and android13-5.10         
+         patch -p1 < <(curl -sSfL "https://raw.githubusercontent.com/fatalcoder524/kernel_patches_additional/refs/heads/main/bbr3/sysctl_add_proc_dou8vec_minmax.patch") || true
+         patch -p1 < <(curl -sSfL "https://raw.githubusercontent.com/fatalcoder524/kernel_patches_additional/refs/heads/main/bbr3/sysctl_fix_data-races_in_proc_dou8vec_minmax.patch") || true
+         echo "✅ BBRv3 fix for android12-5.10 or android13-5.10 is successfully applied"         
 
       - name: "⚙️ Setup basic configs"
+        shell: bash
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
           set -euo pipefail
@@ -408,7 +406,7 @@ jobs:
           find ./artifacts -name "Image.*" -exec cp {} AnyKernel3/ \;
           
           # Create ZIP
-          ZIP_NAME="${{ env.DEVICE_CODENAME }}-${{ env.KSU_TYPE }}-${BUILD_TIME}-AnyKernel3.zip"
+          ZIP_NAME="${{ env.DEVICE_CODENAME }}-v2-${{ env.KSU_TYPE }}-${BUILD_TIME}-AnyKernel3.zip"
           cd AnyKernel3
           zip -r9 "../$ZIP_NAME" * -x .git/*
           cd ..

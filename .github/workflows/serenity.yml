@@ -27,7 +27,8 @@ jobs:
             local_version: "-super.kernel-gki"
             output_name: "Image.gki.ksu"
             output_bootimg_name: "boot.gki.ksu.img"
-            enable_xxksu: true
+            enable_xxksu: false
+            enable_ffksu: true
             extra_patches:
               - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_fixup.patch"
               - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_hostbuild.patch"              
@@ -41,7 +42,8 @@ jobs:
             local_version: "-super.kernel-clo"
             output_name: "Image.clo.ksu"
             output_bootimg_name: "boot.clo.ksu.img"
-            enable_xxksu: true
+            enable_xxksu: false
+            enable_ffksu: true
             extra_patches:
               - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_fixup.patch"
               - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_hostbuild.patch"              
@@ -273,7 +275,97 @@ jobs:
 
       
 
+      - name: "🔧 Setup ffKSU"        
+        if: matrix.kernel.enable_ffksu == true
+        working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
+        run: |
+          rm -rf ./KernelSU ./drivers/kernelsu
+
+          echo "📦 Installing KSU..."
+          curl -LSs "https://raw.githubusercontent.com/fredslbn/KernelSU/refs/heads/master/kernel/setup.sh" | bash -s master
+          
+          echo "✔ KSU installed successfully"       
+
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          cat >> "$CONFIG_FILE" << 'EOF'
+          CONFIG_KSU=y
+          CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
+          CONFIG_KSU_HOSTSREDIRECT=y
+          CONFIG_KSU_KPROBES_KSUD=y
+          CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y
+          CONFIG_KSU_COMPILE_AS_C23=y
+          CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
+          EOF
+                    
+          echo "✅ ffKSU configs added"
+          
+          echo "🔧 Applying SUSFS ffKSU patch..."
+          ## SUSFS PATCHES FOR KERNELSU SUSFS          
+          patch -p1 -d KernelSU < <(curl -sSfL "https://github.com/midori01/KernelSU/commit/xx~1.patch") || true
+          patch -p1 -d KernelSU < <(curl -sSfL "https://github.com/midori01/KernelSU/commit/xx.patch") || true
+          echo "✅ SUSFS ffKSU patch successfully applied"
+
+          # Clone SUSFS4KSU for kernel patches only (not KSU integration)
+          echo "📦 Cloning SUSFS4KSU for kernel patches..."
+          git clone --depth=1 https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android15-6.6        
+          
+          SUSFS_KERNEL_PATCH="susfs4ksu/kernel_patches/50_add_susfs_in_gki-android15-6.6.patch"
+          
+          echo "🔧 Applying SUSFS kernel patch..."
+          wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh
+          chmod +x susfs_deinlined.sh
+          ./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
+             if patch -p1 < deinlined.patch || true; then
+                echo "✅ SUSFS patch successfully applied"
+             else
+                echo "⚠️ SUSFS patch failed — copying files manually"
+             fi
+                    
+          # Always copy fs/susfs.c          
+          cp -f susfs4ksu/kernel_patches/fs/* fs/
+          echo "✔ Copied fs/susfs.c"
+          
+          # Always copy include/linux/susfs.h and susfs_def.h         
+          cp -f susfs4ksu/kernel_patches/include/linux/* include/linux/
+          echo "✔ Copied include/linux/*"
+          
+          echo "🔍 Verifying SUSFS files..."
+          for f in fs/susfs.c include/linux/susfs.h include/linux/susfs_def.h; do
+            if [ -f "$f" ]; then echo "✔ Found: $f"; else echo "❌ Missing: $f"; fi
+          done
+          
+          # Clean up SUSFS repo (we only needed kernel patches, not KSU integration)
+          rm -rf susfs4ksu          
+
+          echo "✅ SUSFS build wiring verified"
+
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          cat >> "$CONFIG_FILE" << 'EOF'
+          CONFIG_KSU_SUSFS=y
+          CONFIG_KSU_SUSFS_SUS_PATH=y
+          CONFIG_KSU_SUSFS_SUS_MOUNT=y
+          CONFIG_KSU_SUSFS_SUS_KSTAT=y
+          CONFIG_KSU_SUSFS_SPOOF_UNAME=y
+          CONFIG_KSU_SUSFS_ENABLE_LOG=y
+          CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
+          CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
+          CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
+          CONFIG_KSU_SUSFS_SUS_MAP=y
+          EOF
+
+
+      - name: Apply BBRv3 Patch
+        shell: bash
+        working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
+        run: |
+         set -euo pipefail
+                           
+         patch -p1 < <(curl -sSfL "https://raw.githubusercontent.com/fatalcoder524/kernel_patches_additional/refs/heads/main/bbr3/0001-net-tcp-backport-BBRv3-to-android15-6.6.patch") || true
+         echo "✅ BBRv3 patch successfully applied"
+
+      
       - name: "⚙️ Setup basic configs"
+        shell: bash
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
@@ -286,11 +378,14 @@ jobs:
           CONFIG_TCP_CONG_WESTWOOD=y
           CONFIG_TCP_CONG_HTCP=n
           CONFIG_TCP_CONG_BBR=y
-          CONFIG_DEFAULT_WESTWOOD=y
+          CONFIG_TCP_CONG_BBR3=y
+          CONFIG_DEFAULT_BBR3=y
           CONFIG_OVERLAY_FS=y
           CONFIG_TMPFS_XATTR=y
           CONFIG_TMPFS_POSIX_ACL=y
           CONFIG_KALLSYMS_ALL=y
+          CONFIG_HZ="300"
+          CONFIG_HZ_300=y
           EOF
           
           echo "✅ Basic configs added"
@@ -347,7 +442,7 @@ jobs:
           find ./artifacts -name "boot.*" -exec cp {} AnyKernel3/ \;
           
           # Create ZIP
-          ZIP_NAME="${{ env.DEVICE_CODENAME }}-${{ env.KSU_TYPE }}-${BUILD_TIME}-AnyKernel3.zip"
+          ZIP_NAME="${{ env.DEVICE_CODENAME }}-v2-${{ env.KSU_TYPE }}-${BUILD_TIME}-AnyKernel3.zip"
           cd AnyKernel3
           zip -r9 "../$ZIP_NAME" * -x .git/*
           cd ..

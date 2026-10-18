@@ -156,9 +156,9 @@ jobs:
           cat >> "$CONFIG_FILE" << 'EOF'
           CONFIG_KSU=y
           CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
-          CONFIG_KSU_HOSTSREDIRECT=y          
+          CONFIG_KSU_HOSTSREDIRECT=y
           CONFIG_KSU_KPROBES_KSUD=y
-          CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y          
+          CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y
           CONFIG_KSU_COMPILE_AS_C23=y
           CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
           EOF
@@ -234,9 +234,9 @@ jobs:
           cat >> "$CONFIG_FILE" << 'EOF'
           CONFIG_KSU=y
           CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
-          CONFIG_KSU_HOSTSREDIRECT=y          
+          CONFIG_KSU_HOSTSREDIRECT=y
           CONFIG_KSU_KPROBES_KSUD=y
-          CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y          
+          CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y
           CONFIG_KSU_COMPILE_AS_C23=y
           CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
           EOF
@@ -297,7 +297,18 @@ jobs:
           CONFIG_KSU_SUSFS_SUS_MAP=y
           EOF
 
+      - name: Apply BBRv3 Patch
+        shell: bash
+        working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
+        run: |
+         set -euo pipefail
+                           
+         patch -p1 < <(curl -sSfL "https://raw.githubusercontent.com/fatalcoder524/kernel_patches_additional/refs/heads/main/bbr3/0001-net-tcp-backport-BBRv3-to-android15-6.6.patch") || true
+         echo "✅ BBRv3 patch successfully applied"
+         
+      
       - name: "⚙️ Setup basic configs"
+        shell: bash
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
@@ -310,13 +321,14 @@ jobs:
           CONFIG_TCP_CONG_WESTWOOD=y
           CONFIG_TCP_CONG_HTCP=n
           CONFIG_TCP_CONG_BBR=y
-          CONFIG_DEFAULT_WESTWOOD=y
+          CONFIG_TCP_CONG_BBR3=y
+          CONFIG_DEFAULT_BBR3=y
           CONFIG_OVERLAY_FS=y
           CONFIG_TMPFS_XATTR=y
           CONFIG_TMPFS_POSIX_ACL=y
           CONFIG_KALLSYMS_ALL=y
           CONFIG_HZ="300"
-          CONFIG_HZ_300=y          
+          CONFIG_HZ_300=y
           EOF
           
           echo "✅ Basic configs added"
@@ -332,7 +344,7 @@ jobs:
       - name: "🔨 Build kernel"
         working-directory: ${{ env.WORK_DIR }}
         run: |
-          LTO=full \
+          LTO=thin \
           BUILD_CONFIG=${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.gki.aarch64 \
           build/build.sh -j$(nproc --all)
 
@@ -369,7 +381,7 @@ jobs:
           find ./artifacts -name "Image.*" -exec cp {} AnyKernel3/ \;
           
           # Create ZIP
-          ZIP_NAME="${{ env.DEVICE_CODENAME }}-${{ env.KSU_TYPE }}-${BUILD_TIME}-AnyKernel3.zip"
+          ZIP_NAME="${{ env.DEVICE_CODENAME }}-v2-${{ env.KSU_TYPE }}-${BUILD_TIME}-AnyKernel3.zip"
           cd AnyKernel3
           zip -r9 "../$ZIP_NAME" * -x .git/*
           cd ..
