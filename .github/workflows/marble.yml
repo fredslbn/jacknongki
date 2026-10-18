@@ -102,9 +102,9 @@ jobs:
           rm -rf prebuilts/clang/host/linux-x86/clang-stable
           
           # Update build config common
-          sed -i \           
-           -e 's/^CLANG_PREBUILT_BIN=.*/CLANG_PREBUILT_BIN=prebuilts-master/clang/host/linux-x86/clang-r547379/bin' \
-           ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.common
+          sed -i 's/CLANG_PREBUILT_BIN=.*/CLANG_PREBUILT_BIN=prebuilts-master/clang/host/linux-x86/clang-r547379/bin/g' ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.common || true
+          
+          
           
           # Remove defconfig check (if exists)
           sed -i '/^POST_DEFCONFIG_CMDS="check_defconfig"/d' ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.gki || true
