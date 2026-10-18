@@ -83,7 +83,7 @@ jobs:
         working-directory: ${{ env.WORK_DIR }}
         run: |
           # Initialize AOSP repo
-          repo init -u https://android.googlesource.com/kernel/manifest -b common-android13-5.15-lts --depth=1
+          repo init -u https://android.googlesource.com/kernel/manifest -b common-android12-5.10-lts --depth=1
           repo sync --optimized-fetch --prune -j8
           
           # Clean up existing repo and common directories
@@ -102,9 +102,10 @@ jobs:
           rm -rf prebuilts/clang/host/linux-x86/clang-stable
           
           # Update build config common
-          sed -i 's/CLANG_PREBUILT_BIN=.*/CLANG_PREBUILT_BIN=prebuilts-master/clang/host/linux-x86/clang-r547379/bin/g' ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.common || true
+          sed -i '/^CLANG_PREBUILT_BIN=.*/d' ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.common
           
-          
+          sed -i '$a\CLANG_PREBUILT_BIN=prebuilts-master/clang/host/linux-x86/clang-r547379/bin' ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.common
+
           
           # Remove defconfig check (if exists)
           sed -i '/^POST_DEFCONFIG_CMDS="check_defconfig"/d' ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.gki || true
