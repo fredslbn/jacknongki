@@ -351,11 +351,6 @@ jobs:
           sed -i 's/-dirty//' ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/scripts/setlocalversion
          fi
 
-         # Commit changes to avoid dirty state during build
-         cd ${{ env.WORK_DIR }}/${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
-         git add .
-         git commit -m "Wild: Clean Dirty Flag"
-
       
       - name: "🔨 Build kernel"
         working-directory: ${{ env.WORK_DIR }}
