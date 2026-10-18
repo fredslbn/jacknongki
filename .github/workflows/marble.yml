@@ -101,11 +101,10 @@ jobs:
           rm -rf prebuilts/clang/host/linux-x86/clang-r450784e
           rm -rf prebuilts/clang/host/linux-x86/clang-stable
           
-          # Update build config constants
-          sed -i \
-           -e 's/^BRANCH=.*/BRANCH=android12-5.10/' \
-           -e 's/^CLANG_VERSION=.*/CLANG_VERSION=r547379/' \
-           ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.constants
+          # Update build config common
+          sed -i \           
+           -e 's/^CLANG_PREBUILT_BIN=.*/CLANG_PREBUILT_BIN=prebuilts-master/clang/host/linux-x86/clang-r547379/bin' \
+           ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.common
           
           # Remove defconfig check (if exists)
           sed -i '/^POST_DEFCONFIG_CMDS="check_defconfig"/d' ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/build.config.gki || true
