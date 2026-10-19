@@ -59,8 +59,8 @@ env:
   KERNELSU_SOURCE : "https://github.com/backslashxx/KernelSU.git"
   KERNELSU_BRANCH : "staging"
 
-  KERNELSU_AUTO_GET : "false" # if u want easy setting kernelsu, u can true.
-  KERNELSU_AUTO_FORK : "" # xxksu, ffksu, rsuntk, next, bakasu and sukisu
+  KERNELSU_AUTO_GET : "true" # if u want easy setting kernelsu, u can true.
+  KERNELSU_AUTO_FORK : "xxksu" # xxksu, ffksu, rsuntk, next, bakasu and sukisu
 
   ROM_TEXT : "xxKSU"  
   CUSTOM_SUSFS_PATCH : true
@@ -86,7 +86,7 @@ env:
   PACK_METHOD: "Anykernel3" # Anykernel3 need SOURCE and BRANCH, MKBOOTIMG needn't it.
   PACK_KMODULES: "false" # if u want pack kernel modules (.ko) into Anykernel3.
 
-  KERNELSU_METHOD: "manual" # shell, manual and only.
+  KERNELSU_METHOD: "shell" # shell, manual and only.
 
   PATCHES_SOURCE: "fredslbn/jacknongki" # [your_name]/[your_patch] -> gooder123/NonGKI_Patcher
   PATCHES_BRANCH: "main" # [your_branch] -> main
