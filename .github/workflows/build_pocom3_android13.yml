@@ -86,7 +86,7 @@ env:
   PACK_METHOD: "Anykernel3" # Anykernel3 need SOURCE and BRANCH, MKBOOTIMG needn't it.
   PACK_KMODULES: "false" # if u want pack kernel modules (.ko) into Anykernel3.
 
-  KERNELSU_METHOD: "shell" # shell, manual and only.
+  KERNELSU_METHOD: "manual" # shell, manual and only.
 
   PATCHES_SOURCE: "fredslbn/jacknongki" # [your_name]/[your_patch] -> gooder123/NonGKI_Patcher
   PATCHES_BRANCH: "main" # [your_branch] -> main
@@ -179,7 +179,7 @@ jobs:
           echo "CONFIG_THUMB2_COMPAT_VDSO=y" >> "$CONFIG_FILE"
           
           # 
-          sed -i '/CONFIG_SHADOW_CALL_STACK/d' "$CONFIG_FILE"
+          # sed -i '/CONFIG_SHADOW_CALL_STACK/d' "$CONFIG_FILE"
           echo "# CONFIG_SHADOW_CALL_STACK is not set" >> "$CONFIG_FILE"
           echo "CONFIG_CFI_CLANG=y" >> "$CONFIG_FILE"
           # echo "CONFIG_ARM64_LSE_ATOMICS=y" >> "$CONFIG_FILE"
@@ -192,8 +192,8 @@ jobs:
           echo "Metamodule configs applied."
 
           # Rewrite Localversion Name
-          sed -i '/CONFIG_LOCALVERSION/d' "$CONFIG_FILE"
-          sed -i '/CONFIG_LOCALVERSION_AUTO/d' "$CONFIG_FILE"
+          # sed -i '/CONFIG_LOCALVERSION/d' "$CONFIG_FILE"
+          # sed -i '/CONFIG_LOCALVERSION_AUTO/d' "$CONFIG_FILE"
           echo "CONFIG_LOCALVERSION=-super.kernel" >> "$CONFIG_FILE"
           echo "CONFIG_LOCALVERSION_AUTO=y" >> "$CONFIG_FILE"
 
@@ -223,8 +223,7 @@ jobs:
           
           echo "CONFIG_HAVE_OPTPROBES=y" >> "$CONFIG_FILE"
           echo "CONFIG_OPTPROBES=y" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_DEBUG_FS/d' "$CONFIG_FILE"
+                    
           echo "CONFIG_DEBUG_FS=n" >> "$CONFIG_FILE"
           
       
