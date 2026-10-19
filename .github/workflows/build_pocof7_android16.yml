@@ -165,9 +165,8 @@ jobs:
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
            
           # LTO Configuration - Enable Thin LTO only
-          # sed -i '/CONFIG_LTO_CLANG_FULL/d' "$CONFIG_FILE"
-          echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
-          echo "# CONFIG_LTO_CLANG_FULL is not set" >> "$CONFIG_FILE"
+          sed -i '/CONFIG_LTO_NONE/d' "$CONFIG_FILE"
+          echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"          
           echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
           echo "CONFIG_THINLTO=y" >> "$CONFIG_FILE"
            
@@ -176,15 +175,19 @@ jobs:
           echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
           echo "CONFIG_OVERLAY_FS=y" >> "$CONFIG_FILE"
 
-          # Rewrite Localversion Name
-          # sed -i '/CONFIG_LOCALVERSION/d' "$CONFIG_FILE"
-          # sed -i '/CONFIG_LOCALVERSION_AUTO/d' "$CONFIG_FILE"
+          # Userspace performance
+          sed -i '/CONFIG_HZ_250/d' "$CONFIG_FILE"
+          # sed -i '/CONFIG_HZ/d' "$CONFIG_FILE"
+          echo "CONFIG_HZ_300=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HZ=300" >> "$CONFIG_FILE"
+          
+          # Rewrite Localversion Name          
           echo "CONFIG_LOCALVERSION=-super.kernel" >> "$CONFIG_FILE"
           echo "CONFIG_LOCALVERSION_AUTO=y" >> "$CONFIG_FILE"
           
           echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$CONFIG_FILE"
                     
-          # echo "KBUILD_CFLAGS += -w" >> ./Makefile
+          # echo "KBUILD_CFLAGS += -w" >> ./Makefile          
           echo 'KBUILD_CFLAGS += -Wno-default-const-init-unsafe' >> ./Makefile
           echo 'KBUILD_CFLAGS += -Wno-uninitialized-const-pointer' >> ./Makefile
           echo 'KBUILD_CFLAGS += -Wno-implicit-function-declaration' >> ./Makefile
