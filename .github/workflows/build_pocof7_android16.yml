@@ -146,15 +146,26 @@ jobs:
       - name: 🔒 Patch Kernel of nomount
         uses: ./.github/workflows/patch-nomount
       
+      - name: 🧩 Apply BBRv3 Patch
+        shell: bash
+        working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
+        run: |
+        
+         cd $GITHUB_WORKSPACE/device_kernel
+         set -euo pipefail         
+                           
+         patch -p1 < <(curl -sSfL "https://raw.githubusercontent.com/fatalcoder524/kernel_patches_additional/refs/heads/main/bbr3/0001-net-tcp-backport-BBRv3-to-android15-6.6.patch") || true
+         echo "✅ BBRv3 patch successfully applied"
+         
       - name: 🪛 Extra Kernel Options
         run: |
           # Only ${{ env.DEVICE_NAME }} use it.
           cd $GITHUB_WORKSPACE/device_kernel
                                         
-          CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
            
           # LTO Configuration - Enable Thin LTO only
-          sed -i '/CONFIG_LTO_CLANG_FULL/d' "$CONFIG_FILE"
+          # sed -i '/CONFIG_LTO_CLANG_FULL/d' "$CONFIG_FILE"
           echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
           echo "# CONFIG_LTO_CLANG_FULL is not set" >> "$CONFIG_FILE"
           echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
@@ -166,8 +177,8 @@ jobs:
           echo "CONFIG_OVERLAY_FS=y" >> "$CONFIG_FILE"
 
           # Rewrite Localversion Name
-          sed -i '/CONFIG_LOCALVERSION/d' "$CONFIG_FILE"
-          sed -i '/CONFIG_LOCALVERSION_AUTO/d' "$CONFIG_FILE"
+          # sed -i '/CONFIG_LOCALVERSION/d' "$CONFIG_FILE"
+          # sed -i '/CONFIG_LOCALVERSION_AUTO/d' "$CONFIG_FILE"
           echo "CONFIG_LOCALVERSION=-super.kernel" >> "$CONFIG_FILE"
           echo "CONFIG_LOCALVERSION_AUTO=y" >> "$CONFIG_FILE"
           
@@ -186,7 +197,8 @@ jobs:
           echo "CONFIG_TCP_CONG_WESTWOOD=y" >> "$CONFIG_FILE"
           echo "CONFIG_TCP_CONG_HTCP=n" >> "$CONFIG_FILE"
           echo "CONFIG_TCP_CONG_BBR=y" >> "$CONFIG_FILE"
-          echo "CONFIG_DEFAULT_WESTWOOD=y" >> "$CONFIG_FILE"
+          echo "CONFIG_TCP_CONG_BBR3=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DEFAULT_BBR3=y" >> "$CONFIG_FILE"
           
           echo "TCP optimization added successfully"
                 
