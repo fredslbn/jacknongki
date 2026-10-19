@@ -57,7 +57,7 @@ env:
   DEFCONFIG_FROM_BOOT: false
 
   KERNELSU_SOURCE : "https://github.com/backslashxx/KernelSU.git"
-  KERNELSU_BRANCH : "preinit-runner-oot"
+  KERNELSU_BRANCH : "staging"
 
   KERNELSU_AUTO_GET : "false" # if u want easy setting kernelsu, u can true.
   KERNELSU_AUTO_FORK : "" # xxksu, ffksu, rsuntk, next, bakasu and sukisu
