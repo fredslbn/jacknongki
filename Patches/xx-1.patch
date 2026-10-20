@@ -1,28 +1,28 @@
-From 4a39f6a4d665f42cbe2f0daddb9a01a4db89d95f Mon Sep 17 00:00:00 2001
+From d7bae85f9b3b42b9db711f8e223bd44a220c8ef5 Mon Sep 17 00:00:00 2001
 From: backslashxx <118538522+backslashxx@users.noreply.github.com>
 Date: Mon, 14 Sep 2026 19:50:53 +0900
 Subject: [PATCH] extra
 
 Signed-off-by: midori01 <lv@lvlv.lv>
 ---
- kernel/hook/branch_link_hook_arm64.c |  4 ++
+ kernel/hook/branch_link_hook_arm64.c |  3 ++
  kernel/include/uapi/supercall.h      | 15 ++++++
  kernel/supercall/dispatch.c          | 70 ++++++++++++++++++++++++++++
- 3 files changed, 89 insertions(+)
+ 3 files changed, 88 insertions(+)
 
 diff --git a/kernel/hook/branch_link_hook_arm64.c b/kernel/hook/branch_link_hook_arm64.c
-index b1577d060c31..410e01021f51 100644
+index cb7080a20465..b9eb097d2fef 100644
 --- a/kernel/hook/branch_link_hook_arm64.c
 +++ b/kernel/hook/branch_link_hook_arm64.c
-@@ -462,12 +462,16 @@ static int bl_hack_init_thread(void *data)
+@@ -466,6 +466,7 @@ static int bl_hook_execve(void *data)
+ static int bl_hack_init_thread(void *data)
  {
  	set_user_nice(current, 19); // low prio
- 
 +	extern char hook_type[];
-+
- 	bool faccessat = !!!bl_hook_faccessat(data);
- 	bool newfstatat = !!!bl_hook_newfstatat(data);
- 	bool execve = !!!bl_hook_execve(data);
+ 
+ loop_start:
+ 	msleep(1000);
+@@ -480,6 +481,8 @@ static int bl_hack_init_thread(void *data)
  
  	pr_info("branch_link: done! faccessat: %s newfstatat: %s execve: %s\n", (faccessat) ? "ok" : "fail", (newfstatat) ? "ok" : "fail", (execve) ? "ok" : "fail");
  
@@ -64,10 +64,10 @@ index 1d21f61c8021..7a3338f1956e 100644
  
  #endif
 diff --git a/kernel/supercall/dispatch.c b/kernel/supercall/dispatch.c
-index 832c8dd3054c..d00706406f48 100644
+index 317d2168533d..176c73111765 100644
 --- a/kernel/supercall/dispatch.c
 +++ b/kernel/supercall/dispatch.c
-@@ -351,6 +351,9 @@ static int do_get_feature(void __user *arg)
+@@ -354,6 +354,9 @@ static int do_get_feature(void __user *arg)
  		return -EFAULT;
  	}
  
@@ -77,7 +77,7 @@ index 832c8dd3054c..d00706406f48 100644
  	ret = ksu_get_feature(cmd.feature_id, &cmd.value, &supported);
  	cmd.supported = 0;
  	if (supported) {
-@@ -360,6 +363,8 @@ static int do_get_feature(void __user *arg)
+@@ -363,6 +366,8 @@ static int do_get_feature(void __user *arg)
  		}
  	}
  
@@ -86,7 +86,7 @@ index 832c8dd3054c..d00706406f48 100644
  	if (ret && supported) {
  		pr_err("get_feature: failed for feature %u: %d\n", cmd.feature_id, ret);
  		return ret;
-@@ -383,6 +388,9 @@ static int do_set_feature(void __user *arg)
+@@ -386,6 +391,9 @@ static int do_set_feature(void __user *arg)
  		return -EFAULT;
  	}
  
@@ -96,7 +96,7 @@ index 832c8dd3054c..d00706406f48 100644
  	ret = ksu_set_feature(cmd.feature_id, cmd.value);
  	if (ret) {
  		pr_err("set_feature: failed for feature %u: %d\n", cmd.feature_id, ret);
-@@ -786,6 +794,65 @@ static int do_lookup_symbols(void __user *arg)
+@@ -789,6 +797,65 @@ static int do_lookup_symbols(void __user *arg)
  	return ret;
  }
  
@@ -162,7 +162,7 @@ index 832c8dd3054c..d00706406f48 100644
  // IOCTL handlers mapping table
  static const struct ksu_ioctl_cmd_map ksu_ioctl_handlers[] = {
  	{ .cmd = KSU_IOCTL_GRANT_ROOT, .name = "GRANT_ROOT", .handler = do_grant_root, .perm_check = allowed_for_su  },
-@@ -813,6 +880,9 @@ static const struct ksu_ioctl_cmd_map ksu_ioctl_handlers[] = {
+@@ -816,6 +883,9 @@ static const struct ksu_ioctl_cmd_map ksu_ioctl_handlers[] = {
  	{ .cmd = KSU_IOCTL_GET_SULOG_FD, .name = "GET_SULOG_FD", .handler = do_get_sulog_fd, .perm_check = only_root },
  	{ .cmd = KSU_IOCTL_DISABLE_ESCAPE_TO_ROOT, .name = "DISABLE_ESCAPE_TO_ROOT", .handler = do_disable_escape_to_root, .perm_check = only_root, .allow_su_session = true },
  	{ .cmd = KSU_IOCTL_LOOKUP_SYMBOLS, .name = "LOOKUP_SYMBOLS", .handler = do_lookup_symbols, .perm_check = only_root },

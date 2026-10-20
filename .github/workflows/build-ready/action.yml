@@ -357,10 +357,9 @@ runs:
                 # patch -p1 < <(curl -sL "https://github.com/midori01/KernelSU/commit/xx~1.patch") || true
                 echo "[...] 00_xxksu_susfs_2.3_patches applied."
                 
-                cp /tmp/Patches/01_disable_xx_avc.patch $GITHUB_WORKSPACE/device_kernel/KernelSU
-                patch -p1 < 01_disable_xx_avc.patch || true
-                # patch -p1 < <(curl -sL "https://github.com/midori01/KernelSU/commit/xx.patch") || true
-                echo "[...] 01_disable_xx_avc.patch applied."
+                # cp /tmp/Patches/01_disable_xx_avc.patch $GITHUB_WORKSPACE/device_kernel/KernelSU
+                # patch -p1 < 01_disable_xx_avc.patch || true
+                # echo "[...] 01_disable_xx_avc.patch applied."
                                 
                 echo "[+] Susfs patch for xxKSU has been completed."          
             else
