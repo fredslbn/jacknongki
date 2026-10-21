@@ -138,7 +138,7 @@ runs:
           
           elif [[ ${{ env.HOOK_METHOD }} == "LKM" ]]; then
 
-             echo "[+] LKM HOOK method applied from xxksu.config."
+             echo "[+] LKM HOOK method applied from fragment.config."
           
           
           else
