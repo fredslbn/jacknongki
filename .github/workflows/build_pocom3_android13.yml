@@ -151,10 +151,11 @@ jobs:
         uses: ./.github/workflows/patch-nomount
       
       - name: 🪛 Extra Kernel Options
+        shell: bash
         run: |
-          # Only ${{ env.DEVICE_NAME }} use it.
+          set -euo pipefail
           cd $GITHUB_WORKSPACE/device_kernel
-          
+
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           # Enable SUSFS_MEMFD
           # echo "CONFIG_KSU_SUSFS_SUS_MEMFD=y" >> "$CONFIG_FILE"

@@ -1,0 +1,174 @@
+From 8a8b397f72f530e292f68a5de1c5b7cc8f7497d5 Mon Sep 17 00:00:00 2001
+From: backslashxx <118538522+backslashxx@users.noreply.github.com>
+Date: Mon, 14 Sep 2026 19:50:53 +0900
+Subject: [PATCH] extra
+
+Signed-off-by: midori01 <lv@lvlv.lv>
+---
+ kernel/hook/branch_link_hook_arm64.c |  3 ++
+ kernel/include/uapi/supercall.h      | 15 ++++++
+ kernel/supercall/dispatch.c          | 70 ++++++++++++++++++++++++++++
+ 3 files changed, 88 insertions(+)
+
+diff --git a/kernel/hook/branch_link_hook_arm64.c b/kernel/hook/branch_link_hook_arm64.c
+index cb7080a20465..b9eb097d2fef 100644
+--- a/kernel/hook/branch_link_hook_arm64.c
++++ b/kernel/hook/branch_link_hook_arm64.c
+@@ -466,6 +466,7 @@ static int bl_hook_execve(void *data)
+ static int bl_hack_init_thread(void *data)
+ {
+ 	set_user_nice(current, 19); // low prio
++	extern char hook_type[];
+ 
+ loop_start:
+ 	msleep(1000);
+@@ -480,6 +481,8 @@ static int bl_hack_init_thread(void *data)
+ 
+ 	pr_info("branch_link: done! faccessat: %s newfstatat: %s execve: %s\n", (faccessat) ? "ok" : "fail", (newfstatat) ? "ok" : "fail", (execve) ? "ok" : "fail");
+ 
++	hook_type[12] = 48 + faccessat + newfstatat + execve;
++
+ 	dotted_kallsyms_destroy_hash_array();
+ 
+ 	return 0;
+diff --git a/kernel/include/uapi/supercall.h b/kernel/include/uapi/supercall.h
+index 1d21f61c8021..7a3338f1956e 100644
+--- a/kernel/include/uapi/supercall.h
++++ b/kernel/include/uapi/supercall.h
+@@ -165,6 +165,18 @@ struct ksu_lookup_symbols_cmd {
+ };
+ #define KSU_LOOKUP_SYMBOLS_MAX 1024
+ 
++struct ksu_hook_type_cmd {
++	char hook_type[32];
++};
++
++struct ksu_susfs_version_cmd {
++	char version[32];
++};
++
++struct ksu_driver_name_cmd {
++	char name[32];
++};
++
+ #define KSU_UMOUNT_WIPE 0	/* ignore everything and wipe list */
+ #define KSU_UMOUNT_ADD 1	/* add entry (path + flags) */
+ #define KSU_UMOUNT_DEL 2	/* delete entry, strcmp */
+@@ -198,5 +210,8 @@ struct ksu_lookup_symbols_cmd {
+ #define KSU_IOCTL_GET_SULOG_FD			_IOW('K', 20, struct ksu_get_sulog_fd_cmd)
+ #define KSU_IOCTL_DISABLE_ESCAPE_TO_ROOT	_IO('K', 21)
+ #define KSU_IOCTL_LOOKUP_SYMBOLS		_IOW('K', 22, struct ksu_lookup_symbols_cmd)
++#define KSU_IOCTL_HOOK_TYPE			_IOC(_IOC_READ, 'K', 101, 0)
++#define KSU_IOCTL_SUSFS_VERSION			_IOC(_IOC_READ, 'K', 102, 0)
++#define KSU_IOCTL_DRIVER_NAME			_IOC(_IOC_READ, 'K', 104, 0)
+ 
+ #endif
+diff --git a/kernel/supercall/dispatch.c b/kernel/supercall/dispatch.c
+index 317d2168533d..176c73111765 100644
+--- a/kernel/supercall/dispatch.c
++++ b/kernel/supercall/dispatch.c
+@@ -354,6 +354,9 @@ static int do_get_feature(void __user *arg)
+ 		return -EFAULT;
+ 	}
+ 
++	bool is_avc_spoof = (cmd.feature_id == 10003);
++	if (is_avc_spoof) cmd.feature_id = 4; // KSU_FEATURE_SELINUX_HIDE
++
+ 	ret = ksu_get_feature(cmd.feature_id, &cmd.value, &supported);
+ 	cmd.supported = 0;
+ 	if (supported) {
+@@ -363,6 +366,8 @@ static int do_get_feature(void __user *arg)
+ 		}
+ 	}
+ 
++	if (is_avc_spoof) cmd.feature_id = 10003;
++
+ 	if (ret && supported) {
+ 		pr_err("get_feature: failed for feature %u: %d\n", cmd.feature_id, ret);
+ 		return ret;
+@@ -386,6 +391,9 @@ static int do_set_feature(void __user *arg)
+ 		return -EFAULT;
+ 	}
+ 
++	bool is_avc_spoof = (cmd.feature_id == 10003);
++	if (is_avc_spoof) cmd.feature_id = 4; // KSU_FEATURE_SELINUX_HIDE
++
+ 	ret = ksu_set_feature(cmd.feature_id, cmd.value);
+ 	if (ret) {
+ 		pr_err("set_feature: failed for feature %u: %d\n", cmd.feature_id, ret);
+@@ -789,6 +797,65 @@ static int do_lookup_symbols(void __user *arg)
+ 	return ret;
+ }
+ 
++#if defined(CONFIG_KSU_HACK_ARM64_BRANCH_LINK)
++char hook_type[] = "Branch Link x/3";
++#elif defined(CONFIG_KSU_TAMPER_SYSCALL_TABLE)
++const char *hook_type = "Syscall Table Tamper";
++#elif defined(CONFIG_KSU_KPROBES_KSUD)
++# ifdef CONFIG_KSU_SUSFS
++const char *hook_type = "De-inlined SUSFS / Hybrid";
++# else
++const char *hook_type = "Hybrid";
++# endif
++#else
++# ifdef CONFIG_KSU_SUSFS
++const char *hook_type = "De-inlined SUSFS / Manual";
++# else
++const char *hook_type = "Manual";
++# endif
++#endif
++
++static int do_get_hook_type(void __user *arg)
++{
++    struct ksu_hook_type_cmd cmd = { 0 };
++
++    strscpy(cmd.hook_type, hook_type, sizeof(cmd.hook_type));
++
++    if (copy_to_user(arg, &cmd, sizeof(cmd))) {
++        pr_err("get_hook_type: copy_to_user failed\n");
++        return -EFAULT;
++    }
++
++    return 0;
++}
++
++static int do_get_susfs_version(void __user *arg)
++{
++    struct ksu_susfs_version_cmd cmd = { 0 };
++
++#ifdef CONFIG_KSU_SUSFS
++    strscpy(cmd.version, SUSFS_VERSION, sizeof(cmd.version));
++#else
++    strscpy(cmd.version, "Not supported", sizeof(cmd.version));
++#endif
++
++    if (copy_to_user(arg, &cmd, sizeof(cmd))) {
++        return -EFAULT;
++    }
++    return 0;
++}
++
++static int do_get_driver_name(void __user *arg)
++{
++    struct ksu_driver_name_cmd cmd = { 0 };
++    strscpy(cmd.name, "BACKSLASHXX", sizeof(cmd.name));
++
++    if (copy_to_user(arg, &cmd, sizeof(cmd))) {
++        return -EFAULT;
++    }
++    return 0;
++}
++
+ // IOCTL handlers mapping table
+ static const struct ksu_ioctl_cmd_map ksu_ioctl_handlers[] = {
+ 	{ .cmd = KSU_IOCTL_GRANT_ROOT, .name = "GRANT_ROOT", .handler = do_grant_root, .perm_check = allowed_for_su  },
+@@ -816,6 +883,9 @@ static const struct ksu_ioctl_cmd_map ksu_ioctl_handlers[] = {
+ 	{ .cmd = KSU_IOCTL_GET_SULOG_FD, .name = "GET_SULOG_FD", .handler = do_get_sulog_fd, .perm_check = only_root },
+ 	{ .cmd = KSU_IOCTL_DISABLE_ESCAPE_TO_ROOT, .name = "DISABLE_ESCAPE_TO_ROOT", .handler = do_disable_escape_to_root, .perm_check = only_root, .allow_su_session = true },
+ 	{ .cmd = KSU_IOCTL_LOOKUP_SYMBOLS, .name = "LOOKUP_SYMBOLS", .handler = do_lookup_symbols, .perm_check = only_root },
++	{ .cmd = KSU_IOCTL_HOOK_TYPE, .name = "HOOK_TYPE", .handler = do_get_hook_type, .perm_check = manager_or_root },
++	{ .cmd = KSU_IOCTL_SUSFS_VERSION, .name = "SUSFS_VERSION", .handler = do_get_susfs_version, .perm_check = manager_or_root },
++	{ .cmd = KSU_IOCTL_DRIVER_NAME, .name = "DRIVER_NAME", .handler = do_get_driver_name, .perm_check = manager_or_root },
+ 	{ .cmd = 0, .name = NULL, .handler = NULL, .perm_check = NULL } // Sentinel
+ };
+ 
