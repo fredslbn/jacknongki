@@ -75,14 +75,7 @@ runs:
  
                        
           elif [[ ${{ env.HOOK_METHOD }} == "branchlink" ]]; then
-             
-             CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-             # sed -i '/CONFIG_KALLSYMS_ALL/d' "$CONFIG_FILE"
-             # sed -i '/CONFIG_KPROBES/d' "$CONFIG_FILE"
-             echo "CONFIG_KPROBES=n" >> "$CONFIG_FILE"
-             echo "# CONFIG_KALLSYMS_ALL is not set" >> "$CONFIG_FILE"
-             echo "CONFIG_ARM64_LSE_ATOMICS=y" >> "$CONFIG_FILE"
-             
+
              CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
              cat >> "$CONFIG_FILE" <<- 'EOF'
              CONFIG_KSU=y
@@ -93,6 +86,9 @@ runs:
              CONFIG_KSU_COMPILE_AS_C23=y
              CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
              CONFIG_KSU_HEURISTIC_IN_TREE_BUILD=y
+             CONFIG_KPROBES=n
+             CONFIG_ARM64_LSE_ATOMICS=y
+             # CONFIG_KALLSYMS_ALL is not set            
              EOF
              echo "✅ BRANCHLINK HOOK method applied"
 
