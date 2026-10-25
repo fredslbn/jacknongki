@@ -3,7 +3,7 @@ new file mode 100644
 index 0000000..125ec8f
 --- /dev/null
 +++ b/include/linux/susfs.h
-@@ -0,0 +1,272 @@
+@@ -0,0 +1,260 @@
 +#ifndef KSU_SUSFS_H
 +#define KSU_SUSFS_H
 +
@@ -165,19 +165,6 @@ index 0000000..125ec8f
 +};
 +#endif
 +
-+/* sus_memfd */
-+#ifdef CONFIG_KSU_SUSFS_SUS_MEMFD
-+struct st_susfs_sus_memfd {
-+	char                    target_pathname[SUSFS_MAX_LEN_PATHNAME];
-+	int 					err;
-+};
-+
-+struct st_susfs_sus_memfd_list {
-+	struct list_head                        list;
-+	struct st_susfs_sus_memfd               info;
-+};
-+#endif
-+
 +/* getpriority uid filter */
 +struct st_susfs_priority_uid_filter {
 +	char                                    app_strings[SUSFS_APP_STR_BUF_SIZE];
@@ -276,3 +263,4 @@ index 0000000..125ec8f
 +void susfs_init(void);
 +
 +#endif
++
