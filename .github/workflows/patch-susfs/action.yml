@@ -100,26 +100,21 @@ runs:
                  if [[ "${{ env.DEVICE_CODENAME }}" == "Citrus" ]]; then
                     cp /tmp/Patches/Patch/susfs_pocom3_patch_to_4.19.patch ./
                     patch -p1 < susfs_pocom3_patch_to_4.19.patch || true
-                 
-                    # Clone SUSFS4KSU for kernel patches only (not KSU integration)
-                    echo "📦 Cloning SUSFS4KSU for kernel patches..."
-                    git clone --depth=1 https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android12-5.10
+
+                    cp /tmp/Patches/Patch/susfs_c.patch ./
+                    cp /tmp/Patches/Patch/susfs_h.patch ./
+                    cp /tmp/Patches/Patch/susfs_def_h.patch ./
+                    patch -p1 < susfs_c.patch || true
+                    patch -p1 < susfs_h.patch || true
+                    patch -p1 < susfs_def_h.patch || true
                     
-                    # Always copy fs/susfs.c
-                    cp -f susfs4ksu/kernel_patches/fs/* fs/
-                    echo "✔ Copied fs/susfs.c"
-                    # Always copy include/linux/susfs.h and susfs_def.h
-                    cp -f susfs4ksu/kernel_patches/include/linux/* include/linux/
-                    echo "✔ Copied include/linux/*"
-                    
-                    echo "🔍 Verifying SUSFS files..."
+                    # Clone SUSFS4KSU for kernel patches
+                    echo "📦 copy susfs.c susfs.h and susfs_def.h"
+
+                    echo "🔍 Verifying files..."
                     for f in fs/susfs.c include/linux/susfs.h include/linux/susfs_def.h; do
                        if [ -f "$f" ]; then echo "✔ Found: $f"; else echo "❌ Missing: $f"; fi
-                    done
-                    
-                    # Clean up SUSFS repo (we only needed kernel patches, not KSU integration)
-                    rm -rf susfs4ksu                                        
-                                                           
+                    done                             
                     echo "[+] PocoM3 SuSFS Patch completed."
                  
                  elif [[ "${{ env.DEVICE_CODENAME }}" == "Sweet" ]]; then
