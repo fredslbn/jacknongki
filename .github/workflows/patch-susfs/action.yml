@@ -101,9 +101,9 @@ runs:
                     cp /tmp/Patches/Patch/susfs_pocom3_patch_to_4.19.patch ./
                     patch -p1 < susfs_pocom3_patch_to_4.19.patch || true
 
-                    cp /tmp/Patches/Patch/fs/susfs.c ./
-                    cp /tmp/Patches/Patch/include/linux/susfs.h ./
-                    cp /tmp/Patches/Patch/include/linux/susfs_def.h ./
+                    cp /tmp/Patches/Patch/fs/susfs.c ./fs
+                    cp /tmp/Patches/Patch/include/linux/susfs.h ./include/linux
+                    cp /tmp/Patches/Patch/include/linux/susfs_def.h ./include/linux
 
                     # Clone SUSFS4KSU for kernel patches
                     echo "📦 copy susfs.c susfs.h and susfs_def.h"
