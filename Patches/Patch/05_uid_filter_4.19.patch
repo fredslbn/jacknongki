@@ -1,0 +1,100 @@
+From 4cd0f125f452ad3292ee6ce360162e14bd558ae1 Mon Sep 17 00:00:00 2001
+From: fredslbn <fh.silaban@gmail.com>
+Date: Sun, 25 Oct 2026 22:45:20 +0700
+Subject: [PATCH] susfs: Add priority uid filter
+
+---
+ block/ioprio.c | 22 ++++++++++++++++++++++
+ kernel/sys.c   | 16 ++++++++++++++++
+ 2 files changed, 38 insertions(+)
+
+diff --git a/block/ioprio.c b/block/ioprio.c
+index f0ee9cc33..5a0f2d37e 100644
+--- a/block/ioprio.c
++++ b/block/ioprio.c
+@@ -90,6 +90,10 @@ int ioprio_check_cap(int ioprio)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_KSU_SUSFS
++extern bool susfs_is_priority_uid_filtered(uid_t uid);
++#endif // #ifdef CONFIG_KSU_SUSFS
++
+ SYSCALL_DEFINE3(ioprio_set, int, which, int, who, int, ioprio)
+ {
+ 	struct task_struct *p, *g;
+@@ -131,7 +135,16 @@ SYSCALL_DEFINE3(ioprio_set, int, which, int, who, int, ioprio)
+ 			if (!who)
+ 				user = current_user();
+ 			else
++			
++#ifdef CONFIG_KSU_SUSFS
++			{
++				if (current_uid().val >= 10000 && susfs_is_priority_uid_filtered(uid.val))
++					break;			
++				user = find_user(uid);
++			}
++#else
+ 				user = find_user(uid);
++#endif // #ifdef CONFIG_KSU_SUSFS
+ 
+ 			if (!user)
+ 				break;
+@@ -224,7 +237,16 @@ SYSCALL_DEFINE2(ioprio_get, int, which, int, who)
+ 			if (!who)
+ 				user = current_user();
+ 			else
++
++#ifdef CONFIG_KSU_SUSFS
++			{
++				if (current_uid().val >= 10000 && susfs_is_priority_uid_filtered(uid.val))
++					break;			
++				user = find_user(uid);
++			}
++#else
+ 				user = find_user(uid);
++#endif // #ifdef CONFIG_KSU_SUSFS
+ 
+ 			if (!user)
+ 				break;
+diff --git a/kernel/sys.c b/kernel/sys.c
+index deefabfa7..79985cde6 100644
+--- a/kernel/sys.c
++++ b/kernel/sys.c
+@@ -198,6 +198,10 @@ static int set_one_prio(struct task_struct *p, int niceval, int error)
+ 	return error;
+ }
+ 
++#ifdef CONFIG_KSU_SUSFS
++extern bool susfs_is_priority_uid_filtered(uid_t uid);
++#endif // #ifdef CONFIG_KSU_SUSFS
++
+ SYSCALL_DEFINE3(setpriority, int, which, int, who, int, niceval)
+ {
+ 	struct task_struct *g, *p;
+@@ -243,6 +247,12 @@ SYSCALL_DEFINE3(setpriority, int, which, int, who, int, niceval)
+ 		if (!who)
+ 			uid = cred->uid;
+ 		else if (!uid_eq(uid, cred->uid)) {
++
++#ifdef CONFIG_KSU_SUSFS
++			if (cred->uid.val >= 10000 && susfs_is_priority_uid_filtered(uid.val))
++				goto out_unlock;
++#endif // #ifdef CONFIG_KSU_SUSFS
++		
+ 			user = find_user(uid);
+ 			if (!user)
+ 				goto out_unlock;	/* No processes for this user */
+@@ -311,6 +321,12 @@ SYSCALL_DEFINE2(getpriority, int, which, int, who)
+ 		if (!who)
+ 			uid = cred->uid;
+ 		else if (!uid_eq(uid, cred->uid)) {
++		
++#ifdef CONFIG_KSU_SUSFS
++			if (cred->uid.val >= 10000 && susfs_is_priority_uid_filtered(uid.val))
++				goto out_unlock;
++#endif // #ifdef CONFIG_KSU_SUSFS
++		
+ 			user = find_user(uid);
+ 			if (!user)
+ 				goto out_unlock;	/* No processes for this user */
