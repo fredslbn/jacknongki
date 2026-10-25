@@ -1814,21 +1814,20 @@ static int watch_one_dir(struct watch_dir *wd)
  * synchronize_srcu on the same SRCU struct, causing a permanent deadlock).
  * Cleanup is deferred to a delayed_work that runs outside the SRCU context.
  *
- * Kernel 5.10 (and >=5.9 generally) calls fsnotify_ops.handle_inode_event()
- * with a "const struct qstr *file_name". Kernel 4.19 predates that split and
- * only has fsnotify_ops.handle_event(), whose last-but-one argument is a
- * plain "const unsigned char *file_name" (no ->len / ->name members).
- * This is the ONLY functional kernel-API difference in this file between
- * 5.10 GKI and 4.19 — every other LINUX_VERSION_CODE branch above already
- * resolves correctly for 4.19 because 4.19 is below every threshold used.
+ * This kernel's struct fsnotify_ops.handle_event() does not take the
+ * separate inode_mark/vfsmount_mark pointers that the vanilla pre-5.9 API
+ * had; instead those were already folded into a trailing
+ * "struct fsnotify_iter_info *iter_info" (a backport ahead of this tree's
+ * declared 4.19 base). file_name here is a plain "const unsigned char *"
+ * (no ->len / ->name members, unlike 5.9+'s "const struct qstr *").
+ * Match the exact declaration in this tree's fsnotify_backend.h.
  * ==================================================================
  */
 static int susfs_handle_sdcard_inode_event(struct fsnotify_group *group,
 					    struct inode *inode,
-					    struct fsnotify_mark *inode_mark,
-					    struct fsnotify_mark *vfsmount_mark,
 					    u32 mask, const void *data, int data_type,
-					    const unsigned char *file_name, u32 cookie)
+					    const unsigned char *file_name, u32 cookie,
+					    struct fsnotify_iter_info *iter_info)
 {
 	if (!file_name || strlen((const char *)file_name) != 7 ||
 	    memcmp(file_name, "Android", 7))
@@ -1844,7 +1843,6 @@ static int susfs_handle_sdcard_inode_event(struct fsnotify_group *group,
 }
 
 static const struct fsnotify_ops fsnotify_ops = {
-	/* 4.19 does not have .handle_inode_event; use the pre-5.9 .handle_event */
 	.handle_event = susfs_handle_sdcard_inode_event,
 };
 
