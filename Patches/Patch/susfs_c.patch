@@ -1,9 +1,9 @@
 diff --git a/fs/susfs.c b/fs/susfs.c
 new file mode 100644
-index 0000000..f879857
+index 0000000..7dca01d
 --- /dev/null
 +++ b/fs/susfs.c
-@@ -0,0 +1,1968 @@
+@@ -0,0 +1,1752 @@
 +#include <linux/version.h>
 +#include <linux/cred.h>
 +#include <linux/fs.h>
@@ -334,22 +334,8 @@ index 0000000..f879857
 +static DEFINE_MUTEX(susfs_mutex_lock_sus_kstat);
 +static DEFINE_HASHTABLE(SUS_KSTAT_HLIST, 14);
 +
-+static int statfs_by_dentry(struct dentry *dentry, struct kstatfs *buf)
-+{
-+	int retval;
-+
-+	if (!dentry->d_sb->s_op->statfs)
-+		return -ENOSYS;
-+
-+	memset(buf, 0, sizeof(*buf));
-+	retval = security_sb_statfs(dentry);
-+	if (retval)
-+		return retval;
-+	retval = dentry->d_sb->s_op->statfs(dentry, buf);
-+	if (retval == 0 && buf->f_frsize == 0)
-+		buf->f_frsize = buf->f_bsize;
-+	return retval;
-+}
++extern int calculate_f_flags_wrapper(struct vfsmount *mnt);
++extern int statfs_by_dentry_wrapper(struct dentry *dentry, struct kstatfs *buf);
 +
 +static int susfs_mark_inode_sus_kstat(char *target_pathname, struct st_susfs_sus_kstat_hlist *new_entry, bool is_update) {
 +	struct path path;
@@ -385,7 +371,9 @@ index 0000000..f879857
 +		new_entry->target_dev = fi->inode.i_sb->s_dev;
 +		new_entry->spoofed_mnt_id = susfs_get_non_sus_mnt_id_from_mnt(real_mount(path.mnt));
 +		no_sus_vfsmnt = susfs_get_non_sus_vfsmnt_from_vfsmnt(path.mnt);
-+		err = statfs_by_dentry(no_sus_vfsmnt->mnt_root, &new_entry->spoofed_kstatfs);
++		err = statfs_by_dentry_wrapper(no_sus_vfsmnt->mnt_root, &new_entry->spoofed_kstatfs);
++		if (!err)
++			new_entry->spoofed_kstatfs.f_flags = calculate_f_flags_wrapper(no_sus_vfsmnt);
 +		dput(no_sus_vfsmnt->mnt_root);
 +		mntput(no_sus_vfsmnt);
 +		if (err)
@@ -404,7 +392,9 @@ index 0000000..f879857
 +	new_entry->target_dev = inode->i_sb->s_dev;
 +	new_entry->spoofed_mnt_id = susfs_get_non_sus_mnt_id_from_mnt(real_mount(path.mnt));
 +	no_sus_vfsmnt = susfs_get_non_sus_vfsmnt_from_vfsmnt(path.mnt);
-+	err = statfs_by_dentry(no_sus_vfsmnt->mnt_root, &new_entry->spoofed_kstatfs);
++	err = statfs_by_dentry_wrapper(no_sus_vfsmnt->mnt_root, &new_entry->spoofed_kstatfs);
++	if (!err)
++		new_entry->spoofed_kstatfs.f_flags = calculate_f_flags_wrapper(no_sus_vfsmnt);
 +	dput(no_sus_vfsmnt->mnt_root);
 +	mntput(no_sus_vfsmnt);
 +	if (err)
@@ -1262,105 +1252,6 @@ index 0000000..f879857
 +}
 +#endif // #ifdef CONFIG_KSU_SUSFS_SUS_MAP
 +
-+#ifdef CONFIG_KSU_SUSFS_SUS_MEMFD
-+static DEFINE_MUTEX(susfs_mutex_lock_sus_memfd);
-+static LIST_HEAD(LH_SUS_MEMFD);
-+
-+int susfs_add_sus_memfd(void __user **user_info) {
-+	struct st_susfs_sus_memfd_list *cursor;
-+	struct st_susfs_sus_memfd_list *new_list = NULL;
-+	struct st_susfs_sus_memfd info = {0};
-+
-+	if (copy_from_user(&info, (struct st_susfs_sus_memfd __user*)*user_info, sizeof(info))) {
-+		SUSFS_LOGE("failed copying from userspace\n");
-+		info.err = -EFAULT;
-+		goto out_copy_to_user;
-+	}
-+
-+	mutex_lock(&susfs_mutex_lock_sus_memfd);
-+	list_for_each_entry(cursor, &LH_SUS_MEMFD, list) {
-+		if (unlikely(!strcmp(info.target_pathname, cursor->info.target_pathname))) {
-+			SUSFS_LOGE("target_pathname: '%s' is already created in LH_SUS_MEMFD\n", info.target_pathname);
-+			mutex_unlock(&susfs_mutex_lock_sus_memfd);
-+			info.err = -EEXIST;
-+			goto out_copy_to_user;
-+		}
-+	}
-+	mutex_unlock(&susfs_mutex_lock_sus_memfd);
-+
-+	new_list = kzalloc(sizeof(struct st_susfs_sus_memfd_list), GFP_KERNEL);
-+	if (!new_list) {
-+		info.err = -ENOMEM;
-+		goto out_copy_to_user;
-+	}
-+
-+	memcpy(&new_list->info, &info, sizeof(info));
-+
-+	INIT_LIST_HEAD(&new_list->list);
-+	mutex_lock(&susfs_mutex_lock_sus_memfd);
-+	list_add_tail(&new_list->list, &LH_SUS_MEMFD);
-+	mutex_unlock(&susfs_mutex_lock_sus_memfd);
-+	SUSFS_LOGI("target_pathname: '%s', is successfully added to LH_SUS_MEMFD\n", new_list->info.target_pathname);
-+	info.err = 0;
-+out_copy_to_user:
-+	if (copy_to_user(&((struct st_susfs_sus_memfd __user*)*user_info)->err, &info.err, sizeof(info.err))) {
-+		info.err = -EFAULT;
-+	}
-+	SUSFS_LOGI("CMD_SUSFS_ADD_SUS_MEMFD -> ret: %d\n", info.err);
-+	return info.err;
-+}
-+
-+int susfs_sus_memfd(char *memfd_name) {
-+	struct st_susfs_sus_memfd_list *cursor;
-+	int res = 0;
-+
-+	mutex_lock(&susfs_mutex_lock_sus_memfd);
-+	list_for_each_entry(cursor, &LH_SUS_MEMFD, list) {
-+		if (unlikely(!strcmp(memfd_name, cursor->info.target_pathname))) {
-+			SUSFS_LOGI("memfd_name: '%s' is found in LH_SUS_MEMFD, blocking memfd_create\n", memfd_name);
-+			res = 1;
-+			break;
-+		}
-+	}
-+	mutex_unlock(&susfs_mutex_lock_sus_memfd);
-+	return res;
-+}
-+#endif // #ifdef CONFIG_KSU_SUSFS_SUS_MEMFD
-+
-+	if (!new_bitmap) {
-+		err = -ENOMEM;
-+		goto out_free_new_app_strings;
-+	}
-+
-+	/*
-+	 * The data paths of the apps cannot be accessed with the selinux
-+	 * restrictions of the calling process, hence the selinux domain is
-+	 * switched to the KernelSU one before the uids are resolved.
-+	 */
-+	orig_cred = susfs_switch_to_ksu_domain();
-+	if (!orig_cred) {
-+		err = -EINVAL;
-+		goto out_free_new_bitmap;
-+	}
-+
-+	if (is_uid_filter_set_before)
-+		SUSFS_LOGI("renewing the priority uid filter\n");
-+	err = susfs_parse_priority_app_names(info->app_strings, new_bitmap->bits, false);
-+
-+	susfs_restore_creds(orig_cred);
-+	orig_cred = NULL;
-+
-+	if (err)
-+		goto out_free_new_bitmap;
-+
-+	/*
-+	 * Publish the new bitmap and drop the old one.
-+	 * The mutex serializes the writers, while the readers are protected
-+	 * by RCU, hence the readers always see a consistent bitmap and they
-+	 * never access a freed bitmap.
-+	 */
-+	mutex_lock(&susfs_mutex_lock_priority_uid_filter);
-+	old_bitmap = rcu_dereference_protected(priority_uid_filter_bitmap, lockdep_is_held(&susfs_mutex_lock_priority_uid_filter));
 +	rcu_assign_pointer(priority_uid_filter_bitmap, new_bitmap);
 +	new_bitmap = NULL;
 +	kvfree(susfs_priority_app_strings);
@@ -1601,11 +1492,6 @@ index 0000000..f879857
 +#endif
 +#ifdef CONFIG_KSU_SUSFS_SUS_MAP
 +	info->err = copy_config_to_buf("CONFIG_KSU_SUSFS_SUS_MAP\n", buf_ptr, &copied_size, SUSFS_ENABLED_FEATURES_SIZE);
-+	if (info->err) goto out_copy_to_user;
-+	buf_ptr = info->enabled_features + copied_size;
-+#endif
-+#ifdef CONFIG_KSU_SUSFS_SUS_MEMFD
-+	info->err = copy_config_to_buf("CONFIG_KSU_SUSFS_SUS_MEMFD\n", buf_ptr, &copied_size, SUSFS_ENABLED_FEATURES_SIZE);
 +	if (info->err) goto out_copy_to_user;
 +	buf_ptr = info->enabled_features + copied_size;
 +#endif
