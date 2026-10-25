@@ -1502,7 +1502,7 @@ index 2978659..6f829e1 100644
  #include "internal.h"
  
  static int flags_by_mnt(int mnt_flags)
-@@ -67,9 +71,71 @@ static int statfs_by_dentry(struct dentry *dentry, struct kstatfs *buf)
+@@ -67,9 +71,90 @@ static int statfs_by_dentry(struct dentry *dentry, struct kstatfs *buf)
  	return retval;
  }
  
@@ -1533,6 +1533,25 @@ index 2978659..6f829e1 100644
 +	if (retval == 0 && buf->f_frsize == 0)
 +		buf->f_frsize = buf->f_bsize;
 +	return retval;
++}
++#endif // #ifdef CONFIG_KSU_SUSFS_SUS_KSTAT
++
++#ifdef CONFIG_KSU_SUSFS_SUS_KSTAT
++/*
++ * Thin public wrappers around the file-local statfs_by_dentry()/
++ * calculate_f_flags(), used by fs/susfs.c's susfs_mark_inode_sus_kstat()
++ * to snapshot a reference (non-sus) mount's real kstatfs when a sus_kstat
++ * entry is added or updated. Distinct from susfs_statfs_by_dentry() above,
++ * which spoofs the result at read time for an already-flagged inode.
++ */
++int statfs_by_dentry_wrapper(struct dentry *dentry, struct kstatfs *buf)
++{
++	return statfs_by_dentry(dentry, buf);
++}
++
++int calculate_f_flags_wrapper(struct vfsmount *mnt)
++{
++	return calculate_f_flags(mnt);
 +}
 +#endif // #ifdef CONFIG_KSU_SUSFS_SUS_KSTAT
 +
