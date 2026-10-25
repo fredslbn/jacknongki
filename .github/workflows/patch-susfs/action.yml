@@ -103,11 +103,13 @@ runs:
 
                     # Clone SUSFS4KSU for kernel patches
                     echo "📦 patching susfs.c susfs.h and susfs_def.h"
+
+                    # cp /tmp/Patches/Patch/susfs_c.patch ./
+                    cp /tmp/Patches/Patch/fs/susfs.c ./fs
                     
-                    cp /tmp/Patches/Patch/susfs_c.patch ./
                     cp /tmp/Patches/Patch/susfs_h.patch ./
                     cp /tmp/Patches/Patch/susfs_def_h.patch ./
-                    patch -p1 < susfs_c.patch || true
+                    # patch -p1 < susfs_c.patch || true
                     patch -p1 < susfs_h.patch || true
                     patch -p1 < susfs_def_h.patch || true
                     

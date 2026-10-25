@@ -442,8 +442,7 @@ void susfs_add_sus_kstat(void __user **user_info) {
 				kfree(new_entry);
 				goto out_copy_to_user;
 			}
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0)
-			SUSFS_LOGI("is_fuse: %d, is_statically: '%d', target_ino: '%lu', target_dev: '%lu', target_pathname: '%s', spoofed_ino: '%lu', spoofed_dev: '%lu', spoofed_nlink: '%u', spoofed_size: '%llu', spoofed_atime_tv_sec: '%ld', spoofed_mtime_tv_sec: '%ld', spoofed_ctime_tv_sec: '%ld', spoofed_atime_tv_nsec: '%ld', spoofed_mtime_tv_nsec: '%ld', spoofed_ctime_tv_nsec: '%ld', spoofed_blksize: '%lu', spoofed_blocks: '%llu', spoofed_mnt_id: '%d', is successfully added to SUS_KSTAT_HLIST\n",
+			SUSFS_LOGI("is_fuse: %d, is_statically: '%d', target_ino: '%lu', target_dev: '%lu', target_pathname: '%s', spoofed_ino: '%lu', spoofed_dev: '%lu', spoofed_nlink: '%u', spoofed_size: '%lld', spoofed_atime_tv_sec: '%ld', spoofed_mtime_tv_sec: '%ld', spoofed_ctime_tv_sec: '%ld', spoofed_atime_tv_nsec: '%ld', spoofed_mtime_tv_nsec: '%ld', spoofed_ctime_tv_nsec: '%ld', spoofed_blksize: '%lu', spoofed_blocks: '%lld', spoofed_mnt_id: '%d', is successfully added to SUS_KSTAT_HLIST\n",
 					new_entry->is_fuse,
 					new_entry->info.is_statically, new_entry->info.target_ino,
 					new_entry->target_dev, new_entry->info.target_pathname,
@@ -452,17 +451,6 @@ void susfs_add_sus_kstat(void __user **user_info) {
 					new_entry->info.spoofed_atime_tv_sec, new_entry->info.spoofed_mtime_tv_sec, new_entry->info.spoofed_ctime_tv_sec,
 					new_entry->info.spoofed_atime_tv_nsec, new_entry->info.spoofed_mtime_tv_nsec, new_entry->info.spoofed_ctime_tv_nsec,
 					new_entry->info.spoofed_blksize, new_entry->info.spoofed_blocks, new_entry->spoofed_mnt_id);
-#else
-			SUSFS_LOGI("is_fuse: %d, is_statically: '%d', target_ino: '%lu', target_dev: '%lu', target_pathname: '%s', spoofed_ino: '%lu', spoofed_dev: '%lu', spoofed_nlink: '%u', spoofed_size: '%u', spoofed_atime_tv_sec: '%ld', spoofed_mtime_tv_sec: '%ld', spoofed_ctime_tv_sec: '%ld', spoofed_atime_tv_nsec: '%ld', spoofed_mtime_tv_nsec: '%ld', spoofed_ctime_tv_nsec: '%ld', spoofed_blksize: '%lu', spoofed_blocks: '%llu', spoofed_mnt_id: '%d', is successfully added to SUS_KSTAT_HLIST\n",
-					new_entry->is_fuse,
-					new_entry->info.is_statically, new_entry->info.target_ino,
-					new_entry->target_dev, new_entry->info.target_pathname,
-					new_entry->info.spoofed_ino, new_entry->info.spoofed_dev,
-					new_entry->info.spoofed_nlink, new_entry->info.spoofed_size,
-					new_entry->info.spoofed_atime_tv_sec, new_entry->info.spoofed_mtime_tv_sec, new_entry->info.spoofed_ctime_tv_sec,
-					new_entry->info.spoofed_atime_tv_nsec, new_entry->info.spoofed_mtime_tv_nsec, new_entry->info.spoofed_ctime_tv_nsec,
-					new_entry->info.spoofed_blksize, new_entry->info.spoofed_blocks, new_entry->spoofed_mnt_id);
-#endif
 			hash_del_rcu(&tmp_entry->node);
 			hash_add_rcu(SUS_KSTAT_HLIST, &new_entry->node, info.target_ino);
 			mutex_unlock(&susfs_mutex_lock_sus_kstat);
@@ -481,8 +469,7 @@ void susfs_add_sus_kstat(void __user **user_info) {
 		goto out_copy_to_user;
 	}
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0)
-	SUSFS_LOGI("is_fuse: %d, is_statically: '%d', target_ino: '%lu', target_dev: '%lu', target_pathname: '%s', spoofed_ino: '%lu', spoofed_dev: '%lu', spoofed_nlink: '%u', spoofed_size: '%llu', spoofed_atime_tv_sec: '%ld', spoofed_mtime_tv_sec: '%ld', spoofed_ctime_tv_sec: '%ld', spoofed_atime_tv_nsec: '%ld', spoofed_mtime_tv_nsec: '%ld', spoofed_ctime_tv_nsec: '%ld', spoofed_blksize: '%lu', spoofed_blocks: '%llu', spoofed_mnt_id: '%d', is successfully added to SUS_KSTAT_HLIST\n",
+	SUSFS_LOGI("is_fuse: %d, is_statically: '%d', target_ino: '%lu', target_dev: '%lu', target_pathname: '%s', spoofed_ino: '%lu', spoofed_dev: '%lu', spoofed_nlink: '%u', spoofed_size: '%lld', spoofed_atime_tv_sec: '%ld', spoofed_mtime_tv_sec: '%ld', spoofed_ctime_tv_sec: '%ld', spoofed_atime_tv_nsec: '%ld', spoofed_mtime_tv_nsec: '%ld', spoofed_ctime_tv_nsec: '%ld', spoofed_blksize: '%lu', spoofed_blocks: '%lld', spoofed_mnt_id: '%d', is successfully added to SUS_KSTAT_HLIST\n",
 			new_entry->is_fuse,
 			new_entry->info.is_statically, new_entry->info.target_ino,
 			new_entry->target_dev, new_entry->info.target_pathname,
@@ -491,17 +478,6 @@ void susfs_add_sus_kstat(void __user **user_info) {
 			new_entry->info.spoofed_atime_tv_sec, new_entry->info.spoofed_mtime_tv_sec, new_entry->info.spoofed_ctime_tv_sec,
 			new_entry->info.spoofed_atime_tv_nsec, new_entry->info.spoofed_mtime_tv_nsec, new_entry->info.spoofed_ctime_tv_nsec,
 			new_entry->info.spoofed_blksize, new_entry->info.spoofed_blocks, new_entry->spoofed_mnt_id);
-#else
-	SUSFS_LOGI("is_fuse: %d, is_statically: '%d', target_ino: '%lu', target_dev: '%lu', target_pathname: '%s', spoofed_ino: '%lu', spoofed_dev: '%lu', spoofed_nlink: '%u', spoofed_size: '%u', spoofed_atime_tv_sec: '%ld', spoofed_mtime_tv_sec: '%ld', spoofed_ctime_tv_sec: '%ld', spoofed_atime_tv_nsec: '%ld', spoofed_mtime_tv_nsec: '%ld', spoofed_ctime_tv_nsec: '%ld', spoofed_blksize: '%lu', spoofed_blocks: '%llu', spoofed_mnt_id: '%d', is successfully added to SUS_KSTAT_HLIST\n",
-			new_entry->is_fuse,
-			new_entry->info.is_statically, new_entry->info.target_ino,
-			new_entry->target_dev, new_entry->info.target_pathname,
-			new_entry->info.spoofed_ino, new_entry->info.spoofed_dev,
-			new_entry->info.spoofed_nlink, new_entry->info.spoofed_size,
-			new_entry->info.spoofed_atime_tv_sec, new_entry->info.spoofed_mtime_tv_sec, new_entry->info.spoofed_ctime_tv_sec,
-			new_entry->info.spoofed_atime_tv_nsec, new_entry->info.spoofed_mtime_tv_nsec, new_entry->info.spoofed_ctime_tv_nsec,
-			new_entry->info.spoofed_blksize, new_entry->info.spoofed_blocks, new_entry->spoofed_mnt_id);
-#endif
 	hash_add_rcu(SUS_KSTAT_HLIST, &new_entry->node, info.target_ino);
 	mutex_unlock(&susfs_mutex_lock_sus_kstat);
 	info.err = 0;
@@ -651,6 +627,7 @@ out_spoof_kstat:
 				stat->blksize = entry->info.spoofed_blksize;
 			if (entry->info.flags & KSTAT_SPOOF_BLOCKS)
 				stat->blocks = entry->info.spoofed_blocks;
+/* struct kstat has no mnt_id field before kernel 5.8ish; 4.19 does not have it. */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)
 			stat->mnt_id = entry->spoofed_mnt_id;
 #endif // #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)
@@ -1831,25 +1808,30 @@ static int watch_one_dir(struct watch_dir *wd)
 }
 
 /*
+ * ===================== 4.19-SPECIFIC CHANGE =====================
  * fsnotify handler — runs inside an SRCU read section held by fsnotify().
  * Must not block or call fsnotify_destroy_group() (which internally calls
  * synchronize_srcu on the same SRCU struct, causing a permanent deadlock).
  * Cleanup is deferred to a delayed_work that runs outside the SRCU context.
+ *
+ * Kernel 5.10 (and >=5.9 generally) calls fsnotify_ops.handle_inode_event()
+ * with a "const struct qstr *file_name". Kernel 4.19 predates that split and
+ * only has fsnotify_ops.handle_event(), whose last-but-one argument is a
+ * plain "const unsigned char *file_name" (no ->len / ->name members).
+ * This is the ONLY functional kernel-API difference in this file between
+ * 5.10 GKI and 4.19 — every other LINUX_VERSION_CODE branch above already
+ * resolves correctly for 4.19 because 4.19 is below every threshold used.
+ * ==================================================================
  */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 9, 0)
-static int susfs_handle_sdcard_inode_event(struct fsnotify_mark *mark, u32 mask,
-											struct inode *inode, struct inode *dir,
-											const struct qstr *file_name, u32 cookie)
-#else
 static int susfs_handle_sdcard_inode_event(struct fsnotify_group *group,
-			    struct inode *inode,
-			    u32 mask, const void *data, int data_type,
-			    const struct qstr *file_name, u32 cookie,
-			    struct fsnotify_iter_info *iter_info)
-#endif
+					    struct inode *inode,
+					    struct fsnotify_mark *inode_mark,
+					    struct fsnotify_mark *vfsmount_mark,
+					    u32 mask, const void *data, int data_type,
+					    const unsigned char *file_name, u32 cookie)
 {
-	if (!file_name || file_name->len != 7 ||
-	    memcmp(file_name->name, "Android", 7))
+	if (!file_name || strlen((const char *)file_name) != 7 ||
+	    memcmp(file_name, "Android", 7))
 		return 0;
 
 	if (test_and_set_bit(0, &sdcard_cleanup_scheduled))
@@ -1862,11 +1844,8 @@ static int susfs_handle_sdcard_inode_event(struct fsnotify_group *group,
 }
 
 static const struct fsnotify_ops fsnotify_ops = {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 9, 0)
-	.handle_inode_event = susfs_handle_sdcard_inode_event,
-#else
+	/* 4.19 does not have .handle_inode_event; use the pre-5.9 .handle_event */
 	.handle_event = susfs_handle_sdcard_inode_event,
-#endif
 };
 
 static int add_mark_on_inode(struct inode *inode, u32 mask,
@@ -1881,6 +1860,7 @@ static int add_mark_on_inode(struct inode *inode, u32 mask,
 	fsnotify_init_mark(m, g);
 	m->mask = mask;
 
+	/* 4.19 >= 4.18, so fsnotify_add_inode_mark() is available here. */
 	if (fsnotify_add_inode_mark(m, inode, 0)) {
 		fsnotify_put_mark(m);
 		return -EINVAL;
@@ -1912,11 +1892,8 @@ static int susfs_sdcard_monitor_fn(void *data)
 
 	INIT_DELAYED_WORK(&sdcard_cleanup_dwork, susfs_sdcard_cleanup_fn);
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
-	g = fsnotify_alloc_group(&fsnotify_ops, 0);
-#else
+	/* 4.19 < 6.0, so fsnotify_alloc_group() takes a single argument. */
 	g = fsnotify_alloc_group(&fsnotify_ops);
-#endif
 	if (IS_ERR(g)) {
 		return PTR_ERR(g);
 	}
@@ -1949,7 +1926,7 @@ static void susfs_run_extra_works(struct work_struct *work) {
 }
 
 /* susfs_init */
-void susfs_init(void) {\
+void susfs_init(void) {
 	SUSFS_LOGI("Initializing susfs_extra_works\n");
 	INIT_WORK(&susfs_extra_works, susfs_run_extra_works);
 	SUSFS_LOGI("susfs is initialized! version: " SUSFS_VERSION " \n");
@@ -1957,4 +1934,3 @@ void susfs_init(void) {\
 
 /* No module exit is needed becuase it should never be a loadable kernel module */
 //void __init susfs_exit(void)
-
