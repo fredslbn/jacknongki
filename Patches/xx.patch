@@ -1,4 +1,4 @@
-From f07e3f091ac5fdbdb99511fc5e8933d9a8c60935 Mon Sep 17 00:00:00 2001
+From afb9439c0852974cb190246a4c91197c73edab83 Mon Sep 17 00:00:00 2001
 From: midori01 <lv@lvlv.lv>
 Date: Mon, 14 Sep 2026 19:50:53 +0900
 Subject: [PATCH] de-inlined susfs
@@ -17,10 +17,10 @@ Signed-off-by: midori01 <lv@lvlv.lv>
  9 files changed, 347 insertions(+)
 
 diff --git a/kernel/Kconfig b/kernel/Kconfig
-index e1d73e7fd7a1..3db737e2deee 100644
+index c69bc26ee747..9bdf3d85ab66 100644
 --- a/kernel/Kconfig
 +++ b/kernel/Kconfig
-@@ -151,4 +151,99 @@ config KSU_HEURISTIC_IN_TREE_BUILD
+@@ -143,4 +143,99 @@ config KSU_HEURISTIC_IN_TREE_BUILD
  	help
  	  Note: if youre building out-of-tree, configure by editing ksu.c #defines instead.
  
@@ -175,10 +175,10 @@ index 925798048a86..4d169f763619 100644
  
  install_ksu_fd:
 diff --git a/kernel/ksu.c b/kernel/ksu.c
-index 1bb5a2b9a7e9..5c7011a95c4e 100644
+index 40db187455dd..db31803c8058 100644
 --- a/kernel/ksu.c
 +++ b/kernel/ksu.c
-@@ -32,6 +32,10 @@
+@@ -30,6 +30,10 @@
  #include "avc.h"
  #endif
  
@@ -189,7 +189,7 @@ index 1bb5a2b9a7e9..5c7011a95c4e 100644
  // uapi
  #include "include/uapi/app_profile.h"
  #include "include/uapi/feature.h"
-@@ -291,6 +295,10 @@ static int __init kernelsu_init(void)
+@@ -285,6 +289,10 @@ static int __init kernelsu_init(void)
  
  	ksu_allowlist_init();
  	ksu_throne_tracker_init();
@@ -204,13 +204,23 @@ diff --git a/kernel/manager/pkg_observer.c b/kernel/manager/pkg_observer.c
 index 8a7d780c3340..055f7412dd1d 100644
 --- a/kernel/manager/pkg_observer.c
 +++ b/kernel/manager/pkg_observer.c
-@@ -52,6 +52,9 @@ static void ksu_rename_observer_slow(struct dentry *old_dentry, struct dentry *n
++@@ -19,6 +19,9 @@
+ by offloading it to a kthread.
+ * reuses code from: https://github.com/tiann/KernelSU/blob/v1.0.5/kernel/core_hook.c#L188
+ */
++
++#include <linux/susfs.h>
++
+ static void *system_dir_inode_ptr = nullptr;
+ 
+ static noinline void ksu_grab_data_system_inode()
+@@ -52,6 +55,9 @@ static void ksu_rename_observer_slow(struct dentry *old_dentry, struct dentry *n
  		return;
  
  	pr_info("renameat: %s -> %s, new path: %s\n", old_dentry->d_iname, new_dentry->d_iname, buf);
-+#ifdef CONFIG_KSU_SUSFS
++// Renew the getpriority uid bitmap filter
 +	susfs_parse_priority_app_strings();
-+#endif // #ifdef CONFIG_KSU_SUSFS
++
  	track_throne(false);
  	return;
  }
