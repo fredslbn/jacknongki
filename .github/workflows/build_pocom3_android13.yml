@@ -69,7 +69,7 @@ env:
   PATCH_XXKSU_MANUAL : false # manual, only if patching manually scope minimized security hooks 2.3
   KERNEL_TYPE : "" # 4.19 4.14 5.4 only for manual patching
   
-  SUSFS_ENABLE : true
+  SUSFS_ENABLE : false
   SUSFS_FIXED : true
 
   AK3_SOURCE : "https://github.com/fredslbn/AnyKernel3.git"
