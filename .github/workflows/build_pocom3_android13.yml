@@ -69,7 +69,7 @@ env:
   PATCH_XXKSU_MANUAL : false # manual, only if patching manually scope minimized security hooks 2.3
   KERNEL_TYPE : "" # 4.19 4.14 5.4 only for manual patching
   
-  SUSFS_ENABLE : false
+  SUSFS_ENABLE : true
   SUSFS_FIXED : true
 
   AK3_SOURCE : "https://github.com/fredslbn/AnyKernel3.git"
@@ -142,13 +142,13 @@ jobs:
       - name: ⚙️ Get neccssary tools
         uses: ./.github/workflows/build-ready
 
-      - name: 🪝 Patch Kernel of SUSFS
+      - name: 🪝 Patch SUSFS
         uses: ./.github/workflows/patch-susfs
 
       - name: 🔗 Patch for no-kprobe
         uses: ./.github/workflows/patch-no-kprobe
             
-      - name: 🔒 Patch Kernel of nomount
+      - name: 🔒 Patch Nomount
         uses: ./.github/workflows/patch-nomount
       
       - name: 🛡 Patch VPNHide
