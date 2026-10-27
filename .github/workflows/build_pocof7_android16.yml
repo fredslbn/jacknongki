@@ -172,10 +172,9 @@ jobs:
           # sed -i '/bad_version:/,/return 0;/s/return 0;/return 1;/' kernel/module/version.c || true
           sed -i '/same_magic(/,/return strcmp/s/return strcmp(amagic, bmagic) == 0;/return 1;/' kernel/module/version.c || true
 
-          config.gki="build.config.gki"
-             sed -i '/^DEFCONFIG=gki_defconfig/d' "config.gki"
-             sed -i '$a\DEFCONFIG=${{ env.DEFCONFIG_NAME }}' "config.gki"
-             sed -i '/^POST_DEFCONFIG_CMDS="check_defconfig"/d' "config.gki"          
+          sed -i '/^DEFCONFIG=gki_defconfig/d' build.config.gki
+          sed -i '$a\DEFCONFIG=${{ env.DEFCONFIG_NAME }}' build.config.gki
+          sed -i '/^POST_DEFCONFIG_CMDS="check_defconfig"/d' build.config.gk"          
           echo "✅ GKI kernel 6.6 patches has been applied."
           
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
