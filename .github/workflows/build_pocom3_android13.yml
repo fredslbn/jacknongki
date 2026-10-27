@@ -151,6 +151,9 @@ jobs:
       - name: 🔒 Patch Kernel of nomount
         uses: ./.github/workflows/patch-nomount
       
+      - name: 🛡 Patch VPNHide
+        uses: ./.github/workflows/patch-vpnhide
+      
       - name: 🪛 Extra Kernel Options
         shell: bash
         run: |
