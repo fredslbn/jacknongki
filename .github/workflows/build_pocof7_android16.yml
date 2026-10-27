@@ -150,22 +150,33 @@ jobs:
         shell: bash
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |        
-         cd $GITHUB_WORKSPACE/device_kernel
          set -euo pipefail
+         cd $GITHUB_WORKSPACE/device_kernel
                            
          patch -p1 < <(curl -sSfL "https://raw.githubusercontent.com/fatalcoder524/kernel_patches_additional/refs/heads/main/bbr3/0001-net-tcp-backport-BBRv3-to-android15-6.6.patch") || true
          echo "✅ BBRv3 patch successfully applied"
          
       - name: 🪛 Extra Kernel Options
+        shell: bash
         run: |
-          # Only ${{ env.DEVICE_NAME }} use it.
-          cd $GITHUB_WORKSPACE/device_kernel
+          set -euo pipefail
+          cd $GITHUB_WORKSPACE/device_kernel                   
 
+          # Kernel 6.6 patches
+          patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_fixup.patch") || true
+          patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_hostbuild.patch") || true
+          patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_force_loading_modules_fail_symbol_version_checks.patch") || true
+          
+          config.gki="build.config.gki"
+             sed -i '/^DEFCONFIG=gki_defconfig/d' "config.gki"
+             sed -i '$a\DEFCONFIG=${{ env.DEFCONFIG_NAME }}' "config.gki"
+             sed -i '/^POST_DEFCONFIG_CMDS="check_defconfig"/d' "config.gki"          
+          echo "✅ GKI kernel 6.6 patches has been applied."
+          
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-
           # LTO Configuration - Enable Thin LTO only
           sed -i '/CONFIG_LTO_NONE/d' "$CONFIG_FILE"
-          echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"          
+          echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
           echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
           echo "CONFIG_THINLTO=y" >> "$CONFIG_FILE"
            
@@ -186,12 +197,12 @@ jobs:
           
           echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$CONFIG_FILE"
                     
-          # echo "KBUILD_CFLAGS += -w" >> ./Makefile          
+          # echo "KBUILD_CFLAGS += -w" >> ./Makefile
           echo 'KBUILD_CFLAGS += -Wno-default-const-init-unsafe' >> ./Makefile
           echo 'KBUILD_CFLAGS += -Wno-uninitialized-const-pointer' >> ./Makefile
           echo 'KBUILD_CFLAGS += -Wno-implicit-function-declaration' >> ./Makefile
           echo 'KBUILD_CFLAGS += -Wno-sometimes-uninitialized' >> ./Makefile
-          echo "Custom Makefile line added successfully"
+          echo "✅ Custom Makefile line added successfully"
           
           # TCP optimization
           echo "CONFIG_TCP_CONG_ADVANCED=y" >> "$CONFIG_FILE"
@@ -201,8 +212,7 @@ jobs:
           echo "CONFIG_TCP_CONG_BBR=y" >> "$CONFIG_FILE"
           echo "CONFIG_TCP_CONG_BBR3=y" >> "$CONFIG_FILE"
           echo "CONFIG_DEFAULT_BBR3=y" >> "$CONFIG_FILE"
-          
-          echo "TCP optimization added successfully"
+          echo "✅ TCP optimization added successfully"
                 
       - name: 🚀 Build Process
         uses: ./.github/workflows/build-process

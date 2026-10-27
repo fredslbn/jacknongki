@@ -93,21 +93,19 @@ runs:
 
 
           elif [[ ${{ env.HOOK_METHOD }} == "branchlink-gki" ]]; then
-             CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-             
-             echo "CONFIG_KSU=y" >> "$CONFIG_FILE"
-             echo "CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y" >> "$CONFIG_FILE"
-             echo "CONFIG_KSU_HOSTSREDIRECT=y" >> "$CONFIG_FILE"
-             echo "CONFIG_KSU_LSM_SECURITY_HOOKS=y" >> "$CONFIG_FILE"
-             echo "CONFIG_KALLSYMS_ALL=y" >> "$CONFIG_FILE"
-             echo "CONFIG_KSU_COMPILE_AS_C23=y" >> "$CONFIG_FILE"
-             # echo "CONFIG_KSU_KPROBES_KSUD=y" >> "$CONFIG_FILE"
-             # echo "CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y" >> "$CONFIG_FILE"
-             echo "CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y" >> "$CONFIG_FILE"
+             CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+             printf '%s\n' \
+                "CONFIG_KSU=y" \
+                "CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y" \
+                "CONFIG_KSU_HOSTSREDIRECT=y" \
+                "CONFIG_KSU_LSM_SECURITY_HOOKS=y" \
+                "CONFIG_KSU_COMPILE_AS_C23=y" \
+                "CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y" \
+                "CONFIG_KSU_HEURISTIC_IN_TREE_BUILD=y" \
+                "CONFIG_KALLSYMS_ALL=y"
+             echo "✅ BRANCHLINK-GKI HOOK method applied"
 
-             echo "[+] BRANCHLINK GKI HOOK method applied."
-  
-          
+
           elif [[ ${{ env.HOOK_METHOD }} == "LKM" ]]; then
 
              echo "[+] LKM HOOK method applied from fragment.config."
