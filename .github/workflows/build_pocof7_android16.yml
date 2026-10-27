@@ -167,10 +167,10 @@ jobs:
           patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_hostbuild.patch") || true
           # patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_force_loading_modules_fail_symbol_version_checks.patch") || true
           
-          rm -f android/abi_gki_protected_exports_* || true
+          # rm -f android/abi_gki_protected_exports_* || true
           sed -i 's/ -dirty//g' scripts/setlocalversion || true
           # sed -i '/bad_version:/,/return 0;/s/return 0;/return 1;/' kernel/module/version.c || true
-          sed -i '/same_magic(/,/return strcmp/s/return strcmp(amagic, bmagic) == 0;/return 1;/' kernel/module/version.c || true
+          # sed -i '/same_magic(/,/return strcmp/s/return strcmp(amagic, bmagic) == 0;/return 1;/' kernel/module/version.c || true
 
           sed -i '/^DEFCONFIG=gki_defconfig/d' build.config.gki
           sed -i '$a\DEFCONFIG=${{ env.DEFCONFIG_NAME }}' build.config.gki
@@ -179,10 +179,10 @@ jobs:
           
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           # LTO Configuration - Enable Thin LTO only
-          sed -i '/CONFIG_LTO_NONE/d' "$CONFIG_FILE"
-          echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
-          echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
-          echo "CONFIG_THINLTO=y" >> "$CONFIG_FILE"
+          # sed -i '/CONFIG_LTO_NONE/d' "$CONFIG_FILE"
+          # echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_THINLTO=y" >> "$CONFIG_FILE"
            
           # Full Metamodule Support
           echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
