@@ -174,7 +174,7 @@ jobs:
 
           sed -i '/^DEFCONFIG=gki_defconfig/d' build.config.gki
           sed -i '$a\DEFCONFIG=${{ env.DEFCONFIG_NAME }}' build.config.gki
-          sed -i '/^POST_DEFCONFIG_CMDS="check_defconfig"/d' build.config.gk"          
+          sed -i '/^POST_DEFCONFIG_CMDS="check_defconfig"/d' build.config.gki
           echo "✅ GKI kernel 6.6 patches has been applied."
           
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
