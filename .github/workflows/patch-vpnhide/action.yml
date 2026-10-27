@@ -8,7 +8,7 @@ runs:
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
-          git clone https://github.com/soranerai/vpnhide_next_backend /tmp/vpnhide
+          git clone https://github.com/fhslbn/vpnhide_next_backend /tmp/vpnhide
 
           chmod +x /tmp/vpnhide/kpatch/scripts/apply.sh
 
