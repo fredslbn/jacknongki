@@ -179,6 +179,9 @@ jobs:
           
           # echo "Full LTO configs applied."
           
+          # Fgetpriority
+          echo "CONFIG_FGETPRIORITY=y" >> "$CONFIG_FILE"
+          
           #
           echo "CONFIG_COMPAT_VDSO=y" >> "$CONFIG_FILE"
           echo "CONFIG_THUMB2_COMPAT_VDSO=y" >> "$CONFIG_FILE"
