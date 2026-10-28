@@ -118,7 +118,7 @@ env:
   BUILD_DEBUGGER: "false" # Output build errors.
   SKIP_PATCH: "false" # Ignore errors found in Patch Debugger.
 
-  BUILD_OTHER_CONFIG: "false" # Merge config files.
+  BUILD_OTHER_CONFIG: "true" # Merge config files.
   MERGE_CONFIG_FILES: "vendor/xiaomi/fragment.config"
 
   FREE_MORE_SPACE: "false" # if u want get more space, enabled it.
@@ -158,81 +158,14 @@ jobs:
       - name: 🪛 Extra Kernel Options
         shell: bash
         run: |
-          set -euo pipefail
-          cd $GITHUB_WORKSPACE/device_kernel
-
-          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-          # Enable SUSFS_MEMFD
-          # echo "CONFIG_KSU_SUSFS_SUS_MEMFD=y" >> "$CONFIG_FILE"
-          # echo "Susfs_memfd configs applied."
+          set -eu
+          cd $GITHUB_WORKSPACE/device_kernel          
           
-          # LTO Configuration - Enable Full LTO only
-          # sed -i '/CONFIG_LTO_CLANG/d' "$CONFIG_FILE"
-          # sed -i '/CONFIG_LTO_CLANG_FULL/d' "$CONFIG_FILE"
-          # sed -i '/CONFIG_LTO_CLANG_THIN/d' "$CONFIG_FILE"
-          # sed -i '/CONFIG_THINLTO/d' "$CONFIG_FILE"          
-
-          # echo "CONFIG_LTO=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_LTO_CLANG_FULL=y" >> "$CONFIG_FILE"
-          # echo "# CONFIG_LTO_CLANG_THIN is not set" >> "$CONFIG_FILE"
-          # echo "# CONFIG_THINLTO is not set" >> "$CONFIG_FILE"
-          
-          # echo "Full LTO configs applied."
-          
-          # Fgetpriority
-          echo "CONFIG_FGETPRIORITY=y" >> "$CONFIG_FILE"
-
-          echo "CONFIG_KALLSYMS_ALL=y" >> "$CONFIG_FILE"
-          echo "CONFIG_ARM64_LSE_ATOMICS=y" >> "$CONFIG_FILE"
-
-          #
-          echo "CONFIG_COMPAT_VDSO=y" >> "$CONFIG_FILE"
-          echo "CONFIG_THUMB2_COMPAT_VDSO=y" >> "$CONFIG_FILE"
-          
-          # 
-          # sed -i '/CONFIG_SHADOW_CALL_STACK/d' "$CONFIG_FILE"
-          # echo "# CONFIG_SHADOW_CALL_STACK is not set" >> "$CONFIG_FILE"
-          echo "CONFIG_CFI_CLANG=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_ARM64_LSE_ATOMICS=y" >> "$CONFIG_FILE"
-   
-          # Full Metamodule Support
-          echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
-          echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_OVERLAY_FS=y" >> "$CONFIG_FILE"
-          
-          echo "Metamodule configs applied."
-
-          # Rewrite Localversion Name
-          # sed -i '/CONFIG_LOCALVERSION/d' "$CONFIG_FILE"
-          # sed -i '/CONFIG_LOCALVERSION_AUTO/d' "$CONFIG_FILE"
-          echo "CONFIG_LOCALVERSION=-super.kernel" >> "$CONFIG_FILE"
-          echo "CONFIG_LOCALVERSION_AUTO=y" >> "$CONFIG_FILE"
-
           sed -i 's/-valeryn/-super.kernel/g' localversion
           sed -i 's/-cip131//g' localversion-cip
-          sed -i 's/-st15//g' localversion-st
-          
+          sed -i 's/-st15//g' localversion-st          
           echo "Localversion string has been replaced."
           
-          # Modif for performance
-          # echo "CONFIG_HZ_250=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_HZ=250" >> "$CONFIG_FILE"
-          
-          # TCP ALGO
-          # echo "CONFIG_TCP_CONG_ADVANCED=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_TCP_CONG_BBR=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_TCP_CONG_WESTWOOD=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_TCP_CONG_HTCP=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_DEFAULT_BBR=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_DEFAULT_TCP_CONG="bbr"" >> "$CONFIG_FILE"
-          # echo "CONFIG_NET_SCH_FQ_CODEL=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_NET_SCH_FQ=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_NET_SCH_DEFAULT=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_DEFAULT_NET_SCH="fq_codel"" >> "$CONFIG_FILE"
-          
-          # echo "TCP algo and tweak performance applied."                    
-      
       - name: 🚀 Build Process
         uses: ./.github/workflows/build-process
 
