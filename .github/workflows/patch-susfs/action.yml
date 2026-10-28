@@ -98,12 +98,6 @@ runs:
               if [[ "${{ env.CUSTOM_SUSFS_PATCH }}" == "true" ]]; then
               
                  if [[ "${{ env.DEVICE_CODENAME }}" == "Citrus" ]]; then
-                    # cp /tmp/Patches/Patch/05_uid_filter_4.19.patch ./
-                    #patch -p1 < 05_uid_filter_4.19.patch || true
-                    
-                    cp /tmp/Patches/Patch/fgetpriority.patch ./
-                    patch -p1 < fgetpriority.patch || true
-
                     cp /tmp/Patches/Patch/susfs_pocom3_patch_to_4.19.patch ./
                     patch -p1 < susfs_pocom3_patch_to_4.19.patch || true
 

@@ -6,13 +6,22 @@ runs:
       - name: Patch Kernel for no-kprobe
         shell: bash
         run: |
-          set -euo pipefail
-          
+          set -euo
           cd $GITHUB_WORKSPACE/device_kernel
+          
+          if [[ "${{ env.DEVICE_NON_GKI2 }}" == "true" ]]; then
+             cp /tmp/Patches/setup_fgetpriority.sh ./
+             chmod +x setup_fgetpriority.sh
+             bash setup_fgetpriority.sh ./
+             echo "✅ Module fgetpriority has been installed"
+
+          else
+             echo "[+] You are GKI 2 Kernel branch, no need for built-in setup, just use the Fgetpriority LKM"
+          fi
           
           # Patching xxKSU for clang inline optimization and scope minimized security 2.3
           if [[ "${{ env.PATCH_XXKSU_MANUAL }}" == "true" ]]; then
-                                           
+
                  if [[ "${{ env.KERNEL_TYPE }}" == "4.19" ]]; then
                      cp /tmp/Patches/4.19_scope_minimized_manual_hooks_2.3.patch ./
                      patch -p1 < 4.19_scope_minimized_manual_hooks_2.3.patch || true
