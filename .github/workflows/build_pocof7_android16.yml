@@ -55,17 +55,17 @@ env:
   KERNELSU_SOURCE : ""
   KERNELSU_BRANCH : ""
 
-  KERNELSU_AUTO_GET : "true" # if u want easy setting kernelsu, u can true.
-  KERNELSU_AUTO_FORK : "xxksu" # magic, rsuntk, next, bakasu and sukisu
+  KERNELSU_AUTO_GET : "false" # if u want easy setting kernelsu, u can true.
+  KERNELSU_AUTO_FORK : "" # magic, rsuntk, next, bakasu and sukisu
 
-  ROM_TEXT : "xxKSU"
+  ROM_TEXT : ""
   GKI_TYPE_KERNEL : true
   GKI_KERNEL_BRANCH : "6.6"
   CUSTOM_SUSFS_PATCH : true
   CUSTOM_CLEANUP_HARDCODE : false
   CUSTOM_DIR_ANYKERNEL : false
   
-  SUSFS_ENABLE : true
+  SUSFS_ENABLE : false
   SUSFS_FIXED : true
 
   AK3_SOURCE : "https://github.com/topnotchfreaks/AnyKernel3.git"
