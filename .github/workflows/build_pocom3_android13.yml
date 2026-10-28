@@ -181,7 +181,10 @@ jobs:
           
           # Fgetpriority
           echo "CONFIG_FGETPRIORITY=y" >> "$CONFIG_FILE"
-          
+
+          echo "CONFIG_KALLSYMS_ALL=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ARM64_LSE_ATOMICS=y" >> "$CONFIG_FILE"
+
           #
           echo "CONFIG_COMPAT_VDSO=y" >> "$CONFIG_FILE"
           echo "CONFIG_THUMB2_COMPAT_VDSO=y" >> "$CONFIG_FILE"

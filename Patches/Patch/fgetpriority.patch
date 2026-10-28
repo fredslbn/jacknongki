@@ -30,30 +30,25 @@ add uidfilter addon for HMAOSS
  create mode 100644 drivers/fgetpriority/vmap_patch.h
 
 diff --git a/drivers/Kconfig b/drivers/Kconfig
-index ea8613a313dd..6ab74aa11e7a 100644
+index 452594d0c..cb6292a1f 100644
 --- a/drivers/Kconfig
 +++ b/drivers/Kconfig
-@@ -232,6 +232,8 @@
- source "drivers/sensors/Kconfig"
- 
+@@ -234,4 +234,6 @@ source "drivers/sensors/Kconfig"
  source "drivers/gpu/msm/Kconfig"
-+
-+source "drivers/fgetpriority/Kconfig"
  
  source "drivers/energy_model/Kconfig"
++
++source "drivers/fgetpriority/Kconfig"
  endmenu
 diff --git a/drivers/Makefile b/drivers/Makefile
-index 557cba5af5c9..acba38768a4d 100644
+index a3e8643ac..4e2c57565 100644
 --- a/drivers/Makefile
 +++ b/drivers/Makefile
-@@ -192,6 +192,7 @@ obj-$(CONFIG_TEE)		+= tee/
- obj-$(CONFIG_SWITCH)            += switch/
- obj-$(CONFIG_UNISYS_VISORBUS)	+= visorbus/
+@@ -194,3 +194,4 @@ obj-$(CONFIG_UNISYS_VISORBUS)	+= visorbus/
  obj-$(CONFIG_SIOX)		+= siox/
-+obj-$(CONFIG_FGETPRIORITY)		+= fgetpriority/=
  obj-$(CONFIG_GNSS)		+= gnss/
  obj-$(CONFIG_SENSORS_SSC)	+= sensors/
- 
++obj-$(CONFIG_FGETPRIORITY)		+= fgetpriority/
 diff --git a/drivers/fgetpriority/Kconfig b/drivers/fgetpriority/Kconfig
 new file mode 100644
 index 000000000000..df7e4196a10d

@@ -87,9 +87,7 @@ runs:
                 "CONFIG_KSU_COMPILE_AS_C23=y" \
                 "CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y" \
                 "CONFIG_KSU_HEURISTIC_IN_TREE_BUILD=y" \
-                "CONFIG_KPROBES=n" \
-                "CONFIG_ARM64_LSE_ATOMICS=y" \
-                "# CONFIG_KALLSYMS_ALL is not set" >> "$CONFIG_FILE"
+                "CONFIG_KPROBES=n"
              echo "✅ BRANCHLINK HOOK method applied"
 
 
