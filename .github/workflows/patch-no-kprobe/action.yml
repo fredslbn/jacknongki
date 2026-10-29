@@ -16,7 +16,7 @@ runs:
              echo "✅ Module fgetpriority has been installed"
 
           else
-             echo "[+] You are GKI 2 Kernel branch, no need for built-in setup, just use the Fgetpriority LKM"
+             echo "[+] This is GKI2 Kernel, no need for Fgetpriority built-in, just use LKM"
           fi
           
           # Patching xxKSU for clang inline optimization and scope minimized security 2.3
