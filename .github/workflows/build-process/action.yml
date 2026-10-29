@@ -6,7 +6,9 @@ runs:
       - name: Added mkdtboimg to kernel (Experiment)
         if: env.HAVE_NO_DTBO == 'true' && env.HAVE_NO_DTBO_TOOL != 'true'
         shell: bash
-        run: |
+        run: |       
+          set -eu
+          
           # Get MKDTBO tool to kernel
           cd $GITHUB_WORKSPACE/device_kernel/scripts/dtc
           ${{ env.CURLX }} https://android.googlesource.com/platform/system/libufdt/+archive/refs/heads/main/utils/src.tar.gz src.tar.gz
@@ -33,7 +35,8 @@ runs:
       - name: Build Kernel
         shell: bash
         run: |
-          cd $GITHUB_WORKSPACE/device_kernel/
+          set -eu
+          cd "$GITHUB_WORKSPACE/device_kernel"
 
           # Function
           BUILD_PROCESS(){
@@ -60,6 +63,19 @@ runs:
             echo "================"
             make O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.DEFCONFIG_NAME }}
           fi
+          
+          ## check status of new config
+          grep -q '^CONFIG_KSU=y' "$GITHUB_WORKSPACE/device_kernel/out/.config" \
+             || { echo "❌ KSU did not make it into .config"; exit 1; }
+          
+          grep -q '^CONFIG_CFI_CLANG=y' "$GITHUB_WORKSPACE/device_kernel/out/.config" \
+             || { echo "❌ Extra Configs did not make it into .config"; exit 1; }
+             
+          if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
+             grep -q '^CONFIG_KSU_SUSFS=y' "$GITHUB_WORKSPACE/device_kernel/out/.config" \
+             || { echo "❌ SUSFS did not make it into .config"; exit 1; }
+          fi
+
 
           if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
             echo "================="
@@ -118,7 +134,7 @@ runs:
 
           if [[ "$BUILD_CLANG" == "true" ]]; then
             echo "======================"
-            echo "=Execuate Clang Build="
+            echo "=Execute Clang Build="
             echo "======================"
 
             if [[ "${{ env.BASEBAND_GUARD_ENABLE }}" == "true" ]]; then
@@ -129,7 +145,7 @@ runs:
             make -j$(nproc --all) CC="ccache clang" ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
           else
             echo "===================="
-            echo "=Execuate GCC Build="
+            echo "=Execute GCC Build="
             echo "===================="
 
             if [[ "${{ env.BASEBAND_GUARD_ENABLE }}" == "true" ]]; then

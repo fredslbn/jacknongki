@@ -6,7 +6,7 @@ runs:
       - name: Patch Kernel for no-kprobe
         shell: bash
         run: |
-          set -euo
+          set -eu
           cd $GITHUB_WORKSPACE/device_kernel
           
           if [[ "${{ env.DEVICE_NON_GKI2 }}" == "true" ]]; then
@@ -35,76 +35,86 @@ runs:
                  cp /tmp/Patches/clang_xxksu_inline.patch ./
                  patch -p1 < clang_xxksu_inline.patch || true
                  echo "[...] clang_xxksu_inline patch applied."             
-                          
-          else
-          
-              echo "[+] Your KernelSU is not manually patched, continue to next step!"   
-          
+
+          else          
+              echo "[+] Your KernelSU is not manually patched, continue to next step!"         
           fi
+          
+          
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          
+          [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
+          [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
+          
+          set_cfg() {  # usage: set_cfg CONFIG_X=y   or   set_cfg CONFIG_X=n
+             local key="${1%%=*}" val="${1#*=}"
+             sed -i "/^# $key is not set/d;/^$key=/d" "$CONFIG_FILE"
+             if [ "$val" = "n" ]; then echo "# $key is not set" >> "$CONFIG_FILE"
+             else echo "$1" >> "$CONFIG_FILE"; fi
+          }
           
           # Detect SuSFS is used to enable the SuSFS inline hook
           if [[ ${{ env.SUSFS_ENABLE }} == "true" ]] && { [[ "${{ env.KERNELSU_SOURCE }}" == *BakaSU* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "bakasu" ]]; }; then
-            # Core
-            cp /tmp/Patches/susfs_inline_hook_patches.sh ./
-            bash susfs_inline_hook_patches.sh ./
-
-            echo "[+] executed SuSFS inline hook successfully."
-
-          # Check syscall hook
-          elif [[ ${{ env.HOOK_METHOD }} == "syscall" ]]; then
-            # Core
-            cp /tmp/Patches/syscall_hook_patches.sh ./
-            bash syscall_hook_patches.sh ./
-            
-            echo "CONFIG_KALLSYMS_ALL=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-
-            echo "[+] SYSCALL HOOK method applied."
-
-
-          elif [[ ${{ env.HOOK_METHOD }} == "tamper" ]]; then
+             cp /tmp/Patches/susfs_inline_hook_patches.sh ./
+             bash susfs_inline_hook_patches.sh ./
+             echo "✅ INLINE HOOK applied"
           
-             CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-
-             sed -i '/CONFIG_KALLSYMS_ALL/d' "$CONFIG_FILE"
-             sed -i '/CONFIG_KPROBES/d' "$CONFIG_FILE"
-             sed -i '/CONFIG_HAVE_KPROBES/d' "$CONFIG_FILE"
-             sed -i '/CONFIG_KPROBE_EVENTS/d' "$CONFIG_FILE"
-
-             echo "CONFIG_KSU=y" >> "$CONFIG_FILE"
-             echo "CONFIG_KSU_TAMPER_SYSCALL_TABLE=y" >> "$CONFIG_FILE"
-             echo "CONFIG_KSU_HOSTSREDIRECT=y" >> "$CONFIG_FILE"
-             echo "CONFIG_KSU_LSM_SECURITY_HOOKS=y" >> "$CONFIG_FILE"
-             echo "CONFIG_KALLSYMS_ALL=y" >> "$CONFIG_FILE"
-             echo "CONFIG_KSU_COMPILE_AS_C23=y" >> "$CONFIG_FILE"
-             echo "CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y" >> "$CONFIG_FILE"
-             echo "CONFIG_KPROBES=n" >> "$CONFIG_FILE"
-             echo "CONFIG_HAVE_KPROBES=n" >> "$CONFIG_FILE"
-             echo "CONFIG_KPROBE_EVENTS=n" >> "$CONFIG_FILE"
-             echo "# CONFIG_KALLSYMS_ALL is not set" >> "$CONFIG_FILE"
-
-             echo "[+] TAMPER HOOK method applied."
- 
-                       
+          elif [[ ${{ env.HOOK_METHOD }} == "syscall" ]]; then
+             cp /tmp/Patches/syscall_hook_patches.sh ./
+             bash syscall_hook_patches.sh ./
+             set_cfg CONFIG_KALLSYMS_ALL=y
+             echo "✅ SYSCALL HOOK applied"
+             
+          elif [[ ${{ env.HOOK_METHOD }} == "tamper" ]]; then
+             set_cfg CONFIG_KSU=y
+             set_cfg CONFIG_KSU_TAMPER_SYSCALL_TABLE=y
+             set_cfg CONFIG_KSU_HOSTSREDIRECT=y
+             set_cfg CONFIG_KSU_LSM_SECURITY_HOOKS=y
+             set_cfg CONFIG_KSU_COMPILE_AS_C23=y
+             set_cfg CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
+             set_cfg CONFIG_KSU_HEURISTIC_IN_TREE_BUILD=y
+             set_cfg CONFIG_KALLSYMS_ALL=n
+             set_cfg CONFIG_KPROBES=n
+             echo "✅ TAMPER HOOK applied"
+                    
           elif [[ ${{ env.HOOK_METHOD }} == "branchlink" ]]; then
-                       
-             echo "✅ BRANCHLINK HOOK config applied from fragment"
-
-
+             set_cfg CONFIG_KSU=y
+             set_cfg CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
+             set_cfg CONFIG_KSU_HOSTSREDIRECT=y
+             set_cfg CONFIG_KSU_LSM_SECURITY_HOOKS=y
+             set_cfg CONFIG_KSU_COMPILE_AS_C23=y
+             set_cfg CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
+             set_cfg CONFIG_KSU_HEURISTIC_IN_TREE_BUILD=y
+             set_cfg CONFIG_KALLSYMS_ALL=n
+             set_cfg CONFIG_KPROBES=n
+             echo "✅ BRANCHLINK HOOK applied"
+             
           elif [[ ${{ env.HOOK_METHOD }} == "branchlink-gki" ]]; then
-                      
-             echo "✅ BRANCHLINK-GKI HOOK config applied from fragment"
-
+             set_cfg CONFIG_KSU=y
+             set_cfg CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
+             set_cfg CONFIG_KSU_HOSTSREDIRECT=y
+             set_cfg CONFIG_KSU_LSM_SECURITY_HOOKS=y
+             set_cfg CONFIG_KSU_COMPILE_AS_C23=y
+             set_cfg CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
+             set_cfg CONFIG_KSU_HEURISTIC_IN_TREE_BUILD=y
+             set_cfg CONFIG_KALLSYMS_ALL=y
+             echo "✅ BRANCHLINK-GKI HOOK applied"
 
           elif [[ ${{ env.HOOK_METHOD }} == "LKM" ]]; then
-
-             echo "[+] LKM HOOK method applied from fragment.config."
+             set_cfg CONFIG_KSU=m
+             set_cfg CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
+             set_cfg CONFIG_KSU_HOSTSREDIRECT=y
+             set_cfg CONFIG_KSU_LSM_SECURITY_HOOKS=y
+             set_cfg CONFIG_KSU_COMPILE_AS_C23=y
+             set_cfg CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
+             set_cfg CONFIG_KSU_HEURISTIC_IN_TREE_BUILD=y
+             set_cfg CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y
+             set_cfg CONFIG_KALLSYMS_ALL=y
+             echo "✅ LKM HOOK applied"        
           
-          
-          else
-          
+          else          
             echo "[-] please input a vaild option!"
             false
-
           fi
 
           # Check for static state in partial functions
