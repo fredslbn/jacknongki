@@ -1,0 +1,83 @@
+From cf801925308bb6568852c80542ede7e76b1b7da2 Mon Sep 17 00:00:00 2001
+From: Mark Rutland <mark.rutland@arm.com>
+Date: Tue, 8 Mar 2022 22:56:13 +0100
+Subject: [PATCH] BACKPORT: Kbuild: use -Wdeclaration-after-statement
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The kernel is moving from using `-std=gnu89` to `-std=gnu11`, permitting
+the use of additional C11 features such as for-loop initial declarations.
+
+One contentious aspect of C99 is that it permits mixed declarations and
+code, and for now at least, it seems preferable to enforce that
+declarations must come first.
+
+These warnings were already enabled in the kernel itself, but not
+for KBUILD_USERCFLAGS or the compat VDSO on arch/arm64, which uses
+a separate set of CFLAGS.
+
+This patch fixes an existing violation in modpost.c, which is not
+reported because of the missing flag in KBUILD_USERCFLAGS:
+
+| scripts/mod/modpost.c: In function ‘match’:
+| scripts/mod/modpost.c:837:3: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+|   837 |   const char *endp = p + strlen(p) - 1;
+|       |   ^~~~~
+
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+[arnd: don't add a duplicate flag to the default set, update changelog]
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # LLVM/Clang v13.0.0 (x86-64)
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
+ Makefile                          | 4 +++-
+ arch/arm64/kernel/vdso32/Makefile | 1 +
+ scripts/mod/modpost.c             | 4 +++-
+ 3 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index da35647ffa5a..6a2305235759 100644
+--- a/Makefile
++++ b/Makefile
+@@ -376,7 +376,9 @@ HOSTCC	= gcc
+ HOSTCXX	= g++
+ endif
+ HOSTCFLAGS   := -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 \
+-		-fomit-frame-pointer -std=gnu89 $(HOST_LFS_CFLAGS)
++		-fomit-frame-pointer -std=gnu89 \
++		-Wdeclaration-after-statement \
++		$(HOST_LFS_CFLAGS)
+ HOSTCXXFLAGS := -O2 $(HOST_LFS_CFLAGS)
+ HOSTLDFLAGS  += $(HOST_LFS_LDFLAGS)
+ HOST_LOADLIBES := $(HOST_LFS_LIBS)
+diff --git a/arch/arm64/kernel/vdso32/Makefile b/arch/arm64/kernel/vdso32/Makefile
+index 70dbec33229a..a3de026478a7 100644
+--- a/arch/arm64/kernel/vdso32/Makefile
++++ b/arch/arm64/kernel/vdso32/Makefile
+@@ -71,6 +71,7 @@ VDSO_CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+                -fno-strict-aliasing -fno-common \
+                -Werror-implicit-function-declaration \
+                -Wno-format-security \
++               -Wdeclaration-after-statement \
+                -std=gnu89
+ ifeq ($(cc-name),clang)
+ VDSO_CFLAGS  += -O3
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index 30af0ba36bd6..271da15c4261 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -801,8 +801,10 @@ static int match(const char *sym, const char * const pat[])
+ {
+ 	const char *p;
+ 	while (*pat) {
++		const char *endp;
++
+ 		p = *pat++;
+-		const char *endp = p + strlen(p) - 1;
++		endp = p + strlen(p) - 1;
+ 
+ 		/* "*foo*" */
+ 		if (*p == '*' && *endp == '*') {

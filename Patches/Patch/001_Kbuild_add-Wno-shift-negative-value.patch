@@ -1,0 +1,74 @@
+From f731d42b8f387a7469ba61116fd35908586a3a04 Mon Sep 17 00:00:00 2001
+From: Arnd Bergmann <arnd@arndb.de>
+Date: Tue, 8 Mar 2022 22:56:12 +0100
+Subject: [PATCH] BACKPORT: Kbuild: add -Wno-shift-negative-value where -Wextra
+ is used
+
+As a preparation for moving to -std=gnu11, turn off the
+-Wshift-negative-value option. This warning is enabled by gcc when
+building with -Wextra for c99 or higher, but not for c89. Since
+the kernel already relies on well-defined overflow behavior,
+the warning is not helpful and can simply be disabled in
+all locations that use -Wextra.
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Jani Nikula <jani.nikula@intel.com>
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # LLVM/Clang v13.0.0 (x86-64)
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
+ drivers/gpu/drm/i915/Makefile          | 1 +
+ drivers/staging/greybus/tools/Makefile | 3 ++-
+ fs/btrfs/Makefile                      | 1 +
+ scripts/Makefile.extrawarn             | 1 +
+ 4 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/i915/Makefile b/drivers/gpu/drm/i915/Makefile
+index 2e034efc4d6d..dc4173afed60 100644
+--- a/drivers/gpu/drm/i915/Makefile
++++ b/drivers/gpu/drm/i915/Makefile
+@@ -3,6 +3,7 @@
+ # Makefile for the drm device driver.  This driver provides support for the
+ # Direct Rendering Infrastructure (DRI) in XFree86 4.1.0 and higher.
+ 
++subdir-ccflags-y += -Wno-shift-negative-value
+ subdir-ccflags-$(CONFIG_DRM_I915_WERROR) := -Werror
+ subdir-ccflags-y += \
+ 	$(call as-instr,movntdqa (%eax)$(comma)%xmm0,-DCONFIG_AS_MOVNTDQA)
+diff --git a/drivers/staging/greybus/tools/Makefile b/drivers/staging/greybus/tools/Makefile
+index ad0ae8053b79..a3bbd73171f2 100644
+--- a/drivers/staging/greybus/tools/Makefile
++++ b/drivers/staging/greybus/tools/Makefile
+@@ -12,7 +12,8 @@ CFLAGS	+= -std=gnu99 -Wall -Wextra -g \
+ 	    -Wredundant-decls \
+ 	    -Wcast-align \
+ 	    -Wsign-compare \
+-	    -Wno-missing-field-initializers
++	    -Wno-missing-field-initializers \
++	    -Wno-shift-negative-value
+ 
+ CC	:= $(CROSS_COMPILE)gcc
+ 
+diff --git a/fs/btrfs/Makefile b/fs/btrfs/Makefile
+index 195229df5ba0..8b826512c183 100644
+--- a/fs/btrfs/Makefile
++++ b/fs/btrfs/Makefile
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ 
++ccflags-y += -Wno-shift-negative-value
+ obj-$(CONFIG_BTRFS_FS) := btrfs.o
+ 
+ btrfs-y += super.o ctree.o extent-tree.o print-tree.o root-tree.o dir-item.o \
+diff --git a/scripts/Makefile.extrawarn b/scripts/Makefile.extrawarn
+index 913ff6c8d0be..417fa3dda926 100644
+--- a/scripts/Makefile.extrawarn
++++ b/scripts/Makefile.extrawarn
+@@ -41,6 +41,7 @@ warning-1 += $(call cc-option, -Wmissing-include-dirs)
+ warning-1 += $(call cc-option, -Wunused-but-set-variable)
+ warning-1 += $(call cc-option, -Wunused-const-variable)
+ warning-1 += $(call cc-option, -Wpacked-not-aligned)
++warning-1 += $(call cc-option, -Wno-shift-negative-value)
+ warning-1 += $(call cc-disable-warning, missing-field-initializers)
+ warning-1 += $(call cc-disable-warning, sign-compare)
+ 

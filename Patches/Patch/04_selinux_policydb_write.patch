@@ -1,0 +1,26 @@
+From f01b4851e257e750e1b34f402929d6137ccb9629 Mon Sep 17 00:00:00 2001
+From: fredslbn <fh.silaban@gmail.com>
+Date: Thu, 17 Sep 2026 14:23:02 +0700
+Subject: [PATCH] ANDROID: selinux: Fix Android specific configs handling in
+ policydb_write()
+
+---
+ security/selinux/ss/policydb.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/security/selinux/ss/policydb.c b/security/selinux/ss/policydb.c
+index 9fd8edd68..6fe7e8f09 100644
+--- a/security/selinux/ss/policydb.c
++++ b/security/selinux/ss/policydb.c
+@@ -3474,6 +3474,11 @@ int policydb_write(struct policydb *p, void *fp)
+ 	config = 0;
+ 	if (p->mls_enabled)
+ 		config |= POLICYDB_CONFIG_MLS;
++		
++    if (p->android_netlink_route)
++		config |= POLICYDB_CONFIG_ANDROID_NETLINK_ROUTE;
++	if (p->android_netlink_getneigh)
++		config |= POLICYDB_CONFIG_ANDROID_NETLINK_GETNEIGH;
+ 
+ 	if (p->reject_unknown)
+ 		config |= REJECT_UNKNOWN;

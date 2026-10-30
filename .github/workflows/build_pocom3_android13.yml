@@ -68,7 +68,7 @@ env:
   CUSTOM_DIR_ANYKERNEL : false
   PATCH_XXKSU_MANUAL : false # manual, only if patching manually scope minimized security hooks 2.3
   KERNEL_TYPE : "" # 4.19 4.14 5.4 only for manual patching
-  DEVICE_NON_GKI2 : true
+  GETPRIORITY_NON_GKI2 : true
   
   SUSFS_ENABLE : true
   SUSFS_FIXED : true

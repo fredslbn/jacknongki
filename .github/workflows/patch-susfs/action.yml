@@ -7,7 +7,7 @@ runs:
         if: env.SUSFS_ENABLE == 'true'
         shell: bash
         run: |
-          cd $GITHUB_WORKSPACE/device_kernel/
+          cd $GITHUB_WORKSPACE/device_kernel
 
           # Core
           if [[ "${{ env.SUSFS_FIXED }}" == true ]]; then
@@ -63,7 +63,7 @@ runs:
         shell: bash
         run: |
           set -euo pipefail
-          cd $GITHUB_WORKSPACE/device_kernel/
+          cd $GITHUB_WORKSPACE/device_kernel
           
           SUSFS_VERSION="2.3.00"
 

@@ -12,7 +12,7 @@ env:
   CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-"
   # CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- THINLTO_USE_MLGO=false"
   
-  EXTRA_CMDS : "LD=ld.lld -S LLVM=1 LLVM_IAS=1 AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
+  EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1 AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
   # EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1"
 
   KERNEL_SOURCE : "https://github.com/fredslbn/android_kernel_xiaomi_sm6150.git"
@@ -22,7 +22,8 @@ env:
   # CLANG_SOURCE : "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
   # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.1/LLVM-23.1.1-Linux-X64.tar.xz"
   # CLANG_SOURCE : "https://github.com/greenforce-project/greenforce_clang/releases/download/20260926/gf-clang-24.0.0-20260926.tar.gz"
-  CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.3/LLVM-23.1.3-Linux-X64.tar.xz"
+  # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.3/LLVM-23.1.3-Linux-X64.tar.xz"
+  CLANG_SOURCE : "https://github.com/Impqxr/aosp_clang_ci/releases/download/13289611/clang-13289611-linux-x86.tar.xz"
   CLANG_BRANCH : ""
 
   GCC_GNU : false
@@ -51,6 +52,7 @@ env:
   CUSTOM_SUSFS_PATCH : true
   CUSTOM_CLEANUP_HARDCODE : true
   CUSTOM_DIR_ANYKERNEL : false
+  GETPRIORITY_NON_GKI2 : true
   
   SUSFS_ENABLE : true
   SUSFS_FIXED : true
@@ -134,24 +136,71 @@ jobs:
         uses: ./.github/workflows/patch-nomount
       
       - name: 🪛 Extra Kernel Options
+        shell: bash
         run: |
-          # Only ${{ env.DEVICE_NAME }} use it.
-          cd $GITHUB_WORKSPACE/device_kernel
-          
-          # CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-          # Enable SUSFS_MEMFD
-          # echo "CONFIG_KSU_SUSFS_SUS_MEMFD=y" >> "$CONFIG_FILE"
-          # echo "Susfs_memfd configs applied."          
-   
-          echo "Metamodule configs already in defconfig."
+          set -eu
+          cd "$GITHUB_WORKSPACE/device_kernel"
 
-          # Rewrite Localversion Name
-          # sed -i '/CONFIG_LOCALVERSION/d' "$CONFIG_FILE"
-          # sed -i '/CONFIG_LOCALVERSION_AUTO/d' "$CONFIG_FILE"
-          # echo "CONFIG_LOCALVERSION=-super.kernel" >> "$CONFIG_FILE"
-          # echo "CONFIG_LOCALVERSION_AUTO=y" >> "$CONFIG_FILE"
+          # selinux patches
+          cp /tmp/Patches/Patch/04_selinux_policydb_write.patch ./
+          if patch -p1 < 04_selinux_policydb_write.patch || true; then
+             echo "✅ Selinux policydb patch applied"
+          else
+             echo "❌ Selinux policydb patch failed"
+          fi
+
+          cp /tmp/Patches/Patch/001_Kbuild_add-Wno-shift-negative-value.patch ./
+          if patch -p1 < 001_Kbuild_add-Wno-shift-negative-value.patch || true; then
+             echo "✅ 001_Kbuild_add-Wno-shift-negative-value.patch applied"
+          else
+             echo "❌ 001_Kbuild_add-Wno-shift-negative-value.patch failed"
+          fi
+
+          cp /tmp/Patches/Patch/002_Kbuild_use_Wdeclaration-after-statement.patch ./
+          if patch -p1 < 002_Kbuild_use_Wdeclaration-after-statement.patch || true; then
+             echo "✅ 002_Kbuild_use_Wdeclaration-after-statement.patch applied"
+          else
+             echo "❌ 002_Kbuild_use_Wdeclaration-after-statement.patch failed"
+          fi
+
+          cp /tmp/Patches/Patch/003_Kbuild_move_to-std=gnu11.patch ./
+          if patch -p1 < 003_Kbuild_move_to-std=gnu11.patch || true; then
+             echo "✅ 003_Kbuild_move_to-std=gnu11.patch applied"
+          else
+             echo "❌ 003_Kbuild_move_to-std=gnu11.patch failed"
+          fi
+
+          cp /tmp/Patches/Patch/004_Kbuild_use-std=gnu11_for_KBUILD_USERCFLAGS.patch ./
+          if patch -p1 < 004_Kbuild_use-std=gnu11_for_KBUILD_USERCFLAGS.patch || true; then
+             echo "✅ 004_Kbuild_use-std=gnu11_for_KBUILD_USERCFLAGS.patch applied"
+          else
+             echo "❌ 004_Kbuild_use-std=gnu11_for_KBUILD_USERCFLAGS.patch failed"
+          fi
+
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           
-          echo "Localversion string has been replaced."
+          [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
+          [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
+          
+          set_cfg() {  # usage: set_cfg CONFIG_X=y   or   set_cfg CONFIG_X=n
+             local key="${1%%=*}" val="${1#*=}"
+             sed -i "/^# $key is not set/d;/^$key=/d" "$CONFIG_FILE"
+             if [ "$val" = "n" ]; then echo "# $key is not set" >> "$CONFIG_FILE"
+             else echo "$1" >> "$CONFIG_FILE"; fi
+          }
+          
+          set_cfg CONFIG_FGETPRIORITY=y
+          set_cfg CONFIG_DEBUG_KERNEL=n
+          set_cfg CONFIG_DEBUG_FS=n
+          set_cfg CONFIG_ARM64_LSE_ATOMICS=y
+          set_cfg CONFIG_CFI_CLANG=y
+          set_cfg CONFIG_COMPAT_VDSO=y
+          set_cfg CONFIG_THUMB2_COMPAT_VDSO=y
+          set_cfg CONFIG_TMPFS_XATTR=y
+          set_cfg CONFIG_TMPFS_POSIX_ACL=y
+          set_cfg CONFIG_LOCALVERSION=-super.kernel
+          set_cfg CONFIG_LOCALVERSION_AUTO=y
+          echo "✅ Configs applied"
 
       - name: 🚀 Build Process
         uses: ./.github/workflows/build-process

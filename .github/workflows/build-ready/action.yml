@@ -45,13 +45,14 @@ runs:
       - name: Get Packing Tools
         shell: bash
         run: |
-          # Set ${{ env.PACK_METHOD }}
+          set -eu
 
           if [[ "${{ env.PACK_METHOD }}" == "Anykernel3" ]]; then
             cd $GITHUB_WORKSPACE/device_kernel
 
-            if [[ -d "Anykernel3" ]]; then
-              echo "[+] Found Anykernel3 in Kernel!"
+            if [[ -d "anykernel" ]]; then
+              mv -f anykernel Anykernel3
+              echo "[+] Found Anykernel3 in kernel source!"
 
             elif [[ "${{ env.AK3_SOURCE }}" == *"osm0sis/AnyKernel3.git" ]]; then
               git clone "${{ env.AK3_SOURCE }}" -b "${{ env.AK3_BRANCH }}" Anykernel3
@@ -64,6 +65,7 @@ runs:
               git clone "${{ env.AK3_SOURCE }}" -b "${{ env.AK3_BRANCH }}" Anykernel3 --depth=1
 
             fi
+
           elif [[ "${{ env.PACK_METHOD }}" == "MKBOOTIMG" ]] || [ "${{ env.DEFCONFIG_FROM_BOOT }}" == "true" ]; then
             cd $GITHUB_WORKSPACE
             git clone https://android.googlesource.com/platform/system/tools/mkbootimg $GITHUB_WORKSPACE/mkboottools -b main-kernel-build-2024 --depth=1

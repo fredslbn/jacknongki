@@ -65,13 +65,13 @@ env:
   CUSTOM_SUSFS_PATCH : true
   CUSTOM_CLEANUP_HARDCODE : false
   CUSTOM_DIR_ANYKERNEL : false
-  DEVICE_NON_GKI2 : false
+  GETPRIORITY_NON_GKI2 : false
   
   SUSFS_ENABLE : true
   SUSFS_FIXED : true
 
-  AK3_SOURCE : "https://github.com/topnotchfreaks/AnyKernel3.git"
-  AK3_BRANCH : "master"
+  AK3_SOURCE : ""
+  AK3_BRANCH : ""
 
   BOOT_SOURCE : ""
 
@@ -114,7 +114,7 @@ env:
   BUILD_DEBUGGER: "false" # Output build errors.
   SKIP_PATCH: "false" # Ignore errors found in Patch Debugger.
 
-  BUILD_OTHER_CONFIG: "true" # Merge config files.
+  BUILD_OTHER_CONFIG: "false" # Merge config files.
   MERGE_CONFIG_FILES: "vendor/xiaomi/fragment.config"
 
   FREE_MORE_SPACE: "false" # if u want get more space, enabled it.
@@ -152,17 +152,28 @@ jobs:
         shell: bash
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |        
-         set -euo pipefail
-         cd $GITHUB_WORKSPACE/device_kernel
+         set -eu
+         cd "$GITHUB_WORKSPACE/device_kernel"                  
                            
-         patch -p1 < <(curl -sSfL "https://raw.githubusercontent.com/fatalcoder524/kernel_patches_additional/refs/heads/main/bbr3/0001-net-tcp-backport-BBRv3-to-android15-6.6.patch") || true
-         echo "✅ BBRv3 patch successfully applied"
+         if patch -p1 < <(curl -sSfL "https://raw.githubusercontent.com/fatalcoder524/kernel_patches_additional/refs/heads/main/bbr3/0001-net-tcp-backport-BBRv3-to-android15-6.6.patch") || true; then
+            echo "✅ BBRv3 patch successfully applied"
+         else
+             echo "❌ BBRv3 patch failed"
+         fi                  
          
       - name: 🪛 Extra Kernel Options
         shell: bash
         run: |
           set -eu
-          cd $GITHUB_WORKSPACE/device_kernel                   
+          cd "$GITHUB_WORKSPACE/device_kernel"
+          
+          # selinux patches          
+          cp /tmp/Patches/Patch/04_selinux_policydb_write.patch ./
+          if patch -p1 < 04_selinux_policydb_write.patch || true; then
+             echo "✅ Selinux policydb patch applied"
+          else
+             echo "❌ Selinux policydb patch failed"
+          fi
 
           # Kernel 6.6 patches
           # patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_fixup.patch") || true
@@ -185,7 +196,37 @@ jobs:
           echo 'KBUILD_CFLAGS += -Wno-implicit-function-declaration' >> ./Makefile
           echo 'KBUILD_CFLAGS += -Wno-sometimes-uninitialized' >> ./Makefile
           echo "✅ Custom Makefile line added successfully"
-                         
+          
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          
+          [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
+          [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
+          
+          set_cfg() {  # usage: set_cfg CONFIG_X=y   or   set_cfg CONFIG_X=n
+             local key="${1%%=*}" val="${1#*=}"
+             sed -i "/^# $key is not set/d;/^$key=/d" "$CONFIG_FILE"
+             if [ "$val" = "n" ]; then echo "# $key is not set" >> "$CONFIG_FILE"
+             else echo "$1" >> "$CONFIG_FILE"; fi
+          }
+
+          set_cfg KSU_DISABLE_32BIT_HOOKS=y
+          set_cfg CONFIG_DEBUG_KERNEL=n
+          set_cfg CONFIG_DEBUG_FS=n
+          set_cfg CONFIG_ARM64_LSE_ATOMICS=y
+          set_cfg CONFIG_CFI_CLANG=y
+          set_cfg CONFIG_LOCALVERSION=-super.kernel
+          set_cfg CONFIG_LOCALVERSION_AUTO=y          
+          set_cfg CONFIG_HZ_300=y
+          set_cfg CONFIG_HZ=300
+          set_cfg CONFIG_TCP_CONG_ADVANCED=y
+          set_cfg CONFIG_TCP_CONG_BIC=n
+          set_cfg CONFIG_TCP_CONG_WESTWOOD=y
+          set_cfg CONFIG_TCP_CONG_HTCP=n
+          set_cfg CONFIG_TCP_CONG_BBR=y
+          set_cfg CONFIG_TCP_CONG_BBR3=y
+          set_cfg CONFIG_DEFAULT_BBR3=y
+          echo "✅ Configs applied"
+
       - name: 🚀 Build Process
         uses: ./.github/workflows/build-process
 

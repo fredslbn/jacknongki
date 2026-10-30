@@ -9,7 +9,8 @@ runs:
           set -eu
           cd $GITHUB_WORKSPACE/device_kernel
           
-          if [[ "${{ env.DEVICE_NON_GKI2 }}" == "true" ]]; then
+          ## FGETPRIORITY BUILT-IN MODULE
+          if [[ "${{ env.GETPRIORITY_NON_GKI2 }}" == "true" ]]; then
              cp /tmp/Patches/setup_fgetpriority.sh ./
              chmod +x setup_fgetpriority.sh
              bash setup_fgetpriority.sh ./
