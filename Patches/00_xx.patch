@@ -200,30 +200,6 @@ index 40db187455dd..db31803c8058 100644
  	ksu_ksud_init();
  	ksu_file_wrapper_init();
  	ksu_preinit_init();
-diff --git a/kernel/manager/pkg_observer.c b/kernel/manager/pkg_observer.c
-index 8a7d780c3340..055f7412dd1d 100644
---- a/kernel/manager/pkg_observer.c
-+++ b/kernel/manager/pkg_observer.c
-+@@ -19,6 +19,9 @@
- by offloading it to a kthread.
- * reuses code from: https://github.com/tiann/KernelSU/blob/v1.0.5/kernel/core_hook.c#L188
- */
-+
-+#include <linux/susfs.h>
-+
- static void *system_dir_inode_ptr = nullptr;
- 
- static noinline void ksu_grab_data_system_inode()
-@@ -52,6 +55,9 @@ static void ksu_rename_observer_slow(struct dentry *old_dentry, struct dentry *n
- 		return;
- 
- 	pr_info("renameat: %s -> %s, new path: %s\n", old_dentry->d_iname, new_dentry->d_iname, buf);
-+// Renew the getpriority uid bitmap filter
-+	susfs_parse_priority_app_strings();
-+
- 	track_throne(false);
- 	return;
- }
 diff --git a/kernel/selinux/rules.c b/kernel/selinux/rules.c
 index 07b9717d87d5..a033260cec95 100644
 --- a/kernel/selinux/rules.c
@@ -392,7 +368,7 @@ index 48ad88427768..55f2acd0f558 100644
  #define KSU_DRIVER_PERMISSION_SU_SESSION (1UL << 0)
  
  struct ksu_driver_context {
-@@ -83,6 +86,92 @@ int ksu_handle_sys_reboot(int magic1, int magic2, unsigned int cmd, void __user
+@@ -83,6 +86,84 @@ int ksu_handle_sys_reboot(int magic1, int magic2, unsigned int cmd, void __user
  	if (magic1 != KSU_INSTALL_MAGIC1)
  		return 0;
  
@@ -458,14 +434,6 @@ index 48ad88427768..55f2acd0f558 100644
 +			return 0;
 +		}
 +#endif // #ifdef CONFIG_KSU_SUSFS_SUS_MAP
-+		if (cmd == CMD_SUSFS_SET_PRIORITY_UID_FILTER) {
-+			susfs_set_priority_uid_filter(arg);
-+			return 0;
-+		}
-+		if (cmd == CMD_SUSFS_ENABLE_AVC_LOG_SPOOFING) {
-+			susfs_set_avc_log_spoofing(arg);
-+			return 0;
-+		}
 +		if (cmd == CMD_SUSFS_SHOW_ENABLED_FEATURES) {
 +			susfs_get_enabled_features(arg);
 +			return 0;

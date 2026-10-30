@@ -11,7 +11,7 @@ diff --git a/fs/susfs.c b/fs/susfs.c
 index 737a217..13e4654 100644
 --- a/fs/susfs.c
 +++ b/fs/susfs.c
-@@ -28,6 +28,7 @@
+@@ -25,6 +25,7 @@
  #include <linux/susfs.h>
  #include "fuse/fuse_i.h"
  #include "mount.h"
@@ -19,7 +19,7 @@ index 737a217..13e4654 100644
  
  extern bool susfs_is_current_ksu_domain(void);
  extern void setup_selinux(const char *domain, struct cred *cred);
-@@ -727,6 +738,62 @@ out_spoof_kstat:
+@@ -719,6 +720,62 @@ out_spoof_kstat:
  }
  #endif // #ifdef CONFIG_KSU_SUSFS_SUS_KSTAT
  
@@ -82,7 +82,7 @@ index 737a217..13e4654 100644
  /* spoof_uname */
  #ifdef CONFIG_KSU_SUSFS_SPOOF_UNAME
  static struct st_susfs_uname my_uname = {0};
-@@ -1654,6 +1711,11 @@ void susfs_get_enabled_features(void __user **user_info) {
+@@ -1340,6 +1397,11 @@ void susfs_get_enabled_features(void __user **user_info) {
  	if (info->err) goto out_copy_to_user;
  	buf_ptr = info->enabled_features + copied_size;
  #endif
