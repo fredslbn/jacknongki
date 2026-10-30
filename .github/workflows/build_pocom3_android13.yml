@@ -160,6 +160,14 @@ jobs:
         run: |
           set -eu
           cd $GITHUB_WORKSPACE/device_kernel
+
+          # SYS_UMOUNT
+          cp /tmp/Patches/Patch/03_4.19_sys_umount_refactor_to_extract_path_umount.patch ./
+          if patch -p1 < 03_4.19_sys_umount_refactor_to_extract_path_umount.patch || true; then
+             echo "✅ 03_4.19_sys_umount_refactor_to_extract_path_umount.patch applied"
+          else
+             echo "❌ 03_4.19_sys_umount_refactor_to_extract_path_umount.patch failed"
+          fi
           
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           

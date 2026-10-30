@@ -207,7 +207,7 @@ jobs:
           set_cfg CONFIG_ARM64_LSE_ATOMICS=y
           set_cfg CONFIG_CFI_CLANG=y
           set_cfg CONFIG_LOCALVERSION=-super.kernel
-          set_cfg CONFIG_LOCALVERSION_AUTO=y          
+          set_cfg CONFIG_LOCALVERSION_AUTO=y
           set_cfg CONFIG_HZ_300=y
           set_cfg CONFIG_HZ=300
           set_cfg CONFIG_TCP_CONG_ADVANCED=y
