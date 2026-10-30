@@ -166,14 +166,6 @@ jobs:
         run: |
           set -eu
           cd "$GITHUB_WORKSPACE/device_kernel"
-          
-          # selinux patches          
-          cp /tmp/Patches/Patch/04_selinux_policydb_write.patch ./
-          if patch -p1 < 04_selinux_policydb_write.patch || true; then
-             echo "✅ Selinux policydb patch applied"
-          else
-             echo "❌ Selinux policydb patch failed"
-          fi
 
           # Kernel 6.6 patches
           # patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_fixup.patch") || true

@@ -149,34 +149,6 @@ jobs:
              echo "❌ Selinux policydb patch failed"
           fi
 
-          cp /tmp/Patches/Patch/001_Kbuild_add-Wno-shift-negative-value.patch ./
-          if patch -p1 < 001_Kbuild_add-Wno-shift-negative-value.patch || true; then
-             echo "✅ 001_Kbuild_add-Wno-shift-negative-value.patch applied"
-          else
-             echo "❌ 001_Kbuild_add-Wno-shift-negative-value.patch failed"
-          fi
-
-          cp /tmp/Patches/Patch/002_Kbuild_use_Wdeclaration-after-statement.patch ./
-          if patch -p1 < 002_Kbuild_use_Wdeclaration-after-statement.patch || true; then
-             echo "✅ 002_Kbuild_use_Wdeclaration-after-statement.patch applied"
-          else
-             echo "❌ 002_Kbuild_use_Wdeclaration-after-statement.patch failed"
-          fi
-
-          cp /tmp/Patches/Patch/003_Kbuild_move_to-std=gnu11.patch ./
-          if patch -p1 < 003_Kbuild_move_to-std=gnu11.patch || true; then
-             echo "✅ 003_Kbuild_move_to-std=gnu11.patch applied"
-          else
-             echo "❌ 003_Kbuild_move_to-std=gnu11.patch failed"
-          fi
-
-          cp /tmp/Patches/Patch/004_Kbuild_use-std=gnu11_for_KBUILD_USERCFLAGS.patch ./
-          if patch -p1 < 004_Kbuild_use-std=gnu11_for_KBUILD_USERCFLAGS.patch || true; then
-             echo "✅ 004_Kbuild_use-std=gnu11_for_KBUILD_USERCFLAGS.patch applied"
-          else
-             echo "❌ 004_Kbuild_use-std=gnu11_for_KBUILD_USERCFLAGS.patch failed"
-          fi
-
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           
           [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
