@@ -63,6 +63,15 @@ jobs:
       WORK_DIR: ${{ github.workspace }}
 
     steps:
+      - name: "⏰ Checkout repository"
+        uses: actions/checkout@v6
+
+      - name: "✨ Move Patches"
+        shell: bash
+        run: |
+          # Move patch folder to tmp
+          mv $GITHUB_WORKSPACE/Patches /tmp/
+      
       - name: "✨ Setup workspace"
         run: |
           mkdir -p ${{ env.KERNEL_LOC_DIR }}
@@ -196,9 +205,10 @@ jobs:
           SUSFS_KERNEL_PATCH="susfs4ksu/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch"
 
           echo "🔧 Applying SUSFS kernel patch..."
-          wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh
+          # wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh          
+          cp /tmp/Patches/susfs_deinlined.sh ./
+          cp /tmp/Patches/Patch/deinlined_topaz.patch ./
           chmod +x susfs_deinlined.sh
-          cp $GITHUB_WORKSPACE/Patches/Patch/deinlined_topaz.patch ./
           #./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
              # if patch -p1 < deinlined.patch || true; then
              if patch -p1 < deinlined_topaz.patch || true; then
@@ -290,9 +300,10 @@ jobs:
           SUSFS_KERNEL_PATCH="susfs4ksu/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch"
 
           echo "🔧 Applying SUSFS kernel patch..."
-          wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh
+          # wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh          
+          cp /tmp/Patches/susfs_deinlined.sh ./
+          cp /tmp/Patches/Patch/deinlined_topaz.patch ./
           chmod +x susfs_deinlined.sh
-          cp $GITHUB_WORKSPACE/Patches/Patch/deinlined_topaz.patch ./
           #./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
              # if patch -p1 < deinlined.patch || true; then
              if patch -p1 < deinlined_topaz.patch || true; then
