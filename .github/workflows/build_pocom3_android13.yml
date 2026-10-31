@@ -169,8 +169,7 @@ jobs:
              echo "❌ 03_4.19_sys_umount_refactor_to_extract_path_umount.patch failed"
           fi
           
-          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-          
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"          
           [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
           [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
           

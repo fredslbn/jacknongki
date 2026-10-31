@@ -32,6 +32,7 @@ jobs:
               - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_fixup.patch"
               - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_hostbuild.patch"              
               - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_force_loading_modules_fail_symbol_version_checks.patch"
+              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/04_selinux_policydb_write.patch"
           - name: "CLO"
             dir: "common_clo"
             repo_name: "clo"
@@ -46,6 +47,7 @@ jobs:
               - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_fixup.patch"
               - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_hostbuild.patch"              
               - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_force_loading_modules_fail_symbol_version_checks.patch"
+              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/04_selinux_policydb_write.patch"
 
     env:
       KERNEL_LOC_DIR: ${{ matrix.kernel.dir }}
@@ -85,7 +87,7 @@ jobs:
         shell: bash
         working-directory: ${{ env.WORK_DIR }}
         run: |
-          set -euo pipefail
+          set -eu
 
           # Initialize AOSP repo
           repo init -u https://android.googlesource.com/kernel/manifest -b common-android13-5.15-lts --depth=1
@@ -119,11 +121,9 @@ jobs:
         shell: bash
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
-          set -euo pipefail
-
-          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-          echo "CONFIG_LOCALVERSION=\"${{ env.LOCAL_VERSION }}\"" >> "$CONFIG_FILE"
-          echo "CONFIG_LOCALVERSION_AUTO=n" >> "$CONFIG_FILE"
+          set -eu
+          
+          sed -i 's|res="\$res\$(scm_version)"|res="$res"|' scripts/setlocalversion
 
           # Helper
           apply_patch() {
@@ -154,34 +154,42 @@ jobs:
         shell: bash
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
-          set -euo pipefail
+          set -eu
 
           rm -rf ./KernelSU ./drivers/kernelsu
           echo "📦 Installing KSU..."
           curl -LSs "https://raw.githubusercontent.com/backslashxx/KernelSU/refs/heads/master/kernel/setup.sh" | bash -s master          
-          echo "✔ KSU installed successfully"
+          echo "✔ xxKSU installed"         
+          
+          echo "✅ xxKSU build wiring verified"          
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"          
+          [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
+          [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
+          
+          set_cfg() {  # usage: set_cfg CONFIG_X=y   or   set_cfg CONFIG_X=n
+             local key="${1%%=*}" val="${1#*=}"
+             sed -i "/^# $key is not set/d;/^$key=/d" "$CONFIG_FILE"
+             if [ "$val" = "n" ]; then echo "# $key is not set" >> "$CONFIG_FILE"
+             else echo "$1" >> "$CONFIG_FILE"; fi
+          }          
+          set_cfg CONFIG_KSU=y
+          set_cfg CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
+          set_cfg CONFIG_KSU_HOSTSREDIRECT=y
+          set_cfg CONFIG_KSU_LSM_SECURITY_HOOKS=y
+          set_cfg CONFIG_KSU_COMPILE_AS_C23=y
+          set_cfg CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
+          set_cfg CONFIG_KSU_HEURISTIC_IN_TREE_BUILD=y
+          set_cfg CONFIG_KALLSYMS_ALL=y
+          echo "✅ BRANCHLINK-GKI HOOK applied"
 
-          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-          cat >> "$CONFIG_FILE" <<- 'EOF'
-          CONFIG_KSU=y
-          CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
-          CONFIG_KSU_HOSTSREDIRECT=y
-          CONFIG_KSU_KPROBES_KSUD=y
-          CONFIG_KSU_COMPILE_AS_C23=y
-          CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
-          EOF
-          echo "✅ xxKSU configs added"
-
-          echo "🔧 SUSFS xxKSU patch..."
-          ## SUSFS PATCHES FOR KERNELSU SUSFS
+          echo "🔧 Patch SUSFS for xxKSU..."
           patch -p1 -d KernelSU < <(curl -sSfL "https://github.com/midori01/KernelSU/commit/xx~1.patch") || true
           patch -p1 -d KernelSU < <(curl -sSfL "https://github.com/midori01/KernelSU/commit/xx.patch") || true
           echo "✅ SUSFS xxKSU patch applied"
 
-          # Clone SUSFS4KSU for kernel patches only (not KSU integration)
-          echo "📦 Cloning SUSFS4KSU for kernel patches..."
+          # Clone SUSFS for kernel patches
+          echo "📦 Cloning SUSFS for kernel patches..."
           git clone --depth=1 https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android13-5.15
-
           SUSFS_KERNEL_PATCH="susfs4ksu/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch"
 
           echo "🔧 Applying SUSFS kernel patch..."
@@ -209,57 +217,71 @@ jobs:
 
           # Clean up SUSFS repo (we only needed kernel patches, not KSU integration)
           rm -rf susfs4ksu
-          echo "✅ SUSFS build wiring verified"
-
-          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-          cat >> "$CONFIG_FILE" <<- 'EOF'
-          CONFIG_KSU_SUSFS=y
-          CONFIG_KSU_SUSFS_SUS_PATH=y
-          CONFIG_KSU_SUSFS_SUS_MOUNT=y
-          CONFIG_KSU_SUSFS_SUS_KSTAT=y
-          CONFIG_KSU_SUSFS_SPOOF_UNAME=y
-          CONFIG_KSU_SUSFS_ENABLE_LOG=y
-          CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
-          CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
-          CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
-          CONFIG_KSU_SUSFS_SUS_MAP=y
-          EOF
-          echo "🎉 xxKSU SUSFS + GKI android13-5.15 now fully integrated!"
-
+          
+          echo "✅ SUSFS build wiring verified"          
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"          
+          [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
+          [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
+          
+          set_cfg() {  # usage: set_cfg CONFIG_X=y   or   set_cfg CONFIG_X=n
+             local key="${1%%=*}" val="${1#*=}"
+             sed -i "/^# $key is not set/d;/^$key=/d" "$CONFIG_FILE"
+             if [ "$val" = "n" ]; then echo "# $key is not set" >> "$CONFIG_FILE"
+             else echo "$1" >> "$CONFIG_FILE"; fi
+          }          
+          set_cfg CONFIG_KSU_SUSFS=y
+          set_cfg CONFIG_KSU_SUSFS_SUS_PATH=y
+          set_cfg CONFIG_KSU_SUSFS_SUS_MOUNT=y
+          set_cfg CONFIG_KSU_SUSFS_SUS_KSTAT=y
+          set_cfg CONFIG_KSU_SUSFS_SPOOF_UNAME=y
+          set_cfg CONFIG_KSU_SUSFS_ENABLE_LOG=y
+          set_cfg CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
+          set_cfg CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
+          set_cfg CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
+          set_cfg CONFIG_KSU_SUSFS_SUS_MAP=y
+          echo "✅ SUSFS configs applied"
 
       - name: "🔧 Setup ffKSU"        
         if: matrix.kernel.enable_ffksu == true
         shell: bash
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
-          set -euo pipefail
+          set -eu
 
           rm -rf ./KernelSU ./drivers/kernelsu
           echo "📦 Installing KSU..."
           curl -LSs "https://raw.githubusercontent.com/fredslbn/KernelSU/refs/heads/master/kernel/setup.sh" | bash -s master          
-          echo "✔ KSU installed successfully"
+          echo "✔ ffKSU installed"
 
-          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-          cat >> "$CONFIG_FILE" <<- 'EOF'
-          CONFIG_KSU=y
-          CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
-          CONFIG_KSU_HOSTSREDIRECT=y
-          CONFIG_KSU_KPROBES_KSUD=y
-          CONFIG_KSU_COMPILE_AS_C23=y
-          CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
-          EOF
-          echo "✅ ffKSU configs added"
+          echo "✅ ffKSU build wiring verified"          
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"          
+          [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
+          [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
+          
+          set_cfg() {  # usage: set_cfg CONFIG_X=y   or   set_cfg CONFIG_X=n
+             local key="${1%%=*}" val="${1#*=}"
+             sed -i "/^# $key is not set/d;/^$key=/d" "$CONFIG_FILE"
+             if [ "$val" = "n" ]; then echo "# $key is not set" >> "$CONFIG_FILE"
+             else echo "$1" >> "$CONFIG_FILE"; fi
+          }          
+          set_cfg CONFIG_KSU=y
+          set_cfg CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
+          set_cfg CONFIG_KSU_HOSTSREDIRECT=y
+          set_cfg CONFIG_KSU_LSM_SECURITY_HOOKS=y
+          set_cfg CONFIG_KSU_COMPILE_AS_C23=y
+          set_cfg CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
+          set_cfg CONFIG_KSU_HEURISTIC_IN_TREE_BUILD=y
+          set_cfg CONFIG_KALLSYMS_ALL=y
+          echo "✅ BRANCHLINK-GKI HOOK applied"
 
-          echo "🔧 SUSFS xxKSU patch..."
-          ## SUSFS PATCHES FOR KERNELSU SUSFS
+          echo "🔧 Patch SUSFS for ffKSU..."
           patch -p1 -d KernelSU < <(curl -sSfL "https://github.com/midori01/KernelSU/commit/xx~1.patch") || true
           patch -p1 -d KernelSU < <(curl -sSfL "https://github.com/midori01/KernelSU/commit/xx.patch") || true
           echo "✅ SUSFS ffKSU patch applied"
 
-          # Clone SUSFS4KSU for kernel patches only (not KSU integration)
-          echo "📦 Cloning SUSFS4KSU for kernel patches..."
+          # Clone SUSFS for kernel patches
+          echo "📦 Cloning SUSFS for kernel patches..."
           git clone --depth=1 https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android13-5.15
-
           SUSFS_KERNEL_PATCH="susfs4ksu/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch"
 
           echo "🔧 Applying SUSFS kernel patch..."
@@ -287,29 +309,35 @@ jobs:
 
           # Clean up SUSFS repo (we only needed kernel patches, not KSU integration)
           rm -rf susfs4ksu
-          echo "✅ SUSFS build wiring verified"
-
-          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-          cat >> "$CONFIG_FILE" <<- 'EOF'
-          CONFIG_KSU_SUSFS=y
-          CONFIG_KSU_SUSFS_SUS_PATH=y
-          CONFIG_KSU_SUSFS_SUS_MOUNT=y
-          CONFIG_KSU_SUSFS_SUS_KSTAT=y
-          CONFIG_KSU_SUSFS_SPOOF_UNAME=y
-          CONFIG_KSU_SUSFS_ENABLE_LOG=y
-          CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
-          CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
-          CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
-          CONFIG_KSU_SUSFS_SUS_MAP=y
-          EOF
-          echo "🎉 ffKSU SUSFS + GKI android13-5.15 now fully integrated!"
-
+          
+          echo "✅ SUSFS build wiring verified"          
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"          
+          [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
+          [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
+          
+          set_cfg() {  # usage: set_cfg CONFIG_X=y   or   set_cfg CONFIG_X=n
+             local key="${1%%=*}" val="${1#*=}"
+             sed -i "/^# $key is not set/d;/^$key=/d" "$CONFIG_FILE"
+             if [ "$val" = "n" ]; then echo "# $key is not set" >> "$CONFIG_FILE"
+             else echo "$1" >> "$CONFIG_FILE"; fi
+          }          
+          set_cfg CONFIG_KSU_SUSFS=y
+          set_cfg CONFIG_KSU_SUSFS_SUS_PATH=y
+          set_cfg CONFIG_KSU_SUSFS_SUS_MOUNT=y
+          set_cfg CONFIG_KSU_SUSFS_SUS_KSTAT=y
+          set_cfg CONFIG_KSU_SUSFS_SPOOF_UNAME=y
+          set_cfg CONFIG_KSU_SUSFS_ENABLE_LOG=y
+          set_cfg CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
+          set_cfg CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
+          set_cfg CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
+          set_cfg CONFIG_KSU_SUSFS_SUS_MAP=y
+          echo "✅ SUSFS configs applied"
       
       - name: "🧩 Apply BBRv3 Patch"
         shell: bash
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
-         set -euo pipefail
+         set -eu
 
          if patch -p1 < <(curl -sSfL "https://raw.githubusercontent.com/fatalcoder524/kernel_patches_additional/refs/heads/main/bbr3/0001-net-tcp-backport-BBRv3-to-android13-5.15.patch") || true; then
             echo "✅ BBRv3 patch applied"
@@ -317,37 +345,50 @@ jobs:
             echo "⚠️ BBRv3 failed"
          fi
 
-
       - name: "⚙️ Setup additional configs"
         shell: bash
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
-          set -euo pipefail
-
+          set -eu                
+                    
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-          cat >> "$CONFIG_FILE" <<- 'EOF'
-          CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y
-          CONFIG_TCP_CONG_ADVANCED=y
-          CONFIG_TCP_CONG_BIC=n
-          CONFIG_TCP_CONG_WESTWOOD=y
-          CONFIG_TCP_CONG_HTCP=n
-          CONFIG_TCP_CONG_BBR=y
-          CONFIG_TCP_CONG_BBR3=y
-          CONFIG_DEFAULT_BBR3=y
-          CONFIG_OVERLAY_FS=y
-          CONFIG_TMPFS_XATTR=y
-          CONFIG_TMPFS_POSIX_ACL=y
-          CONFIG_HZ="300"
-          CONFIG_HZ_300=y
-          EOF
+          
+          sed -i '/^CONFIG_HZ=250$/d' "$CONFIG_FILE"
+          sed -i '/^CONFIG_HZ_250=y/d' "$CONFIG_FILE"
+          
+          [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
+          [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
+          
+          set_cfg() {  # usage: set_cfg CONFIG_X=y   or   set_cfg CONFIG_X=n
+             local key="${1%%=*}" val="${1#*=}"
+             sed -i "/^# $key is not set/d;/^$key=/d" "$CONFIG_FILE"
+             if [ "$val" = "n" ]; then echo "# $key is not set" >> "$CONFIG_FILE"
+             else echo "$1" >> "$CONFIG_FILE"; fi
+          }
+          set_cfg CONFIG_DEBUG_KERNEL=n
+          set_cfg CONFIG_DEBUG_FS=n
+          set_cfg CONFIG_ARM64_LSE_ATOMICS=y
+          set_cfg CONFIG_CFI_CLANG=y
+          set_cfg "CONFIG_LOCALVERSION=\"${{ env.LOCAL_VERSION }}\""
+          set_cfg CONFIG_LOCALVERSION_AUTO=y
+          set_cfg CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y
+          set_cfg CONFIG_TCP_CONG_ADVANCED=y
+          set_cfg CONFIG_TCP_CONG_BIC=n
+          set_cfg CONFIG_TCP_CONG_WESTWOOD=y
+          set_cfg CONFIG_TCP_CONG_HTCP=n
+          set_cfg CONFIG_TCP_CONG_BBR=y
+          set_cfg CONFIG_TCP_CONG_BBR3=y
+          set_cfg CONFIG_TMPFS_XATTR=y
+          set_cfg CONFIG_TMPFS_POSIX_ACL=y
+          set_cfg CONFIG_HZ=300
+          set_cfg CONFIG_HZ_300=y
           echo "✅ Additional configs applied"
-
 
       - name: "📝 Custom Makefile line"
         shell: bash
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
-         set -euo pipefail
+         set -eu
 
          # echo 'KBUILD_CFLAGS += -Wno-default-const-init-unsafe' >> Makefile
          # echo 'KBUILD_CFLAGS += -Wno-uninitialized-const-pointer' >> Makefile
