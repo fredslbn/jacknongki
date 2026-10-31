@@ -77,11 +77,6 @@ jobs:
             echo "vm.swappiness=80" | sudo tee -a /etc/sysctl.conf
             sudo sysctl -p
 
-      - name: 📐 Move Patch Folder
-        shell: bash
-        run: |
-          mv ${{ env.WORK_DIR }}/Patches /tmp/
-
       - name: "🌟 Clone kernel source"
         working-directory: ./${{ env.KERNEL_LOC_DIR }}
         run: |
@@ -158,6 +153,9 @@ jobs:
         if: matrix.kernel.enable_xxksu == true
         shell: bash
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
+        env:
+          PATCH_DIR: ${{ github.workspace }}/Patches
+          DEINLINED_SCRIPT: ${{ github.workspace }}/Patches/susfs_deinlined.sh
         run: |
           set -eu
 
@@ -198,9 +196,10 @@ jobs:
           SUSFS_KERNEL_PATCH="susfs4ksu/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch"
 
           echo "🔧 Applying SUSFS kernel patch..."
-          wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh
+          # wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh          
+          cp "$DEINLINED_SCRIPT" ./
+          cp "$PATCH_DIR/Patch/deinlined_topaz.patch" ./
           chmod +x susfs_deinlined.sh
-          cp /tmp/Patches/Patch/deinlined_topaz.patch ./
           #./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
              # if patch -p1 < deinlined.patch || true; then
              if patch -p1 < deinlined_topaz.patch || true; then
