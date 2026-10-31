@@ -1,4 +1,4 @@
-name: Build Renote 12
+name: Build Redmi Note 12
 
 on:
   workflow_call:
@@ -9,14 +9,14 @@ env:
   DEVICE_NAME : "renote_12"
   DEVICE_CODENAME : "Topaz"
 
-  # CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-"
-  CUSTOM_CMDS : "CROSS_COMPILE=aarch64-linux-gnu- CLANG_TRIPLE=aarch64-linux-gnu-"
+  CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-"
+  # CUSTOM_CMDS : "CROSS_COMPILE=aarch64-linux-gnu- CLANG_TRIPLE=aarch64-linux-gnu-"
   
-  # EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1 AR=llvm-ar AS=llvm-as NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
-  EXTRA_CMDS : "LD=ld.lld LLVM=1 AR=llvm-ar AS=llvm-as NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
+  EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1 AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
+  # EXTRA_CMDS : "LD=ld.lld LLVM=1 AR=llvm-ar AS=llvm-as NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
 
-  KERNEL_SOURCE : "https://github.com/topnotchfreaks/kernel_msm-5.15.git"
-  KERNEL_BRANCH : "codelinaro"
+  KERNEL_SOURCE : "https://git.codelinaro.org/clo/la/kernel/msm-5.15.git"
+  KERNEL_BRANCH : "kernel.lnx.5.15.r1-rel"
   
   # KERNEL_SOURCE : "https://github.com/frstprjkt/valeryn_xiaomi_sm6115.git"
   # KERNEL_BRANCH : "android16"
@@ -25,7 +25,9 @@ env:
   # CLANG_SOURCE : "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
   # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.1/LLVM-23.1.1-Linux-X64.tar.xz"
   # CLANG_SOURCE : "https://github.com/greenforce-project/greenforce_clang/releases/download/20260926/gf-clang-24.0.0-20260926.tar.gz"
-  CLANG_SOURCE : "https://www.kernel.org/pub/tools/llvm/files/llvm-22.1.8-aarch64.tar.gz"
+  # CLANG_SOURCE : "https://www.kernel.org/pub/tools/llvm/files/llvm-22.1.8-aarch64.tar.gz"
+  CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.3/LLVM-23.1.3-Linux-X64.tar.xz"
+  # CLANG_SOURCE : "https://github.com/Impqxr/aosp_clang_ci/releases/download/13289611/clang-13289611-linux-x86.tar.xz"
   CLANG_BRANCH : ""
 
   GCC_GNU : false
@@ -63,12 +65,13 @@ env:
   CUSTOM_SUSFS_PATCH : true
   CUSTOM_CLEANUP_HARDCODE : false
   CUSTOM_DIR_ANYKERNEL : false
+  GETPRIORITY_NON_GKI2 : false
   
   SUSFS_ENABLE : true
   SUSFS_FIXED : true
 
-  AK3_SOURCE : "https://github.com/topnotchfreaks/AnyKernel3.git"
-  AK3_BRANCH : "master"
+  AK3_SOURCE : ""
+  AK3_BRANCH : ""
 
   BOOT_SOURCE : ""
 
@@ -112,7 +115,7 @@ env:
   SKIP_PATCH: "false" # Ignore errors found in Patch Debugger.
 
   BUILD_OTHER_CONFIG: "false" # Merge config files.
-  MERGE_CONFIG_FILES: "vendor/xiaomi/xxksu.config"
+  MERGE_CONFIG_FILES: "vendor/xiaomi/fragment.config"
 
   FREE_MORE_SPACE: "false" # if u want get more space, enabled it.
 
@@ -145,46 +148,77 @@ jobs:
       - name: 🔒 Patch Kernel of nomount
         uses: ./.github/workflows/patch-nomount
       
+      - name: 🧩 Apply BBRv3 Patch
+        shell: bash
+        working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
+        run: |        
+         set -eu
+         cd "$GITHUB_WORKSPACE/device_kernel"                  
+                           
+         if patch -p1 < <(curl -sSfL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/BBRv3/0001-BBRv3-to-android13-5.15.patch") || true; then
+            echo "✅ BBRv3 patch successfully applied"
+         else
+             echo "❌ BBRv3 patch failed"
+         fi                  
+         
       - name: 🪛 Extra Kernel Options
+        shell: bash
         run: |
-          # Only ${{ env.DEVICE_NAME }} use it.
-          cd $GITHUB_WORKSPACE/device_kernel
+          set -eu
+          cd "$GITHUB_WORKSPACE/device_kernel"
           
-          CONFIG_FILE="arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-           
-          # LTO Configuration - Enable Thin LTO only
-          sed -i '/CONFIG_LTO_CLANG_FULL/d' "$CONFIG_FILE"
-          echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
-          echo "# CONFIG_LTO_CLANG_FULL is not set" >> "$CONFIG_FILE"
-          echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
-          echo "CONFIG_THINLTO=y" >> "$CONFIG_FILE"
-          
-          echo "Thin LTO configs applied."
-           
-          # Full Metamodule Support
-          echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
-          echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
-          echo "CONFIG_OVERLAY_FS=y" >> "$CONFIG_FILE"
-          
-          echo "Metamodule configs applied."
+          # selinux patches
+          cp /tmp/Patches/Patch/04_selinux_policydb_write.patch ./
+          if patch -p1 < 04_selinux_policydb_write.patch || true; then
+             echo "✅ Selinux policydb patch applied"
+          else
+             echo "❌ Selinux policydb patch failed"
+          fi
 
-          # Rewrite Localversion Name
-          sed -i '/CONFIG_LOCALVERSION/d' "$CONFIG_FILE"
-          sed -i '/CONFIG_LOCALVERSION_AUTO/d' "$CONFIG_FILE"
-          echo "CONFIG_LOCALVERSION=-super.kernel" >> "$CONFIG_FILE"
-          echo "CONFIG_LOCALVERSION_AUTO=y" >> "$CONFIG_FILE"
+          # Kernel 6.6 patches
+          patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_fixup.patch") || true
+          patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_hostbuild.patch") || true
+          patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_force_loading_modules_fail_symbol_version_checks.patch") || true
           
-          echo "Localversion string has been replaced."
-                    
+          # rm -f android/abi_gki_protected_exports_* || true
+          sed -i 's/ -dirty//g' scripts/setlocalversion || true
+          # sed -i '/bad_version:/,/return 0;/s/return 0;/return 1;/' kernel/module/version.c || true
+          # sed -i '/same_magic(/,/return strcmp/s/return strcmp(amagic, bmagic) == 0;/return 1;/' kernel/module/version.c || true
+
+          sed -i '/^POST_DEFCONFIG_CMDS="check_defconfig"/d' build.config.gki
+          echo "✅ GKI kernel 5.15 patches has been applied."
+                                        
           # echo "KBUILD_CFLAGS += -w" >> ./Makefile
-          echo 'KBUILD_CFLAGS += -Wno-default-const-init-unsafe' >> ./Makefile
-          echo 'KBUILD_CFLAGS += -Wno-uninitialized-const-pointer' >> ./Makefile
           echo 'KBUILD_CFLAGS += -Wno-implicit-function-declaration' >> ./Makefile
-          echo 'KBUILD_CFLAGS += -Wno-sometimes-uninitialized' >> ./Makefile
-          echo "Custom Makefile line added successfully"
+          echo "✅ Custom Makefile line added successfully"
           
-          sed -i '/CONFIG_DEBUG_INFO_BTF/d' "$CONFIG_FILE"
-          echo "# CONFIG_DEBUG_INFO_BTF is not set" >> "$CONFIG_FILE"
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          
+          [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
+          [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
+          
+          set_cfg() {  # usage: set_cfg CONFIG_X=y   or   set_cfg CONFIG_X=n
+             local key="${1%%=*}" val="${1#*=}"
+             sed -i "/^# $key is not set/d;/^$key=/d" "$CONFIG_FILE"
+             if [ "$val" = "n" ]; then echo "# $key is not set" >> "$CONFIG_FILE"
+             else echo "$1" >> "$CONFIG_FILE"; fi
+          }          
+          set_cfg CONFIG_DEBUG_KERNEL=n
+          set_cfg CONFIG_DEBUG_FS=n
+          set_cfg CONFIG_ARM64_LSE_ATOMICS=y
+          set_cfg CONFIG_CFI_CLANG=y
+          set_cfg CONFIG_LOCALVERSION=-super.kernel
+          set_cfg CONFIG_LOCALVERSION_AUTO=y
+          set_cfg CONFIG_HZ_300=y
+          set_cfg CONFIG_HZ=300
+          set_cfg CONFIG_TCP_CONG_ADVANCED=y
+          set_cfg CONFIG_TCP_CONG_BIC=n
+          set_cfg CONFIG_TCP_CONG_WESTWOOD=y
+          set_cfg CONFIG_TCP_CONG_HTCP=n
+          set_cfg CONFIG_TCP_CONG_BBR=y
+          set_cfg CONFIG_TCP_CONG_BBR3=y
+          set_cfg CONFIG_DEFAULT_BBR3=y
+          echo "✅ Additional configs applied"
 
       - name: 🚀 Build Process
         uses: ./.github/workflows/build-process

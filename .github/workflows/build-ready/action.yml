@@ -7,20 +7,39 @@ runs:
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE
+          
+          if [[ "${{ env.GKI_TYPE_KERNEL }}" == "true" ]]; then
+          
+             echo "::group::[+] Starting clone GKI kernel source code..."
+             git clone --recursive "${{ env.KERNEL_SOURCE }}" --branch "${{ env.KERNEL_BRANCH }}" device_kernel --depth=1
+             
+             if [[ -f "device_kernel/.gitmodules" ]]; then
+                cd device_kernel
+                git submodule init
+                git submodule update
+                cd ../
+                echo "[+] Detected GitModules."
+             fi
+             echo "::endgroup::"
+             echo "[+] Kernel source code is cloned."
 
-          echo "::group::[+] Starting git clone kernel source code..."
-          git clone --recursive "${{ env.KERNEL_SOURCE }}" -b "${{ env.KERNEL_BRANCH }}" device_kernel --depth=1
+          else 
 
-          if [[ -f "device_kernel/.gitmodules" ]]; then
-            cd device_kernel
-            git submodule init
-            git submodule update
-            cd ../
-            echo "[+] Detected GitModules."
+             echo "::group::[+] Starting git clone kernel source code..."
+             git clone --recursive "${{ env.KERNEL_SOURCE }}" -b "${{ env.KERNEL_BRANCH }}" device_kernel --depth=1
+             
+             if [[ -f "device_kernel/.gitmodules" ]]; then
+                cd device_kernel
+                git submodule init
+                git submodule update
+                cd ../
+                echo "[+] Detected GitModules."
+             fi
+             echo "::endgroup::"
+             echo "[+] Kernel source code is cloned."
 
           fi
-          echo "::endgroup::"
-          echo "[+] Kernel source code is cloned."
+          
           
           # Get Kernel Version
           KERNEL_VERSION=$(head -n 3 $GITHUB_WORKSPACE/device_kernel/Makefile | grep -E 'VERSION|PATCHLEVEL' | awk '{print $3}' | paste -sd '.')

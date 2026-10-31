@@ -339,7 +339,7 @@ jobs:
         run: |
          set -eu
 
-         if patch -p1 < <(curl -sSfL "https://raw.githubusercontent.com/fatalcoder524/kernel_patches_additional/refs/heads/main/bbr3/0001-net-tcp-backport-BBRv3-to-android13-5.15.patch") || true; then
+         if patch -p1 < <(curl -sSfL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/BBRv3/0001-BBRv3-to-android13-5.15.patch") || true; then
             echo "✅ BBRv3 patch applied"
          else
             echo "⚠️ BBRv3 failed"
