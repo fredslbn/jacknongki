@@ -181,10 +181,11 @@ jobs:
           
           # rm -f android/abi_gki_protected_exports_* || true
           sed -i 's/ -dirty//g' scripts/setlocalversion || true
+          sed -i 's|res="\$res\$(scm_version)"|res="$res"|' scripts/setlocalversion || true
           # sed -i '/bad_version:/,/return 0;/s/return 0;/return 1;/' kernel/module/version.c || true
           # sed -i '/same_magic(/,/return strcmp/s/return strcmp(amagic, bmagic) == 0;/return 1;/' kernel/module/version.c || true
 
-          sed -i '/^POST_DEFCONFIG_CMDS="check_defconfig"/d' build.config.gki
+          sed -i '/^POST_DEFCONFIG_CMDS="check_defconfig"/d' build.config.gki || true
           echo "✅ GKI kernel 5.15 patches has been applied."
                                         
           # echo "KBUILD_CFLAGS += -w" >> ./Makefile

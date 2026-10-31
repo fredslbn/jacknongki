@@ -18,21 +18,21 @@ jobs:
       fail-fast: false
       matrix:
         kernel:
-          - name: "GKI"
-            dir: "common_gki"
-            repo_name: "common"
-            repo_url: "https://android.googlesource.com/kernel/common"
-            branch: "android13-5.15-lts"
-            defconfig: "gki_defconfig"
-            local_version: "-super.kernel-gki"
-            output_name: "Image.gki.ksu"
-            enable_xxksu: true
-            enable_ffksu: false
-            extra_patches:
-              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_fixup.patch"
-              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_hostbuild.patch"              
-              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_force_loading_modules_fail_symbol_version_checks.patch"
-              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/04_selinux_policydb_write.patch"
+#          - name: "GKI"
+#            dir: "common_gki"
+#            repo_name: "common"
+#            repo_url: "https://android.googlesource.com/kernel/common"
+#            branch: "android13-5.15-lts"
+#            defconfig: "gki_defconfig"
+#            local_version: "-super.kernel-gki"
+#            output_name: "Image.gki.ksu"
+#            enable_xxksu: true
+#            enable_ffksu: false
+#            extra_patches:
+#              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_fixup.patch"
+#              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_hostbuild.patch"              
+#              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_force_loading_modules_fail_symbol_version_checks.patch"
+#              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/04_selinux_policydb_write.patch"
           - name: "CLO"
             dir: "common_clo"
             repo_name: "clo"
