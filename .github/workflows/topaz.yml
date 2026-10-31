@@ -60,6 +60,15 @@ jobs:
       WORK_DIR: ${{ github.workspace }}
 
     steps:
+      - name: "⏰ Checkout repository"
+        uses: actions/checkout@v6
+
+      - name: "Move Patches"
+        shell: bash
+        run: |
+          # Move patch folder to tmp
+          mv $GITHUB_WORKSPACE/Patches /tmp/
+      
       - name: "✨ Setup workspace"
         run: |
           mkdir -p ${{ env.KERNEL_LOC_DIR }}
@@ -153,9 +162,6 @@ jobs:
         if: matrix.kernel.enable_xxksu == true
         shell: bash
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
-        env:
-          PATCH_DIR: ${{ github.workspace }}/Patches
-          DEINLINED_SCRIPT: ${{ github.workspace }}/Patches/susfs_deinlined.sh
         run: |
           set -eu
 
@@ -197,8 +203,8 @@ jobs:
 
           echo "🔧 Applying SUSFS kernel patch..."
           # wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh          
-          cp "$DEINLINED_SCRIPT" ./
-          cp "$PATCH_DIR/Patch/deinlined_topaz.patch" ./
+          cp /tmp/Patches/susfs_deinlined.sh ./
+          cp /tmp/Patches/Patch/deinlined_topaz.patch ./
           chmod +x susfs_deinlined.sh
           #./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
              # if patch -p1 < deinlined.patch || true; then
