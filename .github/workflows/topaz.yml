@@ -194,9 +194,11 @@ jobs:
 
           echo "🔧 Applying SUSFS kernel patch..."
           wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh
-          chmod +x susfs_deinlined.sh
-          ./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
-             if patch -p1 < deinlined.patch || true; then
+          chmod +x susfs_deinlined.sh          
+          cp $GITHUB_WORKSPACE/Patches/Patch/deinlined_topaz.patch ./
+          #./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
+             # if patch -p1 < deinlined.patch || true; then
+             if patch -p1 < deinlined_topaz.patch || true; then
                 echo "✅ SUSFS patch applied"
              else
                 echo "⚠️ SUSFS patch failed — copying files manually"
@@ -287,8 +289,10 @@ jobs:
           echo "🔧 Applying SUSFS kernel patch..."
           wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh
           chmod +x susfs_deinlined.sh
-          ./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
-             if patch -p1 < deinlined.patch || true; then
+          cp $GITHUB_WORKSPACE/Patches/Patch/deinlined_topaz.patch ./
+          #./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
+             # if patch -p1 < deinlined.patch || true; then
+             if patch -p1 < deinlined_topaz.patch || true; then
                 echo "✅ SUSFS patch applied"
              else
                 echo "⚠️ SUSFS patch failed — copying files manually"

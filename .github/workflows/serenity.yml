@@ -26,6 +26,7 @@ jobs:
 #            defconfig: "gki_defconfig"
 #            local_version: "-super.kernel-gki"
 #            output_name: "Image.gki.ksu"
+#            output_bootimg_name: "boot.gki.ksu.img"
 #            enable_xxksu: true
 #            enable_ffksu: false
 #            extra_patches:
@@ -41,6 +42,7 @@ jobs:
             defconfig: "gki_defconfig"
             local_version: "-super.kernel-clo"
             output_name: "Image.clo.ksu"
+            output_bootimg_name: "boot.clo.ksu.img"
             enable_xxksu: true
             enable_ffksu: false
             extra_patches:
@@ -57,6 +59,7 @@ jobs:
       DEFCONFIG_NAME: ${{ matrix.kernel.defconfig }}
       LOCAL_VERSION: ${{ matrix.kernel.local_version }}
       OUTPUT_NAME: ${{ matrix.kernel.output_name }}
+      OUTPUT_BOOTIMG_NAME: ${{ matrix.kernel.output_bootimg_name }}
       WORK_DIR: ${{ github.workspace }}
 
     steps:
@@ -195,8 +198,10 @@ jobs:
           echo "🔧 Applying SUSFS kernel patch..."
           wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh
           chmod +x susfs_deinlined.sh
-          ./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
-             if patch -p1 < deinlined.patch || true; then
+          cp $GITHUB_WORKSPACE/Patches/Patch/deinlined_topaz.patch ./
+          #./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
+             # if patch -p1 < deinlined.patch || true; then
+             if patch -p1 < deinlined_topaz.patch || true; then
                 echo "✅ SUSFS patch applied"
              else
                 echo "⚠️ SUSFS patch failed — copying files manually"
@@ -287,8 +292,10 @@ jobs:
           echo "🔧 Applying SUSFS kernel patch..."
           wget https://raw.githubusercontent.com/midori01/gki_ksu_workflow/refs/heads/main/.github/scripts/susfs_deinlined.sh
           chmod +x susfs_deinlined.sh
-          ./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
-             if patch -p1 < deinlined.patch || true; then
+          cp $GITHUB_WORKSPACE/Patches/Patch/deinlined_topaz.patch ./
+          #./susfs_deinlined.sh "$SUSFS_KERNEL_PATCH" deinlined.patch
+             # if patch -p1 < deinlined.patch || true; then
+             if patch -p1 < deinlined_topaz.patch || true; then
                 echo "✅ SUSFS patch applied"
              else
                 echo "⚠️ SUSFS patch failed — copying files manually"
@@ -335,7 +342,6 @@ jobs:
       
       - name: "🧩 Apply BBRv3 Patch"
         shell: bash
-        working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
          set -eu
 
