@@ -70,8 +70,8 @@ env:
   SUSFS_ENABLE : true
   SUSFS_FIXED : true
 
-  AK3_SOURCE : ""
-  AK3_BRANCH : ""
+  AK3_SOURCE : "https://github.com/topnotchfreaks/AnyKernel3"
+  AK3_BRANCH : "YASK"
 
   BOOT_SOURCE : ""
 
@@ -150,8 +150,7 @@ jobs:
       
       - name: 🧩 Apply BBRv3 Patch
         shell: bash
-        working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
-        run: |        
+        run: |
          set -eu
          cd "$GITHUB_WORKSPACE/device_kernel"                  
                            

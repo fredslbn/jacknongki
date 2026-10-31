@@ -150,8 +150,7 @@ jobs:
       
       - name: 🧩 Apply BBRv3 Patch
         shell: bash
-        working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
-        run: |        
+        run: |
          set -eu
          cd "$GITHUB_WORKSPACE/device_kernel"                  
                            
