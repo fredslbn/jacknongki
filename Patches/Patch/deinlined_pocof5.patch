@@ -1,3 +1,52 @@
+diff --git a/block/ioprio.c b/block/ioprio.c
+index c8878647d..d6ea7954a 100644
+--- a/block/ioprio.c
++++ b/block/ioprio.c
+@@ -98,6 +98,10 @@ int ioprio_check_cap(int ioprio)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_KSU_SUSFS
++extern bool susfs_is_priority_uid_filtered(uid_t uid);
++#endif // #ifdef CONFIG_KSU_SUSFS
++
+ SYSCALL_DEFINE3(ioprio_set, int, which, int, who, int, ioprio)
+ {
+ 	struct task_struct *p, *g;
+@@ -139,8 +143,15 @@ SYSCALL_DEFINE3(ioprio_set, int, which, int, who, int, ioprio)
+ 			if (!who)
+ 				user = current_user();
+ 			else
++#ifdef CONFIG_KSU_SUSFS
++			{
++				if (current_uid().val >= 10000 && susfs_is_priority_uid_filtered(uid.val))
++					break;
+ 				user = find_user(uid);
+-
++			}
++#else
++				user = find_user(uid);
++#endif // #ifdef CONFIG_KSU_SUSFS
+ 			if (!user)
+ 				break;
+ 
+@@ -232,8 +243,15 @@ SYSCALL_DEFINE2(ioprio_get, int, which, int, who)
+ 			if (!who)
+ 				user = current_user();
+ 			else
++#ifdef CONFIG_KSU_SUSFS
++			{
++				if (current_uid().val >= 10000 && susfs_is_priority_uid_filtered(uid.val))
++					break;
+ 				user = find_user(uid);
+-
++			}
++#else
++				user = find_user(uid);
++#endif // #ifdef CONFIG_KSU_SUSFS
+ 			if (!user)
+ 				break;
+ 
 diff --git a/fs/Makefile b/fs/Makefile
 index c7851875b..e951f5487 100644
 --- a/fs/Makefile
@@ -921,7 +970,7 @@ diff --git a/fs/proc/base.c b/fs/proc/base.c
 index d0884f38c..abe47e7a7 100644
 --- a/fs/proc/base.c
 +++ b/fs/proc/base.c
-@@ -97,6 +97,10 @@
+@@ -99,6 +99,10 @@
  #include <linux/time_namespace.h>
  #include <linux/resctrl.h>
  #include <linux/cpufreq_times.h>
@@ -932,7 +981,7 @@ index d0884f38c..abe47e7a7 100644
  #include <trace/events/oom.h>
  #include "internal.h"
  #include "fd.h"
-@@ -1758,6 +1762,10 @@ static const char *proc_pid_get_link(struct dentry *dentry,
+@@ -1818,6 +1822,10 @@ static const char *proc_pid_get_link(struct dentry *dentry,
  	return ERR_PTR(error);
  }
  
@@ -943,7 +992,7 @@ index d0884f38c..abe47e7a7 100644
  static int do_proc_readlink(struct path *path, char __user *buffer, int buflen)
  {
  	char *tmp = (char *)__get_free_page(GFP_KERNEL);
-@@ -1767,6 +1775,17 @@ static int do_proc_readlink(struct path *path, char __user *buffer, int buflen)
+@@ -1827,6 +1835,17 @@ static int do_proc_readlink(struct path *path, char __user *buffer, int buflen)
  	if (!tmp)
  		return -ENOMEM;
  
@@ -961,7 +1010,7 @@ index d0884f38c..abe47e7a7 100644
  	pathname = d_path(path, tmp, PAGE_SIZE);
  	len = PTR_ERR(pathname);
  	if (IS_ERR(pathname))
-@@ -2386,6 +2405,10 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
+@@ -2446,6 +2465,10 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
  	for (vma = mm->mmap, pos = 2; vma; vma = vma->vm_next) {
  		if (!vma->vm_file)
  			continue;
@@ -1101,7 +1150,7 @@ diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
 index 839b6d686..7c8aafa9d 100644
 --- a/fs/proc/task_mmu.c
 +++ b/fs/proc/task_mmu.c
-@@ -19,6 +19,9 @@
+@@ -20,6 +20,9 @@
  #include <linux/shmem_fs.h>
  #include <linux/uaccess.h>
  #include <linux/pkeys.h>
@@ -1111,7 +1160,7 @@ index 839b6d686..7c8aafa9d 100644
  
  #include <asm/elf.h>
  #include <asm/tlb.h>
-@@ -460,6 +463,14 @@ static void show_vma_header_prefix(struct seq_file *m,
+@@ -318,6 +321,14 @@ static void show_vma_header_prefix(struct seq_file *m,
  	seq_putc(m, ' ');
  }
  
@@ -1126,10 +1175,30 @@ index 839b6d686..7c8aafa9d 100644
  static void
  show_map_vma(struct seq_file *m, struct vm_area_struct *vma)
  {
-@@ -474,9 +485,16 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma)
+@@ -332,9 +343,36 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma)
  
  	if (file) {
  		struct inode *inode = file_inode(vma->vm_file);
++#ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
++		if (SUSFS_IS_INODE_OPEN_REDIRECT(inode)) {
++			char *spoofed_redirected_name = NULL;
++			int srcu_idx = srcu_read_lock(&susfs_srcu_open_redirect);
++			int ret = susfs_open_redirect_spoof_show_map_vma_srcu(inode, &ino, &dev, &spoofed_redirected_name);
++			if (!ret) {
++				pgoff = ((loff_t)vma->vm_pgoff) << PAGE_SHIFT;
++				start = vma->vm_start;
++				end = VMA_PAD_START(vma);
++				show_vma_header_prefix(m, start, end, flags, pgoff, dev, ino);
++				seq_pad(m, ' ');
++				if (spoofed_redirected_name)
++					seq_puts(m, spoofed_redirected_name);
++				seq_putc(m, '\n');
++				srcu_read_unlock(&susfs_srcu_open_redirect, srcu_idx);
++				return;
++			}
++			srcu_read_unlock(&susfs_srcu_open_redirect, srcu_idx);
++		}
++#endif // #ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
 +#ifdef CONFIG_KSU_SUSFS_SUS_MAP
 +		if (SUSFS_IS_INODE_SUS_MAP(inode))
 +			return;
@@ -1143,7 +1212,7 @@ index 839b6d686..7c8aafa9d 100644
  	}
  
  	start = vma->vm_start;
-@@ -1056,6 +1094,13 @@ static int show_smap(struct seq_file *m, void *v)
+@@ -906,6 +944,13 @@ static int show_smap(struct seq_file *m, void *v)
  	struct vm_area_struct *vma = v;
  	struct mem_size_stats mss;
  
@@ -1157,7 +1226,7 @@ index 839b6d686..7c8aafa9d 100644
  	memset(&mss, 0, sizeof(mss));
  
  	if (!vma_pages(vma))
-@@ -1111,7 +1156,14 @@ static int show_smaps_rollup(struct seq_file *m, void *v)
+@@ -968,7 +1013,14 @@ static int show_smaps_rollup(struct seq_file *m, void *v)
  	hold_task_mempolicy(priv);
  
  	for (vma = priv->mm->mmap; vma;) {
@@ -1172,7 +1241,7 @@ index 839b6d686..7c8aafa9d 100644
  		last_vma_end = vma->vm_end;
  
  		/*
-@@ -1173,7 +1225,14 @@ static int show_smaps_rollup(struct seq_file *m, void *v)
+@@ -1030,7 +1082,14 @@ static int show_smaps_rollup(struct seq_file *m, void *v)
  
  			/* Case 4 above */
  			if (vma->vm_end > last_vma_end)
@@ -1187,7 +1256,7 @@ index 839b6d686..7c8aafa9d 100644
  		}
  		/* Case 2 above */
  		vma = vma->vm_next;
-@@ -1881,6 +1940,9 @@ static ssize_t pagemap_read(struct file *file, char __user *buf,
+@@ -1740,6 +1799,9 @@ static ssize_t pagemap_read(struct file *file, char __user *buf,
  	while (count && (start_vaddr < end_vaddr)) {
  		int len;
  		unsigned long end;
@@ -1197,7 +1266,7 @@ index 839b6d686..7c8aafa9d 100644
  
  		pm.pos = 0;
  		end = (start_vaddr + PAGEMAP_WALK_SIZE) & PAGEMAP_WALK_MASK;
-@@ -1890,7 +1952,15 @@ static ssize_t pagemap_read(struct file *file, char __user *buf,
+@@ -1749,7 +1811,15 @@ static ssize_t pagemap_read(struct file *file, char __user *buf,
  		ret = mmap_read_lock_killable(mm);
  		if (ret)
  			goto out_free;
@@ -1909,7 +1978,7 @@ index c6a2e1098..911b6ce2b 100644
  
  	generic_fillattr(inode, stat);
  	return 0;
-@@ -190,7 +240,16 @@ static int vfs_statx(int dfd, const char __user *filename, int flags,
+@@ -195,7 +245,16 @@ static int vfs_statx(int dfd, const char __user *filename, int flags,
  		goto out;
  
  	error = vfs_getattr(&path, stat, request_mask, flags);
@@ -2135,10 +2204,43 @@ index 126d4433d..a03ac4cac 100644
  }
  
 diff --git a/kernel/sys.c b/kernel/sys.c
-index 1de01fab5..1313b10a2 100644
+index 1de01fab5..310f93cb0 100644
 --- a/kernel/sys.c
 +++ b/kernel/sys.c
-@@ -1271,12 +1271,20 @@ static int override_release(char __user *release, size_t len)
+@@ -204,6 +204,10 @@ static int set_one_prio(struct task_struct *p, int niceval, int error)
+ 	return error;
+ }
+ 
++#ifdef CONFIG_KSU_SUSFS
++extern bool susfs_is_priority_uid_filtered(uid_t uid);
++#endif // #ifdef CONFIG_KSU_SUSFS
++
+ SYSCALL_DEFINE3(setpriority, int, which, int, who, int, niceval)
+ {
+ 	struct task_struct *g, *p;
+@@ -249,6 +253,10 @@ SYSCALL_DEFINE3(setpriority, int, which, int, who, int, niceval)
+ 		if (!who)
+ 			uid = cred->uid;
+ 		else if (!uid_eq(uid, cred->uid)) {
++#ifdef CONFIG_KSU_SUSFS
++			if (cred->uid.val >= 10000 && susfs_is_priority_uid_filtered(uid.val))
++				goto out_unlock;
++#endif // #ifdef CONFIG_KSU_SUSFS
+ 			user = find_user(uid);
+ 			if (!user)
+ 				goto out_unlock;	/* No processes for this user */
+@@ -317,6 +325,10 @@ SYSCALL_DEFINE2(getpriority, int, which, int, who)
+ 		if (!who)
+ 			uid = cred->uid;
+ 		else if (!uid_eq(uid, cred->uid)) {
++#ifdef CONFIG_KSU_SUSFS
++			if (cred->uid.val >= 10000 && susfs_is_priority_uid_filtered(uid.val))
++				goto out_unlock;
++#endif // #ifdef CONFIG_KSU_SUSFS
+ 			user = find_user(uid);
+ 			if (!user)
+ 				goto out_unlock;	/* No processes for this user */
+@@ -1271,12 +1283,21 @@ static int override_release(char __user *release, size_t len)
  	return ret;
  }
  
@@ -2146,6 +2248,7 @@ index 1de01fab5..1313b10a2 100644
 +extern struct static_key_false susfs_is_uname_spoof_buffer_set;
 +extern void susfs_spoof_uname(struct new_utsname* tmp);
 +#endif
++
  SYSCALL_DEFINE1(newuname, struct new_utsname __user *, name)
  {
  	struct new_utsname tmp;
@@ -2160,7 +2263,7 @@ index 1de01fab5..1313b10a2 100644
  	if (copy_to_user(name, &tmp, sizeof(tmp)))
  		return -EFAULT;
 diff --git a/mm/memory.c b/mm/memory.c
-index c6627884c..39bac67b5 100644
+index 5c22fdd1d..f72c2953a 100644
 --- a/mm/memory.c
 +++ b/mm/memory.c
 @@ -74,6 +74,9 @@
@@ -2173,7 +2276,7 @@ index c6627884c..39bac67b5 100644
  #include <trace/hooks/mm.h>
  
  #include <trace/events/kmem.h>
-@@ -5656,12 +5659,21 @@ int __access_remote_vm(struct task_struct *tsk, struct mm_struct *mm,
+@@ -5665,12 +5668,21 @@ int __access_remote_vm(struct task_struct *tsk, struct mm_struct *mm,
  	if (mmap_read_lock_killable(mm))
  		return 0;
  
