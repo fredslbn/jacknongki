@@ -162,6 +162,23 @@ runs:
                     done                   
                     echo "[+] Renote10Pro SuSFS Patch completed."
                                                                              
+                 elif [[ "${{ env.DEVICE_CODENAME }}" == "Ginkgo" ]]; then
+                    cp /tmp/Patches/Patch/susfs_renote8.patch ./
+                    patch -p1 < susfs_renote8.patch || true                 
+                    
+                    echo "📦 patching susfs.c susfs.h and susfs_def.h"
+                    cp /tmp/Patches/Patch/susfs_c1.patch ./
+                    cp /tmp/Patches/Patch/susfs_h1.patch ./
+                    cp /tmp/Patches/Patch/susfs_def_h1.patch ./
+                    patch -p1 < susfs_c1.patch || true
+                    patch -p1 < susfs_h1.patch || true
+                    patch -p1 < susfs_def_h1.patch || true
+                    
+                    echo "🔍 Verifying SUSFS files..."
+                    for f in fs/susfs.c include/linux/susfs.h include/linux/susfs_def.h; do
+                       if [ -f "$f" ]; then echo "✔ Found: $f"; else echo "❌ Missing: $f"; fi
+                    done                   
+                    echo "[+] Renote 8 SuSFS Patch completed."                
                  
                  ## GKI 6.6
                  elif [[ "${{ env.GKI_KERNEL_BRANCH }}" == "6.6" ]]; then                 

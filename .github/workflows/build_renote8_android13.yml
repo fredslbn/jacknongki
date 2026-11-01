@@ -1,45 +1,47 @@
-name: Build Renote 8
+name: Build Redmi Note 8
 
 on:
   workflow_call:
   workflow_dispatch:
 
-env:
+env: 
   # Device env
   DEVICE_NAME : "renote_8"
   DEVICE_CODENAME : "Ginkgo"
 
-  CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu-"
-  EXTRA_CMDS : "LD=ld.lld AR=llvm-ar AS=llvm-as NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
-
-  KERNEL_SOURCE : "https://github.com/fredslbn/kernel_xiaomi_ginkgo.git"
-  KERNEL_BRANCH : "thirteen"
+  CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-"
+  # CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- THINLTO_USE_MLGO=false"
   
-  # KERNEL_SOURCE : "https://github.com/frstprjkt/valeryn_xiaomi_sm6115.git"
-  # KERNEL_BRANCH : "android16"
+  EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1 AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
+  # EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1"
+
+  # KERNEL_SOURCE : "https://github.com/fredslbn/android_kernel_xiaomi_sm6150.git"
+  # KERNEL_BRANCH : "stable"
+  
+  KERNEL_SOURCE : "https://github.com/eternyx404/kernel_xiaomi_ginkgo.git"
+  KERNEL_BRANCH : "main"
 
   # CLANG_SOURCE : "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/28337064939c0b4bb5804cddf35fb03d860edcf6/clang-r614150.tar.gz"
   # CLANG_SOURCE : "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
   # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.1/LLVM-23.1.1-Linux-X64.tar.xz"
   # CLANG_SOURCE : "https://github.com/greenforce-project/greenforce_clang/releases/download/20260926/gf-clang-24.0.0-20260926.tar.gz"
-  CLANG_SOURCE : "https://www.kernel.org/pub/tools/llvm/files/llvm-22.1.8-aarch64.tar.gz"
+  # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.3/LLVM-23.1.3-Linux-X64.tar.xz"
+  CLANG_SOURCE : "https://github.com/Impqxr/aosp_clang_ci/releases/download/13289611/clang-13289611-linux-x86.tar.xz"
   CLANG_BRANCH : ""
 
   GCC_GNU : false
-  GCC_64_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
-  GCC_64_BRANCH : "aarch64"
-  GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
-  GCC_32_BRANCH : "arm32"
+  # GCC_64_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  # GCC_64_BRANCH : "aarch64"
+  # GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  # GCC_32_BRANCH : "arm32"
   
-  # GCC_64_SOURCE : "https://huggingface.co/csukuangfj/sherpa-ncnn-toolchains/resolve/main/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz"
   # GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
   # GCC_64_BRANCH : "master"
-  # GCC_32_SOURCE : "https://huggingface.co/csukuangfj/sherpa-ncnn-toolchains/resolve/main/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf.tar.xz"
   # GCC_32_SOURCE : "https://github.com/mhdzumair/toolchain.git"
   # GCC_32_BRANCH : "master"
 
   DEFCONFIG_SOURCE: ""
-  DEFCONFIG_NAME : "vendor/ginkgo-perf_defconfig"
+  DEFCONFIG_NAME : "vendor/ginkgo_defconfig"
   DEFCONFIG_ORIGIN_IMAGE: ""
   DEFCONFIG_FROM_BOOT: false
 
@@ -49,26 +51,28 @@ env:
   KERNELSU_AUTO_GET : "true" # if u want easy setting kernelsu, u can true.
   KERNELSU_AUTO_FORK : "xxksu" # magic, rsuntk, next, bakasu and sukisu
 
-  ROM_TEXT : "xxKSU"  
-  CUSTOM_SUSFS_PATCH : false
+  ROM_TEXT : "xxKSU"
+  CUSTOM_SUSFS_PATCH : true
   CUSTOM_CLEANUP_HARDCODE : false
+  CUSTOM_DIR_ANYKERNEL : false
+  GETPRIORITY_NON_GKI2 : true
   
-  SUSFS_ENABLE : false
-  SUSFS_FIXED : false
+  SUSFS_ENABLE : true
+  SUSFS_FIXED : true
 
-  AK3_SOURCE : "https://github.com/fredslbn/AnyKernel3.git"
+  AK3_SOURCE : "https://github.com/neophyteprjkt/AnyKernel3.git"
   AK3_BRANCH : "master"
 
   BOOT_SOURCE : ""
 
   NEED_DTBO : true
-  NEED_SAFE_DTBO : false  
+  NEED_SAFE_DTBO : false
 
   # Other env
   PYTHON_VERSION: "3" # Only 2(Ubuntu 22.04 and Ubuntu 20.04) or 3(Any OS Versions).
 
   PACK_METHOD: "Anykernel3" # Anykernel3 need SOURCE and BRANCH, MKBOOTIMG needn't it.
-  PACK_KMODULES: "true" # if u want pack kernel modules (.ko) into Anykernel3.
+  PACK_KMODULES: "false" # if u want pack kernel modules (.ko) into Anykernel3.
 
   KERNELSU_METHOD: "shell" # shell, manual and only.
 
@@ -101,7 +105,7 @@ env:
   SKIP_PATCH: "false" # Ignore errors found in Patch Debugger.
 
   BUILD_OTHER_CONFIG: "false" # Merge config files.
-  MERGE_CONFIG_FILES: ""
+  MERGE_CONFIG_FILES: "vendor/debugfs.config,vendor/lahaina_QGKI.config"
 
   FREE_MORE_SPACE: "false" # if u want get more space, enabled it.
 
@@ -130,22 +134,60 @@ jobs:
 
       - name: 🔗 Patch for no-kprobe
         uses: ./.github/workflows/patch-no-kprobe
-            
+
       - name: 🔒 Patch Kernel of nomount
         uses: ./.github/workflows/patch-nomount
       
       - name: 🪛 Extra Kernel Options
+        shell: bash
         run: |
-          # Only ${{ env.DEVICE_NAME }} use it.
-          cd $GITHUB_WORKSPACE/device_kernel
+          set -eu
+          cd "$GITHUB_WORKSPACE/device_kernel"
 
-          # enable CONFIG_COMPAT_VDSO and CONFIG_THUMB2_COMPAT_VDSO
-          echo "CONFIG_LOCALVERSION_AUTO=y" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-          # echo "CONFIG_LOCALVERSION=-super.kernel" >> ./arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}
-                    
-          # sed -i 's/-Neophyte-Reborn/-super.kernel/g' localversion
-          echo "Localversion string has been replaced."
-      
+          # SYS_UMOUNT
+          cp /tmp/Patches/Patch/03_4.14_sys_umount_refactor_to_extract_path_umount.patch ./
+          if patch -p1 < 03_4.14_sys_umount_refactor_to_extract_path_umount.patch || true; then
+             echo "✅ 03_4.14_sys_umount_refactor_to_extract_path_umount.patch applied"
+          else
+             echo "❌ 03_4.14_sys_umount_refactor_to_extract_path_umount.patch failed"
+          fi
+          
+          # selinux patches
+          cp /tmp/Patches/Patch/04_selinux_policydb_write.patch ./
+          if patch -p1 < 04_selinux_policydb_write.patch || true; then
+             echo "✅ Selinux policydb patch applied"
+          else
+             echo "❌ Selinux policydb patch failed"
+          fi
+
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          
+          [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
+          [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
+          
+          set_cfg() {  # usage: set_cfg CONFIG_X=y   or   set_cfg CONFIG_X=n
+             local key="${1%%=*}" val="${1#*=}"
+             sed -i "/^# $key is not set/d;/^$key=/d" "$CONFIG_FILE"
+             if [ "$val" = "n" ]; then echo "# $key is not set" >> "$CONFIG_FILE"
+             else echo "$1" >> "$CONFIG_FILE"; fi
+          }
+          
+          set_cfg CONFIG_FGETPRIORITY=y
+          set_cfg CONFIG_DEBUG_KERNEL=n
+          set_cfg CONFIG_DEBUG_FS=n
+          set_cfg CONFIG_ARM64_LSE_ATOMICS=y
+          set_cfg CONFIG_CFI_CLANG=y
+          set_cfg CONFIG_COMPAT_VDSO=y
+          set_cfg CONFIG_THUMB2_COMPAT_VDSO=y
+          set_cfg CONFIG_TMPFS_XATTR=y
+          set_cfg CONFIG_TMPFS_POSIX_ACL=y
+          set_cfg CONFIG_LOCALVERSION=-super.kernel
+          set_cfg CONFIG_LOCALVERSION_AUTO=y
+          echo "✅ Additional configs applied"
+          
+          sed -i 's/-Neophyte-Reborn/-super.kernel/g' localversion
+          echo "✅ localversion name applied"
+
       - name: 🚀 Build Process
         uses: ./.github/workflows/build-process
 

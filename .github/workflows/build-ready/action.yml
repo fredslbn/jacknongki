@@ -317,6 +317,7 @@ runs:
       - name: xxKSU | ffKSU + SuSFS
         shell: bash
         run: |
+          set -eu
           cd $GITHUB_WORKSPACE/device_kernel/KernelSU
 
           if [[ "${{ env.KERNELSU_SOURCE }}" == *backslashxx* ]] || [[ "${{ env.KERNELSU_AUTO_FORK }}" == "xxksu" ]]; then
