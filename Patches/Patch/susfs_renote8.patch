@@ -587,33 +587,31 @@ index d772fe4..b1170b4 100644
  }
  
  /*
-@@ -119,8 +137,26 @@ static int mnt_alloc_group_id(struct mount *mnt)
+@@ -117,7 +135,24 @@ static void mnt_free_id(struct mount *mnt)
+  */
+ static int mnt_alloc_group_id(struct mount *mnt)
  {
- 	int res = ida_alloc_min(&mnt_group_ida, 1, GFP_KERNEL);
- 
 +#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
++	int res;
++
++	/* - mnt_alloc_group_id will unlikely get called after screen is unlocked on reboot,
++	 *   so here we can persistently check if current is ksu domain, and assign a sus
++	 *   mnt_group_id if so.
++	 * - Also we can re-use the original mnt_group_ida so there is no need to use
++	 *   another ida nor hook the mnt_release_group_id() function.
++	 */
 +	if (susfs_is_current_ksu_domain()) {
-+		if (!ida_pre_get(&mnt_group_ida, GFP_KERNEL))
-+			return -ENOMEM;
-+		res = ida_get_new_above(&mnt_group_ida,
-+					DEFAULT_KSU_MNT_GROUP_ID,
-+					&mnt->mnt_group_id);
++		res = ida_alloc_min(&mnt_group_ida, DEFAULT_KSU_MNT_GROUP_ID, GFP_KERNEL);
 +		goto bypass_orig_flow;
 +	}
-+
-+	if (!ida_pre_get(&mnt_group_ida, GFP_KERNEL))
-+		return -ENOMEM;
-+	res = ida_get_new_above(&mnt_group_ida,
-+				mnt_group_start,
-+				&mnt->mnt_group_id);
++	res = ida_alloc_min(&mnt_group_ida, 1, GFP_KERNEL);
 +bypass_orig_flow:
 +#else
+ 	int res = ida_alloc_min(&mnt_group_ida, 1, GFP_KERNEL);
++#endif
+ 
  	if (res < 0)
  		return res;
-+#endif
- 	mnt->mnt_group_id = res;
- 	return 0;
- }
 @@ -201,6 +186,116 @@ static void drop_mountpoint(struct fs_pin *p)
  	mntput(&m->mnt);
  }
