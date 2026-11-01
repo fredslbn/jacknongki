@@ -160,16 +160,11 @@ jobs:
              echo "❌ Selinux policydb patch failed"
           fi
           
-          cp /tmp/Patches/Patch/
-          cp /tmp/Patches/Patch/
-          cp /tmp/Patches/Patch/
-          cp /tmp/Patches/Patch/
+          # cp /tmp/Patches/Patch/
+          # cp /tmp/Patches/Patch/
+          # cp /tmp/Patches/Patch/
+          # cp /tmp/Patches/Patch/
           
-          
-          
-          
-          
-
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           
           [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
