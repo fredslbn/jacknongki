@@ -608,8 +608,8 @@ index d772fe4..b1170b4 100644
 +				&mnt->mnt_group_id);
 +bypass_orig_flow:
 +#else
- if (res < 0)
-    return res;
+ 	if (res < 0)
+ 		return res;
 +#endif
  	mnt->mnt_group_id = res;
  	return 0;
@@ -2095,8 +2095,8 @@ index e6019ed..f298278 100644
  static LIST_HEAD(super_blocks);
  static DEFINE_SPINLOCK(sb_lock);
 @@ -972,6 +980,22 @@ int get_anon_bdev(dev_t *p)
+ {
  	int dev;
- 	int error;
  
 +#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 +	if (static_branch_unlikely(&susfs_is_sdcard_android_data_not_decrypted)) {
@@ -2114,9 +2114,9 @@ index e6019ed..f298278 100644
 +	}
 +#endif // #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 +
-  retry:
- 	if (ida_pre_get(&unnamed_dev_ida, GFP_ATOMIC) == 0)
- 		return -ENOMEM;
+ 	/*
+ 	 * Many userspace utilities consider an FSID of 0 invalid.
+ 	 * Always return at least 1 from get_anon_bdev.
 diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
 index b5bfcdc..8af2521 100644
 --- a/kernel/kallsyms.c

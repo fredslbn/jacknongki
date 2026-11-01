@@ -12,7 +12,7 @@ env:
   # CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-"
   CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu-"
   
-  EXTRA_CMDS : "LD=ld.lld AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip Image.gz-dtb dtbo.img"
+  EXTRA_CMDS : "LD=ld.lld AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
   # EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1"
 
   # KERNEL_SOURCE : "https://github.com/fredslbn/android_kernel_xiaomi_sm6150.git"
