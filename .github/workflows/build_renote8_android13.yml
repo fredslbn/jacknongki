@@ -9,10 +9,10 @@ env:
   DEVICE_NAME : "renote_8"
   DEVICE_CODENAME : "Ginkgo"
 
-  CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-"
-  # CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- THINLTO_USE_MLGO=false"
+  # CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-"
+  CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu-"
   
-  EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1 AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
+  EXTRA_CMDS : "LD=ld.lld AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip Image.gz-dtb dtbo.img"
   # EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1"
 
   # KERNEL_SOURCE : "https://github.com/fredslbn/android_kernel_xiaomi_sm6150.git"
@@ -30,10 +30,10 @@ env:
   CLANG_BRANCH : ""
 
   GCC_GNU : false
-  # GCC_64_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
-  # GCC_64_BRANCH : "aarch64"
-  # GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
-  # GCC_32_BRANCH : "arm32"
+  GCC_64_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  GCC_64_BRANCH : "aarch64"
+  GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  GCC_32_BRANCH : "arm32"
   
   # GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
   # GCC_64_BRANCH : "master"
@@ -159,6 +159,16 @@ jobs:
           else
              echo "❌ Selinux policydb patch failed"
           fi
+          
+          cp /tmp/Patches/Patch/
+          cp /tmp/Patches/Patch/
+          cp /tmp/Patches/Patch/
+          cp /tmp/Patches/Patch/
+          
+          
+          
+          
+          
 
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           
@@ -175,14 +185,15 @@ jobs:
           set_cfg CONFIG_FGETPRIORITY=y
           set_cfg CONFIG_DEBUG_KERNEL=n
           set_cfg CONFIG_DEBUG_FS=n
-          set_cfg CONFIG_ARM64_LSE_ATOMICS=y
+          set_cfg CONFIG_ARM64_LSE_ATOMICS=n
           set_cfg CONFIG_CFI_CLANG=y
-          set_cfg CONFIG_COMPAT_VDSO=y
-          set_cfg CONFIG_THUMB2_COMPAT_VDSO=y
+          set_cfg CONFIG_COMPAT_VDSO=n
+          set_cfg CONFIG_THUMB2_COMPAT_VDSO=n
           set_cfg CONFIG_TMPFS_XATTR=y
           set_cfg CONFIG_TMPFS_POSIX_ACL=y
           set_cfg CONFIG_LOCALVERSION=-super.kernel
           set_cfg CONFIG_LOCALVERSION_AUTO=y
+          set_cfg CONFIG_CC_STACKPROTECTOR_STRONG=n
           echo "✅ Additional configs applied"
           
           sed -i 's/-Neophyte-Reborn/-super.kernel/g' localversion
