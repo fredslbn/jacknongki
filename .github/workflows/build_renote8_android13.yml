@@ -180,13 +180,12 @@ jobs:
           }
           set_cfg CONFIG_FGETPRIORITY=y
           set_cfg CONFIG_DEBUG_KERNEL=n
-          set_cfg CONFIG_DEBUG_FS=n          
-          set_cfg CONFIG_CFI_CLANG=y          
+          set_cfg CONFIG_DEBUG_FS=n
+          set_cfg CONFIG_CFI_CLANG=y
           set_cfg CONFIG_TMPFS_XATTR=y
           set_cfg CONFIG_TMPFS_POSIX_ACL=y
           set_cfg CONFIG_LOCALVERSION=-super.kernel
           set_cfg CONFIG_LOCALVERSION_AUTO=y
-          set_cfg CONFIG_CC_STACKPROTECTOR_STRONG=y
           echo "✅ Additional configs applied"
 
       - name: 🚀 Build Process
