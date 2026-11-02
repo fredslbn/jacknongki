@@ -143,6 +143,9 @@ jobs:
         run: |
           set -eu
           cd "$GITHUB_WORKSPACE/device_kernel"
+          
+          sed -i 's/-Neophyte-Reborn/-super.kernel/g' localversion
+          echo "✅ localversion name applied"
 
           # SYS_UMOUNT
           cp /tmp/Patches/Patch/03_4.14_sys_umount_refactor_to_extract_path_umount.patch ./
@@ -166,7 +169,6 @@ jobs:
           # cp /tmp/Patches/Patch/
           
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-          
           [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
           [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
           
@@ -176,23 +178,16 @@ jobs:
              if [ "$val" = "n" ]; then echo "# $key is not set" >> "$CONFIG_FILE"
              else echo "$1" >> "$CONFIG_FILE"; fi
           }
-          
           set_cfg CONFIG_FGETPRIORITY=y
           set_cfg CONFIG_DEBUG_KERNEL=n
-          set_cfg CONFIG_DEBUG_FS=n
-          set_cfg CONFIG_ARM64_LSE_ATOMICS=n
-          set_cfg CONFIG_CFI_CLANG=y
-          set_cfg CONFIG_COMPAT_VDSO=n
-          set_cfg CONFIG_THUMB2_COMPAT_VDSO=n
+          set_cfg CONFIG_DEBUG_FS=n          
+          set_cfg CONFIG_CFI_CLANG=y          
           set_cfg CONFIG_TMPFS_XATTR=y
           set_cfg CONFIG_TMPFS_POSIX_ACL=y
           set_cfg CONFIG_LOCALVERSION=-super.kernel
           set_cfg CONFIG_LOCALVERSION_AUTO=y
-          set_cfg CONFIG_CC_STACKPROTECTOR_STRONG=n
+          set_cfg CONFIG_CC_STACKPROTECTOR_STRONG=y
           echo "✅ Additional configs applied"
-          
-          sed -i 's/-Neophyte-Reborn/-super.kernel/g' localversion
-          echo "✅ localversion name applied"
 
       - name: 🚀 Build Process
         uses: ./.github/workflows/build-process
