@@ -42,12 +42,11 @@ diff --git a/Makefile b/Makefile
 index da35647ffa5a..6a2305235759 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -376,7 +376,9 @@ HOSTCC	= gcc
+@@ -373,6 +373,8 @@ HOSTCC	= gcc
  HOSTCXX	= g++
- endif
  HOSTCFLAGS   := -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 \
--		-fomit-frame-pointer -std=gnu89 $(HOST_LFS_CFLAGS)
-+		-fomit-frame-pointer -std=gnu89 \
+-		-fomit-frame-pointer -std=gnu89 -pipe $(HOST_LFS_CFLAGS)
++		-fomit-frame-pointer -std=gnu89 -pipe \
 +		-Wdeclaration-after-statement \
 +		$(HOST_LFS_CFLAGS)
  HOSTCXXFLAGS := -O2 $(HOST_LFS_CFLAGS)
