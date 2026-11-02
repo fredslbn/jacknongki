@@ -179,7 +179,7 @@ jobs:
           set_cfg CONFIG_TMPFS_XATTR=y
           set_cfg CONFIG_TMPFS_POSIX_ACL=y
           set_cfg CONFIG_LOCALVERSION=-super.kernel
-          set_cfg CONFIG_LOCALVERSION_AUTO=y
+          set_cfg CONFIG_LOCALVERSION_AUTO=y          
           echo "✅ Configs applied"
 
       - name: 🚀 Build Process
