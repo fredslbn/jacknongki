@@ -18,8 +18,9 @@ env:
   # KERNEL_SOURCE : "https://github.com/fredslbn/android_kernel_xiaomi_sm6150.git"
   # KERNEL_BRANCH : "stable"
   
-  KERNEL_SOURCE : "https://github.com/eternyx404/kernel_xiaomi_ginkgo.git"
-  KERNEL_BRANCH : "main"
+  # KERNEL_SOURCE : "https://github.com/eternyx404/kernel_xiaomi_ginkgo.git"
+  KERNEL_SOURCE : "https://github.com/FlopKernel-Series/flop_trinket-mi_kernel.git"
+  KERNEL_BRANCH : "floppy-unity"
 
   # CLANG_SOURCE : "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/28337064939c0b4bb5804cddf35fb03d860edcf6/clang-r614150.tar.gz"
   # CLANG_SOURCE : "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
@@ -41,7 +42,7 @@ env:
   # GCC_32_BRANCH : "master"
 
   DEFCONFIG_SOURCE: ""
-  DEFCONFIG_NAME : "vendor/ginkgo_defconfig"
+  DEFCONFIG_NAME : "vendor/trinket-perf_defconfig"
   DEFCONFIG_ORIGIN_IMAGE: ""
   DEFCONFIG_FROM_BOOT: false
 
@@ -57,11 +58,14 @@ env:
   CUSTOM_DIR_ANYKERNEL : false
   GETPRIORITY_NON_GKI2 : true
   
-  SUSFS_ENABLE : true
+  SUSFS_ENABLE : false
   SUSFS_FIXED : true
 
-  AK3_SOURCE : "https://github.com/neophyteprjkt/AnyKernel3.git"
-  AK3_BRANCH : "master"
+  # AK3_SOURCE : "https://github.com/neophyteprjkt/AnyKernel3.git"
+  # AK3_BRANCH : "master"
+  AK3_SOURCE : "https://github.com/FlopKernel-Series/AnyKernel3-trinket.git"
+  AK3_BRANCH : "floppy-reborn"
+  
 
   BOOT_SOURCE : ""
 
@@ -144,8 +148,8 @@ jobs:
           set -eu
           cd "$GITHUB_WORKSPACE/device_kernel"
           
-          sed -i 's/-Neophyte-Reborn/-super.kernel/g' localversion
-          echo "✅ localversion name applied"
+          # sed -i 's/-Neophyte-Reborn/-super.kernel/g' localversion
+          # echo "✅ localversion name applied"
 
           # SYS_UMOUNT
           cp /tmp/Patches/Patch/03_4.14_sys_umount_refactor_to_extract_path_umount.patch ./
@@ -186,6 +190,16 @@ jobs:
           set_cfg CONFIG_TMPFS_POSIX_ACL=y
           set_cfg CONFIG_LOCALVERSION=-super.kernel
           set_cfg CONFIG_LOCALVERSION_AUTO=y
+          set_cfg CONFIG_MACH_XIAOMI_C3J=y
+          set_cfg CONFIG_BACKLIGHT_KTD3136=y
+          set_cfg CONFIG_INPUT_FINGERPRINT=y
+          set_cfg CONFIG_FINGERPRINT_FPC1020=y
+          set_cfg CONFIG_FINGERPRINT_GF3208=y
+          set_cfg CONFIG_NFC_NQ=y
+          set_cfg CONFIG_TOUCHSCREEN_NT36xxx_HOSTDL_SPI_C3J=y
+          set_cfg CONFIG_TOUCHSCREEN_FTS_C3J=y
+          set_cfg CONFIG_TOUCHSCREEN_XIAOMI_C3J=y
+          set_cfg CONFIG_THERMAL_SWITCH=y
           echo "✅ Additional configs applied"
 
       - name: 🚀 Build Process
