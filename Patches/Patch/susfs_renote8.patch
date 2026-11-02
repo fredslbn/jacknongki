@@ -323,7 +323,7 @@ index 80b743c..c27fde5 100644
  
  	nd->flags &= ~LOOKUP_PARENT;
  	return walk_component(nd, 0);
-@@ -3257,15 +3411,39 @@ static int lookup_open(struct nameidata *nd, struct path *path,
+@@ -3278,15 +3411,39 @@ static int lookup_open(struct nameidata *nd, struct path *path,
  	int error, create_error = 0;
  	umode_t mode = op->mode;
  	DECLARE_WAIT_QUEUE_HEAD_ONSTACK(wq);
@@ -363,7 +363,7 @@ index 80b743c..c27fde5 100644
  			if (IS_ERR(dentry))
  				return PTR_ERR(dentry);
  		}
-@@ -3391,6 +3569,10 @@ static int do_last(struct nameidata *nd,
+@@ -3412,6 +3569,10 @@ static int do_last(struct nameidata *nd,
  	struct path path;
  	int error;
  
@@ -374,7 +374,7 @@ index 80b743c..c27fde5 100644
  	nd->flags &= ~LOOKUP_PARENT;
  	nd->flags |= op->intent;
  
-@@ -3605,9 +3787,31 @@ static int do_tmpfile(struct nameidata *nd, unsigned flags,
+@@ -3626,9 +3787,31 @@ static int do_tmpfile(struct nameidata *nd, unsigned flags,
  		const struct open_flags *op,
  		struct file *file, int *opened)
  {
@@ -406,7 +406,7 @@ index 80b743c..c27fde5 100644
  	if (unlikely(error))
  		return error;
  	error = mnt_want_write(path.mnt);
-@@ -3640,9 +3844,30 @@ out:
+@@ -3661,9 +3844,30 @@ out:
  
  static int do_o_path(struct nameidata *nd, unsigned flags, struct file *file)
  {
@@ -2122,7 +2122,7 @@ diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
 index b5bfcdc..8af2521 100644
 --- a/kernel/kallsyms.c
 +++ b/kernel/kallsyms.c
-@@ -25,6 +25,9 @@
+@@ -23,6 +23,9 @@
  #include <linux/slab.h>
  #include <linux/filter.h>
  #include <linux/compiler.h>
@@ -2130,9 +2130,9 @@ index b5bfcdc..8af2521 100644
 +#include <linux/susfs_def.h>
 +#endif // #ifdef CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS
  
- #include <asm/sections.h>
- 
-@@ -646,8 +649,37 @@ static int s_show(struct seq_file *m, void *p)
+ /*
+  * These will be re-linked against their real values
+@@ -613,8 +616,37 @@ static int s_show(struct seq_file *m, void *p)
  		seq_printf(m, "%pK %c %s\t[%s]\n", (void *)iter->value,
  			   type, iter->name, iter->module_name);
  	} else
@@ -2207,7 +2207,7 @@ index 30801ea..2079eef 100644
  			user = find_user(uid);
  			if (!user)
  				goto out_unlock;	/* No processes for this user */
-@@ -1182,12 +1194,20 @@ static int override_release(char __user *release, size_t len)
+@@ -1182,12 +1214 @@ static int override_release(char __user *release, size_t len)
  	return ret;
  }
  
@@ -2232,7 +2232,7 @@ diff --git a/mm/memory.c b/mm/memory.c
 index 0879df7..23c4b11 100644
 --- a/mm/memory.c
 +++ b/mm/memory.c
-@@ -79,6 +79,10 @@
+@@ -80,6 +80,10 @@
  #include <asm/tlbflush.h>
  #include <asm/pgtable.h>
  
@@ -2243,7 +2243,7 @@ index 0879df7..23c4b11 100644
  #include "internal.h"
  
  #define CREATE_TRACE_POINTS
-@@ -5087,12 +5091,20 @@ int __access_remote_vm(struct task_struct *tsk, struct mm_struct *mm,
+@@ -5134,12 +5138,20 @@ int __access_remote_vm(struct task_struct *tsk, struct mm_struct *mm,
  	int write = gup_flags & FOLL_WRITE;
  
  	down_read(&mm->mmap_sem);

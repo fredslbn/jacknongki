@@ -33,8 +33,7 @@ runs:
           set -eu
           cd "$GITHUB_WORKSPACE/device_kernel"
 
-          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-          
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"          
           [ -f "$CONFIG_FILE" ] || { echo "defconfig not found: $CONFIG_FILE"; exit 1; }
           [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
 
@@ -108,12 +107,11 @@ runs:
               if [[ "${{ env.CUSTOM_SUSFS_PATCH }}" == "true" ]]; then
               
                  if [[ "${{ env.DEVICE_CODENAME }}" == "Citrus" ]]; then
-                    cp /tmp/Patches/Patch/susfs_pocom3_patch_to_4.19.patch ./
-                    patch -p1 < susfs_pocom3_patch_to_4.19.patch || true
+                    cp /tmp/Patches/Patch/susfs_pocom3.patch ./
+                    patch -p1 < susfs_pocom3.patch || true
 
                     echo "📦 patching susfs.c susfs.h and susfs_def.h"
                     cp /tmp/Patches/Patch/susfs_c.patch ./
-                    # cp /tmp/Patches/Patch/fs/susfs.c ./fs                  
                     cp /tmp/Patches/Patch/susfs_h.patch ./
                     cp /tmp/Patches/Patch/susfs_def_h.patch ./
                     patch -p1 < susfs_c.patch || true
@@ -127,8 +125,8 @@ runs:
                     echo "[+] PocoM3 SuSFS Patch completed."
                  
                  elif [[ "${{ env.DEVICE_CODENAME }}" == "Sweet" ]]; then
-                    cp /tmp/Patches/Patch/susfs_renote10pro_patch_to_4.14.patch ./
-                    patch -p1 < susfs_renote10pro_patch_to_4.14.patch || true                 
+                    cp /tmp/Patches/Patch/susfs_renote10pro.patch ./
+                    patch -p1 < susfs_renote10pro.patch || true                 
                     
                     echo "📦 patching susfs.c susfs.h and susfs_def.h"
                     cp /tmp/Patches/Patch/susfs_c.patch ./
@@ -145,8 +143,8 @@ runs:
                     echo "[+] Renote10Pro SuSFS Patch completed."
                     
                  elif [[ "${{ env.DEVICE_CODENAME }}" == "Surya" ]]; then
-                    cp /tmp/Patches/Patch/susfs_pocox3_patch_to_4.14.patch ./
-                    patch -p1 < susfs_pocox3_patch_to_4.14.patch || true                 
+                    cp /tmp/Patches/Patch/susfs_pocox3.patch ./
+                    patch -p1 < susfs_pocox3.patch || true                 
                     
                     echo "📦 patching susfs.c susfs.h and susfs_def.h"
                     cp /tmp/Patches/Patch/susfs_c.patch ./
@@ -164,7 +162,7 @@ runs:
                                                                              
                  elif [[ "${{ env.DEVICE_CODENAME }}" == "Ginkgo" ]]; then
                     cp /tmp/Patches/Patch/susfs_renote8.patch ./
-                    patch -p1 < susfs_renote8.patch || true                 
+                    patch -p1 < susfs_renote8.patch || true
                     
                     echo "📦 patching susfs.c susfs.h and susfs_def.h"
                     cp /tmp/Patches/Patch/susfs_c1.patch ./
