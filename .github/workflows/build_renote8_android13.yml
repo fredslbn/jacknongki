@@ -9,11 +9,12 @@ env:
   DEVICE_NAME : "renote_8"
   DEVICE_CODENAME : "Ginkgo"
 
-  # CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-"
-  CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu-"
+  CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-"
+  # CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu-"
   
-  EXTRA_CMDS : "LD=ld.lld AR=llvm-ar AS=llvm-as NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
+  # EXTRA_CMDS : "LD=ld.lld AR=llvm-ar AS=llvm-as NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
   # EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1"
+  EXTRA_CMDS : "LD=ld.lld"
 
   # KERNEL_SOURCE : "https://github.com/fredslbn/android_kernel_xiaomi_sm6150.git"
   # KERNEL_BRANCH : "stable"
@@ -186,6 +187,8 @@ jobs:
           set_cfg CONFIG_DEBUG_KERNEL=n
           set_cfg CONFIG_DEBUG_FS=n
           set_cfg CONFIG_CFI_CLANG=y
+          set_cfg CONFIG_COMPAT_VDSO=y
+          set_cfg CONFIG_THUMB2_COMPAT_VDSO=y
           set_cfg CONFIG_TMPFS_XATTR=y
           set_cfg CONFIG_TMPFS_POSIX_ACL=y
           set_cfg CONFIG_LOCALVERSION=-super.kernel
