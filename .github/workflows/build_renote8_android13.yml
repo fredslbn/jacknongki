@@ -20,7 +20,7 @@ env:
   
   KERNEL_SOURCE : "https://github.com/eternyx404/kernel_xiaomi_ginkgo.git"
   # KERNEL_SOURCE : "https://github.com/FlopKernel-Series/flop_trinket-mi_kernel.git"
-  KERNEL_BRANCH : "non"
+  KERNEL_BRANCH : "main"
 
   # CLANG_SOURCE : "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/28337064939c0b4bb5804cddf35fb03d860edcf6/clang-r614150.tar.gz"
   # CLANG_SOURCE : "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
@@ -31,10 +31,15 @@ env:
   CLANG_BRANCH : ""
 
   GCC_GNU : false
-  GCC_64_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
-  GCC_64_BRANCH : "aarch64"
-  GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
-  GCC_32_BRANCH : "arm32"
+  GCC_64_SOURCE : "https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git"
+  GCC_64_BRANCH : "lineage-19.1"
+  GCC_32_SOURCE : "https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9.git
+  GCC_32_BRANCH : "lineage-19.1"
+  
+  # GCC_64_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  # GCC_64_BRANCH : "aarch64"
+  # GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  # GCC_32_BRANCH : "arm32"
   
   # GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
   # GCC_64_BRANCH : "master"
@@ -165,12 +170,7 @@ jobs:
              echo "✅ Selinux policydb patch applied"
           else
              echo "❌ Selinux policydb patch failed"
-          fi
-          
-          # cp /tmp/Patches/Patch/
-          # cp /tmp/Patches/Patch/
-          # cp /tmp/Patches/Patch/
-          # cp /tmp/Patches/Patch/
+          fi          
           
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
@@ -189,7 +189,7 @@ jobs:
           set_cfg CONFIG_TMPFS_XATTR=y
           set_cfg CONFIG_TMPFS_POSIX_ACL=y
           set_cfg CONFIG_LOCALVERSION=-super.kernel
-          set_cfg CONFIG_LOCALVERSION_AUTO=y          
+          set_cfg CONFIG_LOCALVERSION_AUTO=y
           echo "✅ Additional configs applied"
 
       - name: 🚀 Build Process
