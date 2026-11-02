@@ -21,7 +21,7 @@ env:
   
   KERNEL_SOURCE : "https://github.com/eternyx404/kernel_xiaomi_ginkgo.git"
   # KERNEL_SOURCE : "https://github.com/FlopKernel-Series/flop_trinket-mi_kernel.git"
-  KERNEL_BRANCH : "wip"
+  KERNEL_BRANCH : "erofs"
 
   # CLANG_SOURCE : "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/28337064939c0b4bb5804cddf35fb03d860edcf6/clang-r614150.tar.gz"
   # CLANG_SOURCE : "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
@@ -37,15 +37,15 @@ env:
   # GCC_32_SOURCE : "https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9.git"
   # GCC_32_BRANCH : "lineage-19.1"
   
-  GCC_64_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
-  GCC_64_BRANCH : "aarch64"
-  GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
-  GCC_32_BRANCH : "arm32"
+  # GCC_64_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  # GCC_64_BRANCH : "aarch64"
+  # GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  # GCC_32_BRANCH : "arm32"
   
-  # GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
-  # GCC_64_BRANCH : "master"
-  # GCC_32_SOURCE : "https://github.com/mhdzumair/toolchain.git"
-  # GCC_32_BRANCH : "master"
+  GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
+  GCC_64_BRANCH : "master"
+  GCC_32_SOURCE : "https://github.com/mhdzumair/toolchain.git"
+  GCC_32_BRANCH : "master"
 
   DEFCONFIG_SOURCE: ""
   DEFCONFIG_NAME : "vendor/ginkgo_defconfig"
@@ -154,7 +154,7 @@ jobs:
           set -eu
           cd "$GITHUB_WORKSPACE/device_kernel"
           
-          sed -i 's/-Neophyte-Reborn/-super.kernel/g' localversion
+          sed -i 's/-Destruction-v1.2/-super.kernel/g' localversion
           echo "✅ localversion name applied"
 
           # SYS_UMOUNT
@@ -187,8 +187,8 @@ jobs:
           set_cfg CONFIG_DEBUG_KERNEL=n
           set_cfg CONFIG_DEBUG_FS=n
           set_cfg CONFIG_CFI_CLANG=y
-          set_cfg CONFIG_COMPAT_VDSO=n
-          set_cfg CONFIG_VDSO32=n
+          set_cfg CONFIG_COMPAT_VDSO=y
+          set_cfg CONFIG_VDSO32=y
           set_cfg CONFIG_TMPFS_XATTR=y
           set_cfg CONFIG_TMPFS_POSIX_ACL=y
           set_cfg CONFIG_LOCALVERSION=-super.kernel
