@@ -58,7 +58,7 @@ env:
   CUSTOM_DIR_ANYKERNEL : false
   GETPRIORITY_NON_GKI2 : true
   
-  SUSFS_ENABLE : true
+  SUSFS_ENABLE : false
   SUSFS_FIXED : true
 
   AK3_SOURCE : "https://github.com/neophyteprjkt/AnyKernel3.git"
