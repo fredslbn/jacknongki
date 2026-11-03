@@ -21,7 +21,7 @@ env:
   
   KERNEL_SOURCE : "https://github.com/eternyx404/kernel_xiaomi_ginkgo.git"
   # KERNEL_SOURCE : "https://github.com/FlopKernel-Series/flop_trinket-mi_kernel.git"
-  KERNEL_BRANCH : "erofs"
+  KERNEL_BRANCH : "11"
 
   # CLANG_SOURCE : "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/28337064939c0b4bb5804cddf35fb03d860edcf6/clang-r614150.tar.gz"
   # CLANG_SOURCE : "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
@@ -154,7 +154,7 @@ jobs:
           set -eu
           cd "$GITHUB_WORKSPACE/device_kernel"
           
-          sed -i 's/-Destruction-v1.2/-super.kernel/g' localversion
+          sed -i 's/-Destruction-v1.1-Snapdragon™665/-super.kernel/g' localversion
           echo "✅ localversion name applied"
 
           # SYS_UMOUNT
