@@ -184,6 +184,8 @@ jobs:
           
           # ADDITIONAL CONFIGS
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          sed -i '/^CONFIG_DEFAULT_BBR=y/d' "$CONFIG_FILE"
+          sed -i '/^CONFIG_DEFAULT_TCP_CONG="BBR"/d' "$CONFIG_FILE"          
           
           [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
           [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
@@ -204,6 +206,8 @@ jobs:
           set_cfg CONFIG_TMPFS_POSIX_ACL=y
           set_cfg CONFIG_LOCALVERSION=-super.kernel
           set_cfg CONFIG_LOCALVERSION_AUTO=y
+          set_cfg CONFIG_DEFAULT_BBR2=y
+          set_cfg CONFIG_DEFAULT_TCP_CONG="bbr2"
           echo "✅ Additional configs applied"
 
       - name: 🚀 Build Process
