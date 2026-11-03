@@ -38,7 +38,7 @@ index 49fd24fa232b..f2ef14fabb3e 100644
  HOSTCC       = gcc
  HOSTCXX      = g++
  HOSTCFLAGS   := -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 \
-- 		-fomit-frame-pointer -std=gnu89 -pipe \
+- 		-fomit-frame-pointer -std=gnu89 -pipe $(HOST_LFS_CFLAGS)
 +		-fomit-frame-pointer -std=gnu11 -pipe \
  		-Wdeclaration-after-statement \
  		$(HOST_LFS_CFLAGS)

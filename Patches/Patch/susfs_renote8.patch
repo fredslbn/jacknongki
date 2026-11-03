@@ -437,7 +437,7 @@ index 80b743c..c27fde5 100644
  		audit_inode(nd->name, path.dentry, 0);
  		error = vfs_open(&path, file, current_cred());
  		path_put(&path);
-@@ -3632,6 +3878,11 @@ static int do_o_path(struct nameidata *nd, unsigned flags, struct file *file)
+@@ -3674,6 +3878,11 @@ static int do_o_path(struct nameidata *nd, unsigned flags, struct file *file)
  static struct file *path_openat(struct nameidata *nd,
  			const struct open_flags *op, unsigned flags)
  {
@@ -449,7 +449,7 @@ index 80b743c..c27fde5 100644
  	const char *s;
  	struct file *file;
  	int opened = 0;
-@@ -3669,12 +3920,45 @@ static struct file *path_openat(struct nameidata *nd,
+@@ -3711,12 +3920,45 @@ static struct file *path_openat(struct nameidata *nd,
  			break;
  		}
  	}
@@ -495,7 +495,7 @@ index 80b743c..c27fde5 100644
  	if (unlikely(error)) {
  		if (error == -EOPENSTALE) {
  			if (flags & LOOKUP_RCU)
-@@ -4855,6 +5139,10 @@ out:
+@@ -4897,6 +5139,10 @@ out:
  	return len;
  }
  
@@ -506,7 +506,7 @@ index 80b743c..c27fde5 100644
  /*
   * A helper for ->readlink().  This should be used *ONLY* for symlinks that
   * have ->get_link() not calling nd_jump_link().  Using (or not using) it
-@@ -4875,6 +5163,15 @@ static int generic_readlink(struct dentry *dentry, char __user *buffer,
+@@ -4917,6 +5163,15 @@ static int generic_readlink(struct dentry *dentry, char __user *buffer,
  		if (IS_ERR(link))
  			return PTR_ERR(link);
  	}
@@ -522,7 +522,7 @@ index 80b743c..c27fde5 100644
  	res = readlink_copy(buffer, buflen, link);
  	do_delayed_call(&done);
  	return res;
-@@ -4892,10 +5190,24 @@ static int generic_readlink(struct dentry *dentry, char __user *buffer,
+@@ -4935,10 +5190,24 @@ static int generic_readlink(struct dentry *dentry, char __user *buffer,
  int vfs_readlink(struct dentry *dentry, char __user *buffer, int buflen)
  {
  	struct inode *inode = d_inode(dentry);
