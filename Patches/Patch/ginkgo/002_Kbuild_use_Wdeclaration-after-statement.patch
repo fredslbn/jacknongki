@@ -42,8 +42,9 @@ diff --git a/Makefile b/Makefile
 index da35647ffa5a..6a2305235759 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -373,6 +373,8 @@ HOSTCC	= gcc
- HOSTCXX	= g++
+@@ -372,6 +372,8 @@ HOST_LFS_LIBS := $(shell getconf LFS_LIBS 2>/dev/null)
+ HOSTCC       = gcc
+ HOSTCXX      = g++
  HOSTCFLAGS   := -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 \
 -		-fomit-frame-pointer -std=gnu89 -pipe $(HOST_LFS_CFLAGS)
 +		-fomit-frame-pointer -std=gnu89 -pipe \
@@ -56,14 +57,14 @@ diff --git a/arch/arm64/kernel/vdso32/Makefile b/arch/arm64/kernel/vdso32/Makefi
 index 70dbec33229a..a3de026478a7 100644
 --- a/arch/arm64/kernel/vdso32/Makefile
 +++ b/arch/arm64/kernel/vdso32/Makefile
-@@ -71,6 +71,7 @@ VDSO_CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+@@ -64,6 +64,7 @@ VDSO_CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
                 -fno-strict-aliasing -fno-common \
                 -Werror-implicit-function-declaration \
                 -Wno-format-security \
 +               -Wdeclaration-after-statement \
                 -std=gnu89
- ifeq ($(cc-name),clang)
  VDSO_CFLAGS  += -O3
+ # Some useful compiler-dependent flags from top-level Makefile
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
 index 30af0ba36bd6..271da15c4261 100644
 --- a/scripts/mod/modpost.c

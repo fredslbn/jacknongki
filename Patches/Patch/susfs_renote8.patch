@@ -437,7 +437,7 @@ index 80b743c..c27fde5 100644
  		audit_inode(nd->name, path.dentry, 0);
  		error = vfs_open(&path, file, current_cred());
  		path_put(&path);
-@@ -3653,6 +3878,11 @@ static int do_o_path(struct nameidata *nd, unsigned flags, struct file *file)
+@@ -3632,6 +3878,11 @@ static int do_o_path(struct nameidata *nd, unsigned flags, struct file *file)
  static struct file *path_openat(struct nameidata *nd,
  			const struct open_flags *op, unsigned flags)
  {
@@ -449,7 +449,7 @@ index 80b743c..c27fde5 100644
  	const char *s;
  	struct file *file;
  	int opened = 0;
-@@ -3690,12 +3920,45 @@ static struct file *path_openat(struct nameidata *nd,
+@@ -3669,12 +3920,45 @@ static struct file *path_openat(struct nameidata *nd,
  			break;
  		}
  	}
@@ -495,7 +495,7 @@ index 80b743c..c27fde5 100644
  	if (unlikely(error)) {
  		if (error == -EOPENSTALE) {
  			if (flags & LOOKUP_RCU)
-@@ -4876,6 +5139,10 @@ out:
+@@ -4855,6 +5139,10 @@ out:
  	return len;
  }
  
@@ -506,7 +506,7 @@ index 80b743c..c27fde5 100644
  /*
   * A helper for ->readlink().  This should be used *ONLY* for symlinks that
   * have ->get_link() not calling nd_jump_link().  Using (or not using) it
-@@ -4896,6 +5163,15 @@ static int generic_readlink(struct dentry *dentry, char __user *buffer,
+@@ -4875,6 +5163,15 @@ static int generic_readlink(struct dentry *dentry, char __user *buffer,
  		if (IS_ERR(link))
  			return PTR_ERR(link);
  	}
@@ -522,7 +522,7 @@ index 80b743c..c27fde5 100644
  	res = readlink_copy(buffer, buflen, link);
  	do_delayed_call(&done);
  	return res;
-@@ -4914,10 +5190,24 @@ static int generic_readlink(struct dentry *dentry, char __user *buffer,
+@@ -4892,10 +5190,24 @@ static int generic_readlink(struct dentry *dentry, char __user *buffer,
  int vfs_readlink(struct dentry *dentry, char __user *buffer, int buflen)
  {
  	struct inode *inode = d_inode(dentry);
@@ -612,7 +612,7 @@ index d772fe4..b1170b4 100644
  
  	if (res < 0)
  		return res;
-@@ -201,6 +186,116 @@ static void drop_mountpoint(struct fs_pin *p)
+@@ -175,6 +210,116 @@ static void drop_mountpoint(struct fs_pin *p)
  	mntput(&m->mnt);
  }
  
@@ -729,7 +729,7 @@ index d772fe4..b1170b4 100644
  static struct mount *alloc_vfsmnt(const char *name)
  {
  	struct mount *mnt = kmem_cache_zalloc(mnt_cache, GFP_KERNEL);
-@@ -703,6 +794,20 @@ struct mount *__lookup_mnt(struct vfsmount *mnt, struct dentry *dentry)
+@@ -673,6 +818,20 @@ struct mount *__lookup_mnt(struct vfsmount *mnt, struct dentry *dentry)
  	struct hlist_head *head = m_hash(mnt, dentry);
  	struct mount *p;
  
@@ -750,7 +750,7 @@ index d772fe4..b1170b4 100644
  	hlist_for_each_entry_rcu(p, head, mnt_hash)
  		if (&p->mnt_parent->mnt == mnt && p->mnt_mountpoint == dentry)
  			return p;
-@@ -1039,7 +1144,22 @@ vfs_kern_mount(struct file_system_type *type, int flags, const char *name, void
+@@ -1009,7 +1168,22 @@ vfs_kern_mount(struct file_system_type *type, int flags, const char *name, void
  	if (!type)
  		return ERR_PTR(-ENODEV);
  
@@ -773,7 +773,7 @@ index d772fe4..b1170b4 100644
  	if (!mnt)
  		return ERR_PTR(-ENOMEM);
  
-@@ -1094,7 +1214,40 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
+@@ -1064,7 +1238,40 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
  	struct mount *mnt;
  	int err;
  
@@ -814,7 +814,7 @@ index d772fe4..b1170b4 100644
  	if (!mnt)
  		return ERR_PTR(-ENOMEM);
  
-@@ -1119,6 +1272,13 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
+@@ -1089,6 +1296,13 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
  
  	mnt->mnt.mnt_flags = old->mnt.mnt_flags;
  	mnt->mnt.mnt_flags &= ~(MNT_WRITE_HOLD|MNT_MARKED|MNT_INTERNAL);
@@ -828,7 +828,7 @@ index d772fe4..b1170b4 100644
  	/* Don't allow unprivileged users to change mount flags */
  	if (flag & CL_UNPRIVILEGED) {
  		mnt->mnt.mnt_flags |= MNT_LOCK_ATIME;
-@@ -3059,6 +3233,9 @@ struct mnt_namespace *copy_mnt_ns(unsigned long flags, struct mnt_namespace *ns,
+@@ -3043,6 +3257,9 @@ struct mnt_namespace *copy_mnt_ns(unsigned long flags, struct mnt_namespace *ns,
  	copy_flags = CL_COPY_UNBINDABLE | CL_EXPIRE;
  	if (user_ns != ns->user_ns)
  		copy_flags |= CL_SHARED_TO_SLAVE | CL_UNPRIVILEGED;
@@ -838,7 +838,7 @@ index d772fe4..b1170b4 100644
  	new = copy_tree(old, old->mnt.mnt_root, copy_flags);
  	if (IS_ERR(new)) {
  		namespace_unlock();
-@@ -3635,3 +3867,43 @@ const struct proc_ns_operations mntns_operations = {
+@@ -3669,3 +3891,43 @@ const struct proc_ns_operations mntns_operations = {
  	.install	= mntns_install,
  	.owner		= mntns_owner,
  };

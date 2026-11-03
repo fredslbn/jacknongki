@@ -34,9 +34,10 @@ diff --git a/Makefile b/Makefile
 index 49fd24fa232b..f2ef14fabb3e 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -373,6 +373,6 @@ HOSTCC	= gcc
-  HOSTCXX	= g++
-  HOSTCFLAGS   := -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 \
+@@ -372,7 +372,7 @@ HOST_LFS_LIBS := $(shell getconf LFS_LIBS 2>/dev/null)
+ HOSTCC       = gcc
+ HOSTCXX      = g++
+ HOSTCFLAGS   := -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 \
 - 		-fomit-frame-pointer -std=gnu89 -pipe \
 +		-fomit-frame-pointer -std=gnu11 -pipe \
  		-Wdeclaration-after-statement \

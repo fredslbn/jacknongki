@@ -160,7 +160,7 @@ jobs:
           # SYS_UMOUNT
           cp /tmp/Patches/Patch/ginkgo/03_4.14_sys_umount_refactor_to_extract_path_umount.patch ./
           patch -p1 < 03_4.14_sys_umount_refactor_to_extract_path_umount.patch || true
-          echo "✅ 03_4.14_sys_umount_refactor_to_extract_path_umount.patch applied"
+          echo "✅ 03_4.14_sys_umount_refactor patch applied"
           
           # SELINUX patches
           cp /tmp/Patches/Patch/ginkgo/04_selinux_policydb_write.patch ./
@@ -173,10 +173,14 @@ jobs:
           cp /tmp/Patches/Patch/ginkgo/003_Kbuild_move_to-std=gnu11.patch ./
           cp /tmp/Patches/Patch/ginkgo/004_Kbuild_use-std=gnu11_for_KBUILD_USERCFLAGS.patch ./
           patch -p1 < 001_Kbuild_add-Wno-shift-negative-value.patch || true
+          echo "001_Kbuild_add-Wno applied"
           patch -p1 < 002_Kbuild_use_Wdeclaration-after-statement.patch || true
+          echo "002_Kbuild_use_Wdeclaration applied"
           patch -p1 < 003_Kbuild_move_to-std=gnu11.patch || true
+          echo "003_Kbuild_move_to applied"
           patch -p1 < 004_Kbuild_use-std=gnu11_for_KBUILD_USERCFLAGS.patch || true
-          echo "✅ -STD=GNU11 patch applied"
+          echo "004_Kbuild_use applied"
+          echo "✅ -STD=GNU11 patch completed"
           
           # ADDITIONAL CONFIGS
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
