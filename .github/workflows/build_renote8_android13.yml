@@ -190,7 +190,11 @@ jobs:
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           
           # for merge configs
-          cp /tmp/Patches/Patch/ginkgo/additional.config "$CONFIG_DIR"
+          cp /tmp/Patches/Patch/ginkgo/additional.config "$CONFIG_DIR"          
+          for f in "$CONFIG_DIR"/additional.config; do
+             if [ -f "$f" ]; then echo "✔ Found: $f"; else echo "❌ Missing: $f"; fi
+             done       
+          echo "✅ Additional config file copied"
           
           # sed -i '/^CONFIG_DEFAULT_BBR=y/d' "$CONFIG_FILE"
           # sed -i '/^CONFIG_DEFAULT_TCP_CONG="BBR"/d' "$CONFIG_FILE"          
