@@ -75,12 +75,12 @@ runs:
             done
             if [[ "$BUILD_CLANG" == "true" ]]; then
                 echo "==============================="
-                echo "=Execuate olddefconfig (Clang)="
+                echo "=Execute olddefconfig (Clang)="
                 echo "==============================="
                 make CC="ccache clang" O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} olddefconfig
             else
                 echo "======================="
-                echo "=Execuate olddefconfig="
+                echo "=Execute olddefconfig="
                 echo "======================="
                 make O=out ARCH="${{ env.KERNEL_ARCH }}" olddefconfig
             fi
@@ -93,12 +93,12 @@ runs:
             ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/"${{ env.KERNEL_ARCH }}"/configs/droidspaces.config
             if [[ "$BUILD_CLANG" == "true" ]]; then
                 echo "==============================="
-                echo "=Execuate olddefconfig (Clang)="
+                echo "=Execute olddefconfig (Clang)="
                 echo "==============================="
                 make CC="ccache clang" O=out ARCH="${{ env.KERNEL_ARCH }}" ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} olddefconfig
             else
                 echo "======================="
-                echo "=Execuate olddefconfig="
+                echo "=Execute olddefconfig="
                 echo "======================="
                 make O=out ARCH="${{ env.KERNEL_ARCH }}" olddefconfig
             fi

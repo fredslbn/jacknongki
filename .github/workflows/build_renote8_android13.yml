@@ -115,8 +115,8 @@ env:
   BUILD_DEBUGGER: "false" # Output build errors.
   SKIP_PATCH: "false" # Ignore errors found in Patch Debugger.
 
-  BUILD_OTHER_CONFIG: "false" # Merge config files.
-  MERGE_CONFIG_FILES: "vendor/debugfs.config,vendor/lahaina_QGKI.config"
+  BUILD_OTHER_CONFIG: "true" # Merge config files.
+  MERGE_CONFIG_FILES: "vendor/additional.config"
 
   FREE_MORE_SPACE: "false" # if u want get more space, enabled it.
 
@@ -154,7 +154,7 @@ jobs:
         run: |
           set -eu
           cd "$GITHUB_WORKSPACE/device_kernel"
-          
+                    
           # sed -i '\|^source "drivers/su_variants.Kconfig"|d' drivers/Kconfig
           
           sed -i 's/-Neophyte-Reborn/-super.kernel/g' localversion
@@ -185,8 +185,13 @@ jobs:
           # echo "[+] 004_Kbuild_use applied"
           # echo "✅ -STD=GNU11 patch completed"
           
-          # ADDITIONAL CONFIGS
+          # ADDITIONAL CONFIGS                   
+          CONFIG_DIR="./arch/arm64/configs/vendor/"
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          
+          # for merge configs
+          cp /tmp/Patches/Patch/ginkgo/additional.config "$CONFIG_DIR"
+          
           # sed -i '/^CONFIG_DEFAULT_BBR=y/d' "$CONFIG_FILE"
           # sed -i '/^CONFIG_DEFAULT_TCP_CONG="BBR"/d' "$CONFIG_FILE"          
           
