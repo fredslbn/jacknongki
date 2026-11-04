@@ -39,7 +39,7 @@ perform_cleanup() {
 # Sets up or update KernelSU environment
 setup_fgetpriority() {
     echo "[+] Setting up fgetpriority..."
-    test -d "$GKI_ROOT/fgetpriority" || git clone https://github.com/backslashxx/fgetpriority && echo "[+] Repository cloned."
+    test -d "$GKI_ROOT/fgetpriority" || git clone https://github.com/aerath-stuff/fgetpriority.git && echo "[+] Repository cloned."
     cd "$GKI_ROOT/fgetpriority"
     git stash && echo "[-] Stashed current changes."
     if [ "$(git status | grep -Po 'v\d+(\.\d+)*' | head -n1)" ]; then
