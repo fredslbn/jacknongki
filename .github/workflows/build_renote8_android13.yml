@@ -155,7 +155,7 @@ jobs:
           set -eu
           cd "$GITHUB_WORKSPACE/device_kernel"
           
-          sed -i '/^source "drivers/su_variants.Kconfig"/d' drivers/Kconfig
+          sed -i '\|^source "drivers/su_variants.Kconfig"|d' drivers/Kconfig
           
           # sed -i 's/-Destruction-v1.1-Snapdragon™665/-super.kernel/g' localversion
           # echo "✅ localversion name applied"
