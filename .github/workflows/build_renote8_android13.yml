@@ -175,15 +175,15 @@ jobs:
           cp /tmp/Patches/Patch/ginkgo/002_Kbuild_use_Wdeclaration-after-statement.patch ./
           cp /tmp/Patches/Patch/ginkgo/003_Kbuild_move_to-std=gnu11.patch ./
           # cp /tmp/Patches/Patch/ginkgo/004_Kbuild_use-std=gnu11_for_KBUILD_USERCFLAGS.patch ./
-          patch -p1 < 001_Kbuild_add-Wno-shift-negative-value.patch || true
-          echo "[+] 001_Kbuild_add-Wno applied"
-          patch -p1 < 002_Kbuild_use_Wdeclaration-after-statement.patch || true
-          echo "[+] 002_Kbuild_use_Wdeclaration applied"
-          patch -p1 < 003_Kbuild_move_to-std=gnu11.patch || true
-          echo "[+] 003_Kbuild_move_to applied"
+          # patch -p1 < 001_Kbuild_add-Wno-shift-negative-value.patch || true
+          # echo "[+] 001_Kbuild_add-Wno applied"
+          # patch -p1 < 002_Kbuild_use_Wdeclaration-after-statement.patch || true
+          # echo "[+] 002_Kbuild_use_Wdeclaration applied"
+          # patch -p1 < 003_Kbuild_move_to-std=gnu11.patch || true
+          # echo "[+] 003_Kbuild_move_to applied"
           # patch -p1 < 004_Kbuild_use-std=gnu11_for_KBUILD_USERCFLAGS.patch || true
           # echo "[+] 004_Kbuild_use applied"
-          echo "✅ -STD=GNU11 patch completed"
+          # echo "✅ -STD=GNU11 patch completed"
           
           # ADDITIONAL CONFIGS
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
