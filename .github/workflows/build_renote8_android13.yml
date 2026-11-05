@@ -22,7 +22,7 @@ env:
   
   KERNEL_SOURCE : "https://github.com/eternyx404/kernel_xiaomi_ginkgo.git"
   # KERNEL_SOURCE : "https://github.com/FlopKernel-Series/flop_trinket-mi_kernel.git"
-  KERNEL_BRANCH : "bpf"
+  KERNEL_BRANCH : "non"
 
   # CLANG_SOURCE : "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/28337064939c0b4bb5804cddf35fb03d860edcf6/clang-r614150.tar.gz"
   # CLANG_SOURCE : "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
