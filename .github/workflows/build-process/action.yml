@@ -143,19 +143,22 @@ runs:
 
             make -j$(nproc --all) O=out ARCH="${{ env.KERNEL_ARCH }}" 2>&1|tee error.log
           fi
+
           
              ## check status of new config
              grep -q '^CONFIG_KSU=y' "$GITHUB_WORKSPACE/device_kernel/out/.config" \
                 || { echo "❌ KSU did not make it into .config"; exit 1; }
           
-             grep -q '^CONFIG_CFI_CLANG=y' "$GITHUB_WORKSPACE/device_kernel/out/.config" \
+             if [[ "${{ env.GETPRIORITY_NON_GKI2 }}" == "true" ]]; then
+                grep -q '^CONFIG_FGETPRIORITY=y' "$GITHUB_WORKSPACE/device_kernel/out/.config" \
                 || { echo "❌ Extra Configs did not make it into .config"; exit 1; }
+             fi
              
              if [[ ${{ env.SUSFS_ENABLE }} == "true" ]]; then
                 grep -q '^CONFIG_KSU_SUSFS=y' "$GITHUB_WORKSPACE/device_kernel/out/.config" \
                 || { echo "❌ SUSFS did not make it into .config"; exit 1; }
              fi
-          
+
           }
 
           # Core
