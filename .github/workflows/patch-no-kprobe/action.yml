@@ -86,7 +86,7 @@ runs:
              set_cfg CONFIG_KSU_COMPILE_AS_C23=y
              set_cfg CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
              set_cfg CONFIG_KSU_HEURISTIC_IN_TREE_BUILD=y
-             set_cfg CONFIG_KALLSYMS_ALL=n
+             set_cfg CONFIG_KALLSYMS_ALL=y
              set_cfg CONFIG_KPROBES=n
              echo "✅ BRANCHLINK HOOK applied"
              

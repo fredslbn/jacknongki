@@ -68,9 +68,9 @@ env:
   CUSTOM_DIR_ANYKERNEL : false
   PATCH_XXKSU_MANUAL : false # manual, only if patching manually scope minimized security hooks 2.3
   KERNEL_TYPE : "" # 4.19 4.14 5.4 only for manual patching
-  GETPRIORITY_NON_GKI2 : true
+  GETPRIORITY_NON_GKI2 : false
   
-  SUSFS_ENABLE : true
+  SUSFS_ENABLE : false
   SUSFS_FIXED : true
 
   AK3_SOURCE : "https://github.com/fredslbn/AnyKernel3.git"
@@ -180,13 +180,11 @@ jobs:
              else echo "$1" >> "$CONFIG_FILE"; fi
           }
           
-          set_cfg CONFIG_FGETPRIORITY=y
+          set_cfg CONFIG_FGETPRIORITY=n
           set_cfg CONFIG_DEBUG_KERNEL=n
           set_cfg CONFIG_DEBUG_FS=n
-          set_cfg CONFIG_ARM64_LSE_ATOMICS=y
           set_cfg CONFIG_CFI_CLANG=y
           set_cfg CONFIG_COMPAT_VDSO=y
-          set_cfg CONFIG_THUMB2_COMPAT_VDSO=y
           set_cfg CONFIG_TMPFS_XATTR=y
           set_cfg CONFIG_TMPFS_POSIX_ACL=y
           set_cfg CONFIG_LOCALVERSION=-super.kernel
