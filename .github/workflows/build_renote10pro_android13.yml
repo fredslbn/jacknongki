@@ -83,7 +83,7 @@ env:
   DROIDSPACES_ENABLE: "false" # if u need Droidspaces or LXC/Docker.
   NOMOUNT_ENABLE: "true" # if u need NoMount.
 
-  HOOK_METHOD: "branchlink" # Manual hook method -> syscall.
+  HOOK_METHOD: "tamper" # Manual hook method -> syscall.
 
   KERNEL_PATCH: "false" # If your kernel version is <= 4.9, you have the option of enabling the patch to patch the kernel_write and kernel_read functions.
 
@@ -157,8 +157,7 @@ jobs:
              echo "❌ Selinux policydb patch failed"
           fi
 
-          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-          
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"          
           [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
           [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
           
@@ -168,18 +167,16 @@ jobs:
              if [ "$val" = "n" ]; then echo "# $key is not set" >> "$CONFIG_FILE"
              else echo "$1" >> "$CONFIG_FILE"; fi
           }
-          
           set_cfg CONFIG_FGETPRIORITY=y
           set_cfg CONFIG_DEBUG_KERNEL=n
           set_cfg CONFIG_DEBUG_FS=n
-          set_cfg CONFIG_ARM64_LSE_ATOMICS=y
           set_cfg CONFIG_CFI_CLANG=y
           set_cfg CONFIG_COMPAT_VDSO=y
           set_cfg CONFIG_THUMB2_COMPAT_VDSO=y
           set_cfg CONFIG_TMPFS_XATTR=y
           set_cfg CONFIG_TMPFS_POSIX_ACL=y
           set_cfg CONFIG_LOCALVERSION=-super.kernel
-          set_cfg CONFIG_LOCALVERSION_AUTO=y          
+          set_cfg CONFIG_LOCALVERSION_AUTO=y
           echo "✅ Configs applied"
 
       - name: 🚀 Build Process

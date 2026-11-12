@@ -18,19 +18,19 @@ jobs:
       fail-fast: false
       matrix:
         kernel:
-          - name: "GKI"
-            dir: "common_gki"
-            repo_name: "common"
-            repo_url: "https://android.googlesource.com/kernel/common"
-            branch: "android15-6.6-lts"
-            defconfig: "gki_defconfig"
-            local_version: "-super.kernel-gki"
-            output_name: "Image.gki.ksu"
-            enable_xxksu: true
-            enable_ffksu: false
-            extra_patches:
-              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_fixup.patch"
-              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_hostbuild.patch"
+#          - name: "GKI"
+#            dir: "common_gki"
+#            repo_name: "common"
+#            repo_url: "https://android.googlesource.com/kernel/common"
+#            branch: "android15-6.6-lts"
+#            defconfig: "gki_defconfig"
+#            local_version: "-super.kernel-gki"
+#            output_name: "Image.gki.ksu"
+#            enable_xxksu: true
+#            enable_ffksu: false
+#            extra_patches:
+#              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_fixup.patch"
+#              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_hostbuild.patch"
           - name: "CLO"
             dir: "common_clo"
             repo_name: "clo"
@@ -42,7 +42,7 @@ jobs:
             enable_xxksu: true
             enable_ffksu: false
             extra_patches:
-              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_fixup.patch"
+#              - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_fixup.patch"
               - "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_hostbuild.patch"
 
     env:
@@ -56,6 +56,15 @@ jobs:
       WORK_DIR: ${{ github.workspace }}
 
     steps:
+      - name: "⏰ Checkout repository"
+        uses: actions/checkout@v6
+
+      - name: "✨ Move Patches"
+        shell: bash
+        run: |
+          # Move patch folder to tmp
+          mv $GITHUB_WORKSPACE/Patches /tmp/
+
       - name: "✨ Setup workspace"
         run: |
           mkdir -p ${{ env.KERNEL_LOC_DIR }}
@@ -111,9 +120,9 @@ jobs:
       - name: "🧩 Configure kernel & patches"
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
-          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-          echo "CONFIG_LOCALVERSION=\"${{ env.LOCAL_VERSION }}\"" >> "$CONFIG_FILE"
-          echo "CONFIG_LOCALVERSION_AUTO=n" >> "$CONFIG_FILE"
+          set -eu
+          
+          sed -i 's|res="\$res\$(scm_version)"|res="$res"|' scripts/setlocalversion
 
           # Helper
           apply_patch() {
@@ -141,25 +150,34 @@ jobs:
         if: matrix.kernel.enable_xxksu == true
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
+          set -eu
+
           rm -rf ./KernelSU ./drivers/kernelsu
-
           echo "📦 Installing KSU..."
-          curl -LSs "https://raw.githubusercontent.com/backslashxx/KernelSU/refs/heads/master/kernel/setup.sh" | bash -s master
+          curl -LSs "https://raw.githubusercontent.com/backslashxx/KernelSU/refs/heads/master/kernel/setup.sh" | bash -s master          
+          echo "✔ xxKSU installed"         
           
-          echo "✔ KSU installed successfully"       
+          echo "✅ xxKSU build wiring verified"          
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"          
+          [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
+          [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
+          
+          set_cfg() {  # usage: set_cfg CONFIG_X=y   or   set_cfg CONFIG_X=n
+             local key="${1%%=*}" val="${1#*=}"
+             sed -i "/^# $key is not set/d;/^$key=/d" "$CONFIG_FILE"
+             if [ "$val" = "n" ]; then echo "# $key is not set" >> "$CONFIG_FILE"
+             else echo "$1" >> "$CONFIG_FILE"; fi
+          }          
+          set_cfg CONFIG_KSU=y
+          set_cfg CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
+          set_cfg CONFIG_KSU_HOSTSREDIRECT=y
+          set_cfg CONFIG_KSU_LSM_SECURITY_HOOKS=y
+          set_cfg CONFIG_KSU_COMPILE_AS_C23=y
+          set_cfg CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
+          set_cfg CONFIG_KSU_HEURISTIC_IN_TREE_BUILD=y
+          set_cfg CONFIG_KALLSYMS_ALL=y
+          echo "✅ BRANCHLINK-GKI HOOK applied"
 
-          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-          cat >> "$CONFIG_FILE" << 'EOF'
-          CONFIG_KSU=y
-          CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
-          CONFIG_KSU_HOSTSREDIRECT=y
-          CONFIG_KSU_KPROBES_KSUD=y
-          CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=y
-          CONFIG_KSU_COMPILE_AS_C23=y
-          CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
-          EOF
-                    
-          echo "✅ xxKSU configs added"
           
           echo "🔧 Applying SUSFS xxKSU patch..."
           ## SUSFS PATCHES FOR KERNELSU SUSFS          
@@ -307,27 +325,40 @@ jobs:
         shell: bash
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
         run: |
+          set -eu                
+                    
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
           
-          # addon configs
-          cat >> "$CONFIG_FILE" << 'EOF'
-          CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y
-          CONFIG_TCP_CONG_ADVANCED=y
-          CONFIG_TCP_CONG_BIC=n
-          CONFIG_TCP_CONG_WESTWOOD=y
-          CONFIG_TCP_CONG_HTCP=n
-          CONFIG_TCP_CONG_BBR=y
-          CONFIG_TCP_CONG_BBR3=y
-          CONFIG_DEFAULT_BBR3=y
-          CONFIG_OVERLAY_FS=y
-          CONFIG_TMPFS_XATTR=y
-          CONFIG_TMPFS_POSIX_ACL=y
-          CONFIG_KALLSYMS_ALL=y
-          CONFIG_HZ="300"
-          CONFIG_HZ_300=y
-          EOF
+          sed -i '/^CONFIG_HZ=250$/d' "$CONFIG_FILE"
+          sed -i '/^CONFIG_HZ_250=y/d' "$CONFIG_FILE"
           
-          echo "✅ Basic configs added"
+          [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
+          [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
+          
+          set_cfg() {  # usage: set_cfg CONFIG_X=y   or   set_cfg CONFIG_X=n
+             local key="${1%%=*}" val="${1#*=}"
+             sed -i "/^# $key is not set/d;/^$key=/d" "$CONFIG_FILE"
+             if [ "$val" = "n" ]; then echo "# $key is not set" >> "$CONFIG_FILE"
+             else echo "$1" >> "$CONFIG_FILE"; fi
+          }
+          set_cfg CONFIG_DEBUG_KERNEL=n
+          set_cfg CONFIG_DEBUG_FS=n
+          set_cfg CONFIG_ARM64_LSE_ATOMICS=y
+          set_cfg CONFIG_CFI_CLANG=y
+          set_cfg "CONFIG_LOCALVERSION=\"${{ env.LOCAL_VERSION }}\""
+          set_cfg CONFIG_LOCALVERSION_AUTO=y
+          set_cfg CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y
+          set_cfg CONFIG_TCP_CONG_ADVANCED=y
+          set_cfg CONFIG_TCP_CONG_BIC=n
+          set_cfg CONFIG_TCP_CONG_WESTWOOD=y
+          set_cfg CONFIG_TCP_CONG_HTCP=n
+          set_cfg CONFIG_TCP_CONG_BBR=y
+          set_cfg CONFIG_TCP_CONG_BBR3=y
+          set_cfg CONFIG_TMPFS_XATTR=y
+          set_cfg CONFIG_TMPFS_POSIX_ACL=y
+          set_cfg CONFIG_HZ=300
+          set_cfg CONFIG_HZ_300=y
+          echo "✅ Additional configs applied"
 
       - name: "📝 Append custom Makefile line"
         working-directory: ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}
@@ -344,11 +375,11 @@ jobs:
          # Clean dirty flags and ABI exports based on build system
          if [ -f "build/build.sh" ]; then
           # Old build system (5.10, 5.15, early 6.1)
-          sed -i 's/-dirty//' ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/scripts/setlocalversion
+
          else
           # Bazel build system (newer kernels)
           sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" build/kernel/kleaf/impl/stamp.bzl
-          sed -i 's/-dirty//' ${{ env.KERNEL_LOC_DIR }}/${{ env.KERNEL_NAME }}/scripts/setlocalversion
+
          fi
 
       

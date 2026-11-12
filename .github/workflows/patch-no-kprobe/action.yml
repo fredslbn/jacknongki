@@ -69,11 +69,15 @@ runs:
           elif [[ ${{ env.HOOK_METHOD }} == "tamper" ]]; then
              set_cfg CONFIG_KSU=y
              set_cfg CONFIG_KSU_TAMPER_SYSCALL_TABLE=y
-             set_cfg CONFIG_KSU_HOSTSREDIRECT=y
+             set_cfg CONFIG_KSU_HOSTSREDIRECT=n
              set_cfg CONFIG_KSU_LSM_SECURITY_HOOKS=y
              set_cfg CONFIG_KSU_COMPILE_AS_C23=y
              set_cfg CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
-             set_cfg CONFIG_KSU_HEURISTIC_IN_TREE_BUILD=y
+             set_cfg CONFIG_KSU_KPROBES_KSUD=n
+             set_cfg CONFIG_KSU_DISABLE_32BIT_HOOKS=n
+             set_cfg CONFIG_KSU_FEATURE_SULOG=n
+             set_cfg CONFIG_KSU_FEATURE_ADBROOT=n
+             set_cfg CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=n
              set_cfg CONFIG_KALLSYMS_ALL=n
              set_cfg CONFIG_KPROBES=n
              echo "✅ TAMPER HOOK applied"
@@ -85,6 +89,11 @@ runs:
              set_cfg CONFIG_KSU_LSM_SECURITY_HOOKS=y
              set_cfg CONFIG_KSU_COMPILE_AS_C23=y
              set_cfg CONFIG_KSU_SHELL_HAS_SU_ALWAYS=n
+             set_cfg CONFIG_KSU_KPROBES_KSUD=n
+             set_cfg CONFIG_KSU_DISABLE_32BIT_HOOKS=n
+             set_cfg CONFIG_KSU_FEATURE_SULOG=n
+             set_cfg CONFIG_KSU_FEATURE_ADBROOT=n
+             set_cfg CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=n
              set_cfg CONFIG_KALLSYMS_ALL=n
              set_cfg CONFIG_KPROBES=n
              echo "✅ BRANCHLINK HOOK applied"

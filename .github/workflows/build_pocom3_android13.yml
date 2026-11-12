@@ -159,7 +159,7 @@ jobs:
         shell: bash
         run: |
           set -eu
-          cd $GITHUB_WORKSPACE/device_kernel
+          cd "$GITHUB_WORKSPACE/device_kernel"
 
           # SYS_UMOUNT
           cp /tmp/Patches/Patch/03_4.19_sys_umount_refactor_to_extract_path_umount.patch ./
@@ -186,11 +186,11 @@ jobs:
           set_cfg CONFIG_COMPAT_VDSO=y
           set_cfg CONFIG_TMPFS_XATTR=y
           set_cfg CONFIG_TMPFS_POSIX_ACL=y
-          set_cfg CONFIG_LOCALVERSION=-perf
+          set_cfg CONFIG_LOCALVERSION=-super.kernel
           set_cfg CONFIG_LOCALVERSION_AUTO=y
           echo "✅ Configs applied"
 
-          sed -i 's/-valeryn/-perf/g' localversion
+          sed -i 's/-valeryn/-super.kernel/g' localversion
           sed -i 's/-cip131//g' localversion-cip
           sed -i 's/-st15//g' localversion-st          
           echo "✅ LocalVersion name applied"
