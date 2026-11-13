@@ -39,7 +39,7 @@ diff --git a/fs/namespace.c b/fs/namespace.c
 index 6ca275c923c1..8015d54586bf 100644
 --- a/fs/namespace.c
 +++ b/fs/namespace.c
-@@ -1710,37 +1924,19 @@ static inline bool may_mandlock(void)
+@@ -1739,37 +1957,19 @@ static inline bool may_mandlock(void)
  }
  #endif
  
@@ -81,7 +81,7 @@ index 6ca275c923c1..8015d54586bf 100644
  		goto dput_and_out;
  	if (!check_mnt(mnt))
  		goto dput_and_out;
-@@ -1757,7 +1953,7 @@ SYSCALL_DEFINE2(umount, char __user *, name, int, flags)
+@@ -1786,7 +1986,7 @@ SYSCALL_DEFINE2(umount, char __user *, name, int, flags)
  	retval = do_umount(mnt, flags);
  dput_and_out:
  	/* we mustn't call path_put() as that would clear mnt_expiry_mark */
@@ -90,7 +90,7 @@ index 6ca275c923c1..8015d54586bf 100644
  	if (user_request && (!retval || (flags & MNT_FORCE))) {
  		/* filesystem needs to handle unclosed namespaces */
  		if (mnt->mnt.mnt_sb->s_op->umount_end)
-@@ -1784,6 +1980,33 @@ SYSCALL_DEFINE2(umount, char __user *, name, int, flags)
+@@ -1813,6 +2013,33 @@ SYSCALL_DEFINE2(umount, char __user *, name, int, flags)
  	return retval;
  }
  
