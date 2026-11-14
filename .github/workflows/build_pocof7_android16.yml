@@ -186,6 +186,7 @@ jobs:
           echo 'KBUILD_CFLAGS += -Wno-uninitialized-const-pointer' >> ./Makefile
           echo 'KBUILD_CFLAGS += -Wno-implicit-function-declaration' >> ./Makefile
           echo 'KBUILD_CFLAGS += -Wno-sometimes-uninitialized' >> ./Makefile
+          echo 'KBUILD_CFLAGS += -Wno-unused-function' >> ./Makefile
           echo "✅ Custom Makefile line added successfully"
           
           CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"        
