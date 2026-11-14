@@ -188,8 +188,7 @@ jobs:
           echo 'KBUILD_CFLAGS += -Wno-sometimes-uninitialized' >> ./Makefile
           echo "✅ Custom Makefile line added successfully"
           
-          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
-          
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"        
           [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
           [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
           
@@ -199,11 +198,9 @@ jobs:
              if [ "$val" = "n" ]; then echo "# $key is not set" >> "$CONFIG_FILE"
              else echo "$1" >> "$CONFIG_FILE"; fi
           }
-
           set_cfg KSU_DISABLE_32BIT_HOOKS=y
           set_cfg CONFIG_DEBUG_KERNEL=n
           set_cfg CONFIG_DEBUG_FS=n
-          set_cfg CONFIG_ARM64_LSE_ATOMICS=y
           set_cfg CONFIG_CFI_CLANG=y
           set_cfg CONFIG_LOCALVERSION=-super.kernel
           set_cfg CONFIG_LOCALVERSION_AUTO=y
