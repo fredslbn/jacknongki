@@ -67,7 +67,7 @@ env:
   CUSTOM_DIR_ANYKERNEL : false
   GETPRIORITY_NON_GKI2 : false
   
-  SUSFS_ENABLE : false
+  SUSFS_ENABLE : true
   SUSFS_FIXED : true
 
   AK3_SOURCE : "https://github.com/topnotchfreaks/AnyKernel3"
@@ -167,9 +167,14 @@ jobs:
           cd "$GITHUB_WORKSPACE/device_kernel"
 
           # Kernel 6.1 patches
-          # patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_fixup.patch") || true
-          # patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_hostbuild.patch") || true
-          # patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_force_loading_modules_fail_symbol_version_checks.patch") || true
+          patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.1/gki_hostbuild.patch") || true
+          echo "✅ Host build patch applied"
+          
+          patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.1/gki_force_loading_modules_fail_symbol_checks.patch") || true
+          echo "✅ Force loading modules patch applied"
+          
+          patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.1/gki_selinux_policydb_write.patch") || true
+          echo "✅ Policydb patch applied"
           
           # rm -f android/abi_gki_protected_exports_* || true
           sed -i 's/ -dirty//g' scripts/setlocalversion || true
