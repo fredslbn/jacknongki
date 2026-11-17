@@ -1,0 +1,226 @@
+name: Build Renote 14 Pro +
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+env:
+  # Device env
+  DEVICE_NAME : "renote_14proplus"
+  DEVICE_CODENAME : "Amethyst"
+
+  CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-"
+  # CUSTOM_CMDS : "CROSS_COMPILE=aarch64-linux-gnu- CLANG_TRIPLE=aarch64-linux-gnu-"
+  
+  EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1 AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
+  # EXTRA_CMDS : "LD=ld.lld LLVM=1 AR=llvm-ar AS=llvm-as NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
+
+  KERNEL_SOURCE : "https://github.com/chainonyourdoor/LuminaireKernel-6.1.git"
+  KERNEL_BRANCH : "android14-6.1"
+  
+  # KERNEL_SOURCE : "https://github.com/frstprjkt/valeryn_xiaomi_sm6115.git"
+  # KERNEL_BRANCH : "android16"
+
+  # CLANG_SOURCE : "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/28337064939c0b4bb5804cddf35fb03d860edcf6/clang-r614150.tar.gz"
+  # CLANG_SOURCE : "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
+  # CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.1/LLVM-23.1.1-Linux-X64.tar.xz"
+  # CLANG_SOURCE : "https://github.com/greenforce-project/greenforce_clang/releases/download/20260926/gf-clang-24.0.0-20260926.tar.gz"
+  # CLANG_SOURCE : "https://www.kernel.org/pub/tools/llvm/files/llvm-22.1.8-aarch64.tar.gz"
+  CLANG_SOURCE : "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.3/LLVM-23.1.3-Linux-X64.tar.xz"
+  # CLANG_SOURCE : "https://github.com/Impqxr/aosp_clang_ci/releases/download/13289611/clang-13289611-linux-x86.tar.xz"
+  CLANG_BRANCH : ""
+
+  GCC_GNU : false
+  # GCC_64_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  # GCC_64_BRANCH : "aarch64"
+  # GCC_32_SOURCE : "https://github.com/JackA1ltman/Google-GCC-Android-4.9.git"
+  # GCC_32_BRANCH : "arm32"
+  
+  # GCC_64_SOURCE : "https://github.com/YuzukiHD/sunxi-bsp-toolchains/releases/download/1.0.0/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu.tar.xz"
+  # GCC_64_BRANCH : ""
+  # GCC_32_SOURCE : "https://github.com/YuzukiHD/sunxi-bsp-toolchains/releases/download/1.0.0/gcc-linaro-5.3.1-2016.05-x86_64_arm-linux-gnueabi.tar.xz"  
+  # GCC_32_BRANCH : ""
+  
+  # GCC_64_SOURCE : "https://huggingface.co/csukuangfj/sherpa-ncnn-toolchains/resolve/main/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz"
+  # GCC_64_SOURCE : "https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7.git"
+  # GCC_64_BRANCH : "master"
+  # GCC_32_SOURCE : "https://huggingface.co/csukuangfj/sherpa-ncnn-toolchains/resolve/main/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf.tar.xz"
+  # GCC_32_SOURCE : "https://github.com/mhdzumair/toolchain.git"
+  # GCC_32_BRANCH : "master"
+
+  DEFCONFIG_SOURCE: ""
+  DEFCONFIG_NAME : "gki_defconfig"
+  DEFCONFIG_ORIGIN_IMAGE: ""
+  DEFCONFIG_FROM_BOOT: false
+
+  KERNELSU_SOURCE : ""
+  KERNELSU_BRANCH : ""
+
+  KERNELSU_AUTO_GET : "true" # if u want easy setting kernelsu, u can true.
+  KERNELSU_AUTO_FORK : "xxksu" # magic, rsuntk, next, bakasu and sukisu
+
+  ROM_TEXT : "xxKSU"
+  GKI_TYPE_KERNEL : true
+  GKI_KERNEL_BRANCH : "6.1"
+  CUSTOM_SUSFS_PATCH : true
+  CUSTOM_CLEANUP_HARDCODE : false
+  CUSTOM_DIR_ANYKERNEL : false
+  GETPRIORITY_NON_GKI2 : false
+  
+  SUSFS_ENABLE : false
+  SUSFS_FIXED : true
+
+  AK3_SOURCE : "https://github.com/topnotchfreaks/AnyKernel3"
+  AK3_BRANCH : "YASK"
+
+  BOOT_SOURCE : ""
+
+  NEED_DTBO : false
+  NEED_SAFE_DTBO : false  
+
+  # Other env
+  PYTHON_VERSION: "3" # Only 2(Ubuntu 22.04 and Ubuntu 20.04) or 3(Any OS Versions).
+
+  PACK_METHOD: "Anykernel3" # Anykernel3 need SOURCE and BRANCH, MKBOOTIMG needn't it.
+  PACK_KMODULES: "false" # if u want pack kernel modules (.ko) into Anykernel3.
+
+  KERNELSU_METHOD: "shell" # shell, manual and only.
+
+  PATCHES_SOURCE: "fredslbn/jacknongki" # [your_name]/[your_patch] -> gooder123/NonGKI_Patcher
+  PATCHES_BRANCH: "main" # [your_branch] -> main
+
+  SUSFS_FOLDER_FIXED: "Patches/Patch/Fixed" # Fill in your patch prefix directory here. Leave it blank if there isn't one. -> your_folder
+  SUSFS_PATCH_FIXED: "" # Fill in your patches here. If there are multiple patches, please separate them with a comma. Leave it blank if there isn't one. -> patch1,patch2
+
+  REKERNEL_ENABLE: "false" # if u need Re:Kernel.
+  DROIDSPACES_ENABLE: "false" # if u need Droidspaces or LXC/Docker.
+  NOMOUNT_ENABLE: "true" # if u need NoMount.
+
+  HOOK_METHOD: "branchlink-gki" # Manual hook method -> syscall.
+
+  KERNEL_PATCH: "false" # If your kernel version is <= 4.9, you have the option of enabling the patch to patch the kernel_write and kernel_read functions.
+
+  KPM_ENABLE: "false" # Anyone devices.
+  KPM_INLINE: "false" # Only use it for SukiSU-Ultra.
+  KPM_KPATCH_NEXT: "false" # If u want hook KPatch-Next in build step.
+  KPM_PATCH_SOURCE: "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU_patch/refs/heads/main/kpm/patch_linux" # If u want to use KPM Inline,so you need set patch exec file source -> raw.githubusercontent.com/Test/Test/patch .
+
+  BASEBAND_GUARD_ENABLE: "false" #if u want prevent unauthorized writes to critical partitions/device nodes.
+  BASEBAND_GUARD_BOOT: "false" #if u want to protect boot partition.
+
+  GENERATE_DTB: "false" # if u kernel need DTB , but cannot auto generate it. (Only Anykernel3).
+  GENERATE_CHIP: "qcom" # only supported for qcom and mediatek.
+
+  BUILD_DEBUGGER: "false" # Output build errors.
+  SKIP_PATCH: "false" # Ignore errors found in Patch Debugger.
+
+  BUILD_OTHER_CONFIG: "false" # Merge config files.
+  MERGE_CONFIG_FILES: "vendor/xiaomi/fragment.config"
+
+  FREE_MORE_SPACE: "false" # if u want get more space, enabled it.
+
+jobs:
+  build-kernel:
+    name: Build Renote 14 Pro +
+    runs-on: ubuntu-24.04 # u can changed to ubuntu 22.04, and need container set ubuntu-latest
+    # container: archlinux/archlinux:latest # if u need use arch linux -> archlinux/archlinux:latest or ubuntu 20.04 -> ubuntu:focal
+    env:
+      CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
+      CCACHE_NOHASHDIR: "true"
+      CCACHE_HARDLINK: "true"
+
+    steps:
+      - name: ⏰ Checkout repository
+        uses: actions/checkout@v6
+
+      - name: ⌛️ Compilation environment preparation
+        uses: ./.github/workflows/build-env
+
+      - name: ⚙️ Get neccssary tools
+        uses: ./.github/workflows/build-ready
+
+      - name: 🪝 Patch Kernel of SUSFS
+        uses: ./.github/workflows/patch-susfs
+
+      - name: 🔗 Patch for no-kprobe
+        uses: ./.github/workflows/patch-no-kprobe
+            
+      - name: 🔒 Patch Kernel of nomount
+        uses: ./.github/workflows/patch-nomount
+      
+      - name: 🧩 Apply BBRv3 Patch
+        shell: bash
+        run: |
+         set -eu
+         cd "$GITHUB_WORKSPACE/device_kernel"                  
+                           
+         if patch -p1 < <(curl -sSfL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/BBRv3/0001-BBRv3-to-android14-6.1.patch") || true; then
+            echo "✅ BBRv3 patch successfully applied"
+         else
+             echo "❌ BBRv3 patch failed"
+         fi                  
+         
+      - name: 🪛 Extra Kernel Options
+        shell: bash
+        run: |
+          set -eu
+          cd "$GITHUB_WORKSPACE/device_kernel"
+
+          # Kernel 6.1 patches
+          # patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_fixup.patch") || true
+          # patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/6.6/gki_hostbuild.patch") || true
+          # patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_force_loading_modules_fail_symbol_version_checks.patch") || true
+          
+          # rm -f android/abi_gki_protected_exports_* || true
+          sed -i 's/ -dirty//g' scripts/setlocalversion || true
+          # sed -i '/bad_version:/,/return 0;/s/return 0;/return 1;/' kernel/module/version.c || true
+          # sed -i '/same_magic(/,/return strcmp/s/return strcmp(amagic, bmagic) == 0;/return 1;/' kernel/module/version.c || true
+
+          sed -i '/^DEFCONFIG=gki_defconfig/d' build.config.gki
+          sed -i '$a\DEFCONFIG=${{ env.DEFCONFIG_NAME }}' build.config.gki
+          sed -i '/^POST_DEFCONFIG_CMDS="check_defconfig"/d' build.config.gki
+          echo "✅ GKI kernel 6.1 patches has been applied."
+                                        
+          # echo "KBUILD_CFLAGS += -w" >> ./Makefile
+          echo 'KBUILD_CFLAGS += -Wno-default-const-init-unsafe' >> ./Makefile
+          echo 'KBUILD_CFLAGS += -Wno-uninitialized-const-pointer' >> ./Makefile
+          echo 'KBUILD_CFLAGS += -Wno-implicit-function-declaration' >> ./Makefile
+          echo 'KBUILD_CFLAGS += -Wno-sometimes-uninitialized' >> ./Makefile
+          # echo 'KBUILD_CFLAGS += -Wno-unused-function' >> ./Makefile
+          echo "✅ Custom Makefile line added successfully"
+          
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"        
+          [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
+          [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
+          
+          set_cfg() {  # usage: set_cfg CONFIG_X=y   or   set_cfg CONFIG_X=n
+             local key="${1%%=*}" val="${1#*=}"
+             sed -i "/^# $key is not set/d;/^$key=/d" "$CONFIG_FILE"
+             if [ "$val" = "n" ]; then echo "# $key is not set" >> "$CONFIG_FILE"
+             else echo "$1" >> "$CONFIG_FILE"; fi
+          }
+          set_cfg CONFIG_KSU_DISABLE_32BIT_HOOKS=y
+          set_cfg CONFIG_DEBUG_KERNEL=n
+          set_cfg CONFIG_DEBUG_FS=n
+          set_cfg CONFIG_CFI_CLANG=y
+          set_cfg CONFIG_LOCALVERSION=-super.kernel
+          set_cfg CONFIG_LOCALVERSION_AUTO=y
+          set_cfg CONFIG_HZ_300=y
+          set_cfg CONFIG_HZ=300
+          set_cfg CONFIG_TCP_CONG_ADVANCED=y
+          set_cfg CONFIG_TCP_CONG_BIC=n
+          set_cfg CONFIG_TCP_CONG_WESTWOOD=y
+          set_cfg CONFIG_TCP_CONG_HTCP=n
+          set_cfg CONFIG_TCP_CONG_BBR=y
+          set_cfg CONFIG_TCP_CONG_BBR3=y
+          set_cfg CONFIG_DEFAULT_BBR3=y
+          echo "✅ Configs applied"
+
+      - name: 🚀 Build Process
+        uses: ./.github/workflows/build-process
+
+      - name: 🔩 Pack Process
+        uses: ./.github/workflows/pack-process
+
+      - name: ✏️ Upload Artifacts
+        uses: ./.github/workflows/upload-files
