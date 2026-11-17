@@ -113,7 +113,7 @@ runs:
             apt-get install p7zip p7zip-full -y
             apt-get install libtinfo5 -y            
             if [ "${{ env.GKI_TYPE_KERNEL }}" == "true" ]; then
-               sudo apt-get install libelf-dev -y
+               sudo apt-get install libelf-dev dwarves pahole -y
             fi
             echo "::endgroup::"
             echo "[+] The base packages is installed."
@@ -168,7 +168,7 @@ runs:
             # sudo apt install -y binutils-aarch64-linux-gnu binutils-arm-linux-gnueabi gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi
                         
             if [ "${{ env.GKI_TYPE_KERNEL }}" == "true" ]; then
-               sudo apt-get install libelf-dev -y
+               sudo apt-get install libelf-dev dwarves pahole -y
             fi
             
             echo "::endgroup::"
@@ -223,7 +223,7 @@ runs:
             # sudo apt install -y binutils-aarch64-linux-gnu binutils-arm-linux-gnueabi gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi
             
             if [ "${{ env.GKI_TYPE_KERNEL }}" == "true" ]; then
-               sudo apt-get install libelf-dev -y
+               sudo apt-get install libelf-dev dwarves pahole -y
             fi                       
             
             echo "::endgroup::"
