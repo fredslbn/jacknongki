@@ -218,6 +218,7 @@ jobs:
           set_cfg CONFIG_TCP_CONG_BBR=y
           set_cfg CONFIG_TCP_CONG_BBR3=y
           set_cfg CONFIG_DEFAULT_BBR3=y
+          set_cfg CONFIG_FGETPRIORITY=y
           echo "✅ Configs applied"
 
       - name: 🚀 Build Process
