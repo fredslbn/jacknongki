@@ -65,7 +65,7 @@ env:
   CUSTOM_SUSFS_PATCH : true
   CUSTOM_CLEANUP_HARDCODE : false
   CUSTOM_DIR_ANYKERNEL : false
-  GETPRIORITY_NON_GKI2 : false
+  GETPRIORITY_NON_GKI2 : true
   
   SUSFS_ENABLE : true
   SUSFS_FIXED : true
@@ -189,7 +189,11 @@ jobs:
           echo 'KBUILD_CFLAGS += -Wno-unused-function' >> ./Makefile
           echo "✅ Custom Makefile line added successfully"
           
-          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"        
+          CONFIG_FILE="./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}"
+          
+          sed -i '/^CONFIG_HZ=250$/d' "$CONFIG_FILE"
+          sed -i '/^CONFIG_HZ_250=y/d' "$CONFIG_FILE"
+          
           [ -f "$CONFIG_FILE" ] || { echo "defconfig not found"; exit 1; }
           [ -n "$(tail -c1 "$CONFIG_FILE")" ] && echo >> "$CONFIG_FILE"
           
