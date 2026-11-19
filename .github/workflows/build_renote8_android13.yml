@@ -22,7 +22,7 @@ env:
   
   KERNEL_SOURCE : "https://github.com/eternyx404/kernel_xiaomi_ginkgo.git"
   # KERNEL_SOURCE : "https://github.com/FlopKernel-Series/flop_trinket-mi_kernel.git"
-  KERNEL_BRANCH : "non"
+  KERNEL_BRANCH : "main"
 
   # CLANG_SOURCE : "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/28337064939c0b4bb5804cddf35fb03d860edcf6/clang-r614150.tar.gz"
   # CLANG_SOURCE : "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
@@ -65,7 +65,7 @@ env:
   CUSTOM_DIR_ANYKERNEL : false
   GETPRIORITY_NON_GKI2 : true
   
-  SUSFS_ENABLE : false
+  SUSFS_ENABLE : true
   SUSFS_FIXED : true
 
   AK3_SOURCE : "https://github.com/neophyteprjkt/AnyKernel3.git"
@@ -97,7 +97,7 @@ env:
   DROIDSPACES_ENABLE: "false" # if u need Droidspaces or LXC/Docker.
   NOMOUNT_ENABLE: "true" # if u need NoMount.
 
-  HOOK_METHOD: "tamper" # Manual hook method -> syscall.
+  HOOK_METHOD: "branchlink" # Manual hook method -> syscall.
 
   KERNEL_PATCH: "false" # If your kernel version is <= 4.9, you have the option of enabling the patch to patch the kernel_write and kernel_read functions.
 
@@ -211,13 +211,10 @@ jobs:
           set_cfg CONFIG_FGETPRIORITY=y
           set_cfg CONFIG_DEBUG_KERNEL=n
           set_cfg CONFIG_DEBUG_FS=n
-          set_cfg CONFIG_CFI_CLANG=y
-          set_cfg CONFIG_COMPAT_VDSO=y
-          set_cfg CONFIG_VDSO32=y
           set_cfg CONFIG_TMPFS_XATTR=y
           set_cfg CONFIG_TMPFS_POSIX_ACL=y
           set_cfg CONFIG_LOCALVERSION=-super.kernel
-          set_cfg CONFIG_LOCALVERSION_AUTO=y          
+          set_cfg CONFIG_LOCALVERSION_AUTO=y
           echo "✅ Additional configs applied"
           
           
