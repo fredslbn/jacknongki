@@ -172,7 +172,7 @@ jobs:
           # patch -p1 < <(curl -sL "https://raw.githubusercontent.com/fredslbn/Patches/refs/heads/main/GKI/5.15/gki_force_loading_modules_fail_symbol_version_checks.patch") || true
           
           # rm -f android/abi_gki_protected_exports_* || true
-          sed -i 's/ -dirty//g' scripts/setlocalversion || true
+          # sed -i 's/ -dirty//g' scripts/setlocalversion || true
           # sed -i '/bad_version:/,/return 0;/s/return 0;/return 1;/' kernel/module/version.c || true
           # sed -i '/same_magic(/,/return strcmp/s/return strcmp(amagic, bmagic) == 0;/return 1;/' kernel/module/version.c || true
 
@@ -206,7 +206,6 @@ jobs:
           set_cfg CONFIG_KSU_DISABLE_32BIT_HOOKS=y
           set_cfg CONFIG_DEBUG_KERNEL=n
           set_cfg CONFIG_DEBUG_FS=n
-          set_cfg CONFIG_CFI_CLANG=y
           set_cfg CONFIG_LOCALVERSION=-super.kernel
           set_cfg CONFIG_LOCALVERSION_AUTO=y
           set_cfg CONFIG_HZ_300=y

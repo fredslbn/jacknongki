@@ -185,11 +185,10 @@ jobs:
           }          
           set_cfg CONFIG_KSU=y
           set_cfg CONFIG_KSU_HACK_ARM64_BRANCH_LINK=y
-          set_cfg CONFIG_KSU_HOSTSREDIRECT=y
+          set_cfg CONFIG_KSU_HOSTSREDIRECT=n
           set_cfg CONFIG_KSU_LSM_SECURITY_HOOKS=y
           set_cfg CONFIG_KSU_COMPILE_AS_C23=y
-          set_cfg CONFIG_KSU_SHELL_HAS_SU_ALWAYS=y
-          set_cfg CONFIG_KSU_HEURISTIC_IN_TREE_BUILD=y
+          set_cfg CONFIG_KSU_SHELL_HAS_SU_ALWAYS=n
           set_cfg CONFIG_KALLSYMS_ALL=y
           echo "✅ BRANCHLINK-GKI HOOK applied"
 
@@ -395,7 +394,6 @@ jobs:
           }
           set_cfg CONFIG_DEBUG_KERNEL=n
           set_cfg CONFIG_DEBUG_FS=n
-          set_cfg CONFIG_ARM64_LSE_ATOMICS=y
           set_cfg CONFIG_CFI_CLANG=y
           set_cfg "CONFIG_LOCALVERSION=\"${{ env.LOCAL_VERSION }}\""
           set_cfg CONFIG_LOCALVERSION_AUTO=y
