@@ -109,7 +109,7 @@ runs:
              set_cfg CONFIG_KSU_FEATURE_SULOG=n
              set_cfg CONFIG_KSU_FEATURE_ADBROOT=n
              set_cfg CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED=n
-             set_cfg CONFIG_KALLSYMS_ALL=y
+             set_cfg CONFIG_KALLSYMS_ALL=n
              echo "✅ BRANCHLINK-GKI HOOK applied"
 
           elif [[ ${{ env.HOOK_METHOD }} == "LKM" ]]; then
