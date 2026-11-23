@@ -12,8 +12,9 @@ env:
   CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-"
   # CUSTOM_CMDS : "CROSS_COMPILE=aarch64-linux-gnu- CLANG_TRIPLE=aarch64-linux-gnu-"
   
-  EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1 AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
+  # EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1 AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
   # EXTRA_CMDS : "LD=ld.lld LLVM=1 AR=llvm-ar AS=llvm-as NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
+  EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1"
 
   KERNEL_SOURCE : "https://github.com/chainonyourdoor/LuminaireKernel-6.1.git"
   KERNEL_BRANCH : "android14-6.1-luminaire"
@@ -177,7 +178,7 @@ jobs:
           echo "✅ Policydb patch applied"
           
           # rm -f android/abi_gki_protected_exports_* || true
-          sed -i 's/ -dirty//g' scripts/setlocalversion || true
+          # sed -i 's/ -dirty//g' scripts/setlocalversion || true
           # sed -i '/bad_version:/,/return 0;/s/return 0;/return 1;/' kernel/module/version.c || true
           # sed -i '/same_magic(/,/return strcmp/s/return strcmp(amagic, bmagic) == 0;/return 1;/' kernel/module/version.c || true
 
