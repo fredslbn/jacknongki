@@ -15,7 +15,7 @@ env:
   EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1 AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
   # EXTRA_CMDS : "LD=ld.lld LLVM=1 AR=llvm-ar AS=llvm-as NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip"
 
-  KERNEL_SOURCE : "https://github.com/chainonyourdoor/LuminaireKernel-6.1.git"
+  KERNEL_SOURCE : "https://github.com/chainonyourdoor/LuminaireKernel-6.6.git"
   KERNEL_BRANCH : "android15-6.6-lts"
   
   # KERNEL_SOURCE : "https://github.com/frstprjkt/valeryn_xiaomi_sm6115.git"
