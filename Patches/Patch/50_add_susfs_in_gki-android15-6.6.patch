@@ -1155,15 +1155,15 @@ diff --git a/fs/proc/base.c b/fs/proc/base.c
 index cf20a8f08..71ee077cf 100644
 --- a/fs/proc/base.c
 +++ b/fs/proc/base.c
-@@ -99,6 +99,10 @@
- #include <linux/cn_proc.h>
- #include <linux/ksm.h>
+@@ -102,6 +102,10 @@
  #include <linux/cpufreq_times.h>
+ #include <linux/dma-buf.h>
+ #include <trace/events/oom.h>
 +#if defined(CONFIG_KSU_SUSFS_SUS_MAP) || defined(CONFIG_KSU_SUSFS_OPEN_REDIRECT)
 +#include <linux/susfs_def.h>
 +#endif // #if defined(CONFIG_KSU_SUSFS_SUS_MAP) || defined(CONFIG_KSU_SUSFS_OPEN_REDIRECT)
 +
- #include <trace/events/oom.h>
+ #include <trace/hooks/sched.h>
  #include "internal.h"
  #include "fd.h"
 @@ -1835,6 +1839,10 @@ static const char *proc_pid_get_link(struct dentry *dentry,
